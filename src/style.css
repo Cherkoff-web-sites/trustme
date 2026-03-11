@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@layer base {
+  html,
+  body,
+  #app {
+    min-height: 100vh;
+    min-width: 320px;
+  }
+
+  body {
+    margin: 0;
+    font-family: Inter, Arial, sans-serif;
+    color: #fdfeff;
+    background: #1a1a1a;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
