@@ -465,13 +465,173 @@ function SupportSection() {
 }
 
 function PageLayout({ children }: { children: React.ReactNode }) {
+  const [showNotifications, setShowNotifications] = useState(false);
+
   return (
     <div className={pageClassName}>
       <BackgroundDecor />
       <div className="relative z-10 flex min-h-screen flex-col">
-        <AppHeader />
+        <AppHeader onNotificationsClick={() => setShowNotifications(true)} />
         {children}
         <AppFooter />
+      </div>
+
+      {showNotifications && (
+        <div
+          className="fixed inset-0 z-40 flex items-start justify-center bg-black/40 px-4 py-8 sm:px-6 sm:py-12"
+          onClick={() => setShowNotifications(false)}
+        >
+          <div
+            className="mt-12 w-full max-w-[720px] rounded-[28px] border border-white/80 bg-[#151515]/98 p-4 sm:p-5"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <header className="mb-4 flex items-center justify-between gap-4 border-b border-white/15 pb-3">
+              <nav className="flex flex-wrap gap-2 text-sm">
+                {['Все', 'Финансы', 'Тариф', 'Аккаунт', 'Сервис'].map((label, index) => (
+                  <button
+                    key={label}
+                    className={`rounded-full px-3 py-1.5 ${
+                      index === 0 ? 'bg-white text-[#151515]' : 'bg-white/5 text-white/80 hover:bg-white/10'
+                    }`}
+                    type="button"
+                  >
+                    {label}
+                  </button>
+                ))}
+              </nav>
+              <button
+                className="text-sm font-medium text-white/70 underline underline-offset-4 hover:text-white"
+                type="button"
+              >
+                Очистить
+              </button>
+            </header>
+
+            <div className="flex max-h-[70vh] flex-col gap-3 overflow-y-auto pr-1">
+              {[
+                {
+                  title: 'Добавлен новый сотрудник: Иванов Иван',
+                  category: 'Аккаунт',
+                  time: '11 февраля 2026 в 02:49',
+                },
+                {
+                  title: 'Аккаунт user@company.ru заблокирован. Превышен лимит доступных проверок',
+                  category: 'Аккаунт',
+                  time: '11 февраля 2026 в 02:49',
+                },
+                {
+                  title: 'Тарифный план учетной записи user@company.ru истекает через 3 дня',
+                  category: 'Тариф',
+                  time: '11 февраля 2026 в 02:49',
+                  action: 'Продлить',
+                },
+                {
+                  title: 'Списано 490 ₽ за проверку юр.лица «ООО УМНЫЙ РИТЕЙЛ»',
+                  category: 'Финансы',
+                  time: '11 февраля 2026 в 02:49',
+                },
+                {
+                  title: 'Баланс успешно пополнен на 10 000 ₽',
+                  category: 'Финансы',
+                  time: '11 февраля 2026 в 02:49',
+                },
+                {
+                  title: 'Тариф «Индивидуальный» активирован',
+                  category: 'Тариф',
+                  time: '11 февраля 2026 в 02:49',
+                },
+                {
+                  title: 'Тариф «Индивидуальный» изменен',
+                  category: 'Тариф',
+                  time: '11 февраля 2026 в 02:49',
+                },
+              ].map((item) => (
+                <article
+                  key={item.title}
+                  className="flex items-start gap-3 rounded-2xl bg-[#131313] px-4 py-3 text-sm text-white/85 sm:px-5"
+                >
+                  <div className="mt-1 h-9 w-9 shrink-0 overflow-hidden rounded-full bg-[#393939]" />
+                  <div className="flex-1">
+                    <div className="mb-1 flex flex-wrap items-center gap-2">
+                      <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/80">
+                        {item.category}
+                      </span>
+                      <p className="m-0 text-[15px] leading-[1.3] text-white">{item.title}</p>
+                    </div>
+                    <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-white/55">
+                      <span>{item.time}</span>
+                      {item.action ? (
+                        <button
+                          className="rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white hover:bg-white/20"
+                          type="button"
+                        >
+                          {item.action}
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div className="mt-1 flex shrink-0 flex-col items-center gap-3 text-[15px] text-white/65">
+                    <button className="hover:text-white" type="button" aria-label="Повторить">
+                      ↻
+                    </button>
+                    <button className="hover:text-white" type="button" aria-label="Удалить">
+                      🗑
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CurrentTariffInfoModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4 py-6 sm:px-6 sm:py-10"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-[430px] rounded-[28px] border border-white/70 bg-[#151515] px-5 py-5 text-sm text-white/85 shadow-[0_0_0_1px_rgba(255,255,255,0.15)] sm:px-6 sm:py-6"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button
+          type="button"
+          aria-label="Закрыть"
+          className="absolute right-4 top-4 text-lg text-white/60 transition hover:text-white"
+          onClick={onClose}
+        >
+          ×
+        </button>
+
+        <p className="mb-3 text-xs uppercase tracking-[0.12em] text-white/55">
+          Текущий тарифный план
+        </p>
+        <p className="mb-4 text-[15px] leading-snug text-white">
+          Ваш тарифный план «Индивидуальный» включает в себя следующие категории:
+        </p>
+
+        <ul className="mb-4 space-y-1.5 text-[15px] leading-snug">
+          <li className="flex items-center gap-3 text-[#F45353]">
+            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/45 bg-transparent" />
+            <span>Упоминания в Telegram</span>
+          </li>
+          <li className="flex items-center gap-3 text-[#F45353]">
+            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/45 bg-transparent" />
+            <span>Упоминания в СМИ</span>
+          </li>
+          <li className="flex items-center gap-3 text-[#45C857]">
+            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/45 bg-transparent" />
+            <span>Все факторы проверок</span>
+          </li>
+        </ul>
+
+        <p className="text-xs leading-snug text-white/60">
+          Подробнее со всеми тарифными планами можно ознакомиться на странице «Тариф».
+        </p>
       </div>
     </div>
   );
@@ -484,6 +644,8 @@ function DashboardPage() {
     ['23.09.2025', 'Юр.лицо', 'Telegram-бот', 'Успешно'],
     ['23.09.2024', 'Юр.лицо', 'Веб-сервис', 'Ошибка'],
   ] as const;
+
+  const [showCurrentTariffModal, setShowCurrentTariffModal] = useState(false);
 
   return (
     <PageLayout>
@@ -539,7 +701,11 @@ function DashboardPage() {
                   <div className="inline-flex min-h-12 min-w-[180px] items-center justify-center rounded-full border border-white/15 bg-white/10 px-5 text-lg font-medium">
                     Индивидуальный
                   </div>
-                  <button className={`${submitButtonClassName} min-w-[160px]`} type="button">
+                  <button
+                    className={`${submitButtonClassName} min-w-[160px]`}
+                    type="button"
+                    onClick={() => setShowCurrentTariffModal(true)}
+                  >
                     Изменить
                   </button>
                 </div>
@@ -618,6 +784,9 @@ function DashboardPage() {
               </div>
             </DashboardCard>
           </div>
+        {showCurrentTariffModal ? (
+          <CurrentTariffInfoModal onClose={() => setShowCurrentTariffModal(false)} />
+        ) : null}
       </main>
     </PageLayout>
   );
@@ -635,7 +804,13 @@ type HistoryItem = {
   success: boolean;
 };
 
-function HistoryRequestCard({ item }: { item: HistoryItem }) {
+type HistoryCategoryFilter = 'all' | 'legal' | 'individual';
+type HistorySourceFilter = 'all' | 'telegram' | 'web';
+type HistoryStatusFilter = 'all' | 'success' | 'error';
+
+type HistoryFilterPanel = 'period' | 'category' | 'source' | 'status' | null;
+
+function HistoryRequestCard({ item, onOpenReport }: { item: HistoryItem; onOpenReport?: () => void }) {
   return (
     <article className={`${cardClassName} p-4 sm:p-5`}>
       <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -684,7 +859,11 @@ function HistoryRequestCard({ item }: { item: HistoryItem }) {
 
       <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-3 sm:flex-row">
-          <button className={`${submitButtonClassName} min-w-[196px]`} type="button">
+          <button
+            className={`${submitButtonClassName} min-w-[196px]`}
+            type="button"
+            onClick={onOpenReport}
+          >
             Открыть отчёт
           </button>
           <button className={`${submitButtonClassName} min-w-[196px]`} type="button">
@@ -697,6 +876,210 @@ function HistoryRequestCard({ item }: { item: HistoryItem }) {
         </button>
       </div>
     </article>
+  );
+}
+
+function ReportContent({ item }: { item: HistoryItem }) {
+  return (
+    <>
+      <header className="border-b border-white/15 bg-[#101010] px-5 pb-4 pt-5 sm:px-7">
+        <div className="mb-4 h-10 w-full rounded-[18px] bg-[#1F1F1F]" />
+        <p className="text-xs uppercase tracking-[0.12em] text-white/55">Отчёт по организации</p>
+        <h2 className="mt-2 text-[22px] leading-tight font-semibold text-white sm:text-[26px]">{item.name}</h2>
+      </header>
+
+      <section className="space-y-6 px-5 py-5 sm:px-7 sm:py-6">
+        <section className="rounded-[20px] border border-white/15 bg-[#151515] p-4 sm:p-5">
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-white/70">Основная информация</h3>
+          <div className="grid gap-3 text-xs text-white/80 sm:grid-cols-3">
+            <div className="space-y-1.5">
+              <p className="text-white/45">Статус</p>
+              <div className="inline-flex min-h-8 items-center rounded-full bg-[#1E2D21] px-3 text-xs text-[#45C857]">
+                Действует
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-white/45">Документ</p>
+              <p className="m-0">{item.document}</p>
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-white/45">Руководитель</p>
+              <p className="m-0">Иванов Иван Иванович</p>
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-white/45">Адрес</p>
+              <p className="m-0">г. Москва, ул. Примерная, д. 1</p>
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-white/45">Учредители</p>
+              <div className="inline-flex min-h-8 items-center rounded-full border border-white/25 bg-transparent px-3 text-xs">
+                Место под кнопку
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-[20px] border border-white/15 bg-[#151515] p-4 sm:p-5">
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-white/70">Финансовый отчёт</h3>
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.3fr)]">
+            <div className="flex items-center justify-center">
+              <div className="flex h-40 w-40 items-center justify-center rounded-full border-[10px] border-[#0EB8D2] border-r-[#2A2A2A] border-t-[#2A2A2A]">
+                <span className="text-xs text-white/75">2022 год</span>
+              </div>
+            </div>
+            <div className="space-y-3 text-xs text-white/80">
+              <div className="grid gap-2 sm:grid-cols-2">
+                <div className="rounded-[12px] bg-[#1C1C1C] px-3 py-2">
+                  <p className="text-white/55">Выручка</p>
+                  <p className="mt-1 text-sm font-semibold text-white">68,19 млрд ₽</p>
+                  <p className="mt-1 text-[11px] text-[#45C857]">+92,96% к прошлому году</p>
+                </div>
+                <div className="rounded-[12px] bg-[#1C1C1C] px-3 py-2">
+                  <p className="text-white/55">Прибыль</p>
+                  <p className="mt-1 text-sm font-semibold text-white">10,69 млрд ₽</p>
+                  <p className="mt-1 text-[11px] text-[#45C857]">+11,39% к прошлому году</p>
+                </div>
+              </div>
+              <div className="rounded-[12px] bg-[#1C1C1C] px-3 py-2">
+                <p className="text-white/55">Уставной капитал</p>
+                <p className="mt-1 text-sm font-semibold text-white">1,1 млн ₽</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-[20px] border border-white/15 bg-[#151515] p-4 sm:p-5">
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-white/70">Арбитражные суды</h3>
+          <div className="grid gap-4 text-xs text-white/80 sm:grid-cols-2">
+            <div className="rounded-[12px] bg-[#1C1C1C] px-3 py-2">
+              <p className="text-white/55">За последний год</p>
+              <p className="mt-1">Исков: 10,02 млн ₽</p>
+              <p className="mt-1">Ответчик: 22,65 млн ₽</p>
+            </div>
+            <div className="rounded-[12px] bg-[#1C1C1C] px-3 py-2">
+              <p className="text-white/55">За всё время</p>
+              <p className="mt-1">Исков: 44,3 млн ₽</p>
+              <p className="mt-1">Ответчик: 36,8 млн ₽</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-[20px] border border-white/15 bg-[#151515] p-4 sm:p-5">
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-white/70">Экспресс-отчёт</h3>
+          <div className="mb-4 flex flex-wrap gap-2 text-xs">
+            <span className="inline-flex items-center rounded-full bg-[#1F1F1F] px-3 py-1 text-white/80">
+              Отрицательные факторы: 2
+            </span>
+            <span className="inline-flex items-center rounded-full bg-[#1F1F1F] px-3 py-1 text-[#45C857]">
+              Положительные факторы: 18
+            </span>
+          </div>
+          <div className="space-y-4 text-xs text-white/80">
+            <div>
+              <p className="mb-3 text-white/55">Отрицательные факторы</p>
+              <div className="grid gap-3 md:grid-cols-2">
+                <div className="rounded-[12px] bg-[#1C1C1C] px-3 py-2">
+                  <p className="text-sm text-white">Исполнительные производства</p>
+                  <p className="mt-1 text-white/70">Найдены 39/72 тыс.</p>
+                </div>
+                <div className="rounded-[12px] bg-[#1C1C1C] px-3 py-2">
+                  <p className="text-sm text-white">Количество арбитражных дел</p>
+                  <p className="mt-1 text-white/70">5,21 млн ₽</p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <p className="mb-3 text-white/55">Положительные факторы</p>
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 9 }).map((_, index) => (
+                  <div key={index} className="rounded-[12px] bg-[#1C1C1C] px-3 py-2">
+                    <p className="text-sm text-white">Фактор #{index + 1}</p>
+                    <p className="mt-1 text-white/70">Не найдено</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-[20px] border border-white/15 bg-[#151515] p-4 sm:p-5">
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-white/70">Упоминания в Telegram</h3>
+          <div className="space-y-3 text-xs text-white/80">
+            {Array.from({ length: 2 }).map((_, index) => (
+              <article key={index} className="rounded-[14px] bg-[#1C1C1C] px-3 py-3">
+                <div className="mb-2 flex items-center gap-2 text-[11px] text-[#0EB8D2]">
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#111111]" />
+                  <span>https://t.me/example_{index + 1}</span>
+                </div>
+                <p className="mb-2 text-[11px] leading-snug text-white/80">
+                  Место под текст сообщения с упоминанием компании. Здесь будет отображаться полный текст публикации из Telegram.
+                </p>
+                <div className="flex items-center justify-between text-[11px] text-white/55">
+                  <span>30.07.2024, 15:25</span>
+                  <span className="inline-flex h-5 items-center rounded-full border border-white/35 px-2">Кнопка перехода</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-[20px] border border-white/15 bg-[#151515] p-4 sm:p-5">
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-white/70">Упоминания в СМИ</h3>
+          <div className="space-y-3 text-xs text-white/80">
+            <article className="rounded-[14px] bg-[#1C1C1C] px-3 py-3">
+              <div className="mb-2 flex items-center gap-2 text-[11px] text-[#0EB8D2]">
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#111111]" />
+                <span>@example_media</span>
+              </div>
+              <p className="mb-2 text-[11px] leading-snug text-white/80">
+                Место под текст публикации в СМИ. Здесь будет отображаться часть статьи c упоминанием компании.
+              </p>
+              <div className="flex items-center justify-between text-[11px] text-white/55">
+                <span>12.10.2025, 07:49</span>
+                <span className="inline-flex h-5 items-center rounded-full border border-white/35 px-2">Кнопка перехода</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section className="rounded-[20px] border border-white/15 bg-[#151515] p-4 sm:p-5">
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-white/70">Итоговая оценка</h3>
+          <p className="mb-3 text-xs text-white/75">
+            На основании проведённого анализа организация имеет низкий уровень риска. Обнаружено 2 отрицательных фактора в 18 положительных показателях.
+          </p>
+          <div className="inline-flex min-h-9 items-center rounded-full bg-[#1E2D21] px-4 text-xs text-[#45C857]">
+            Низкий уровень риска
+          </div>
+          <p className="mt-4 text-[11px] text-white/50">
+            Отчёт сгенерирован: 27.10.2025 09:32. Система анализа юридических лиц «TrustMe».
+          </p>
+        </section>
+      </section>
+    </>
+  );
+}
+
+function HistoryReportModal({ item, onClose }: { item: HistoryItem; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-3 py-6 sm:px-6 sm:py-10" onClick={onClose}>
+      <div
+        className="relative flex h-full max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-[28px] border border-white/70 bg-[#151515] text-sm text-white/85 shadow-[0_0_0_1px_rgba(255,255,255,0.15)]"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button
+          type="button"
+          aria-label="Закрыть"
+          className="absolute right-5 top-4 z-10 text-xl text-white/70 transition hover:text-white"
+          onClick={onClose}
+        >
+          ×
+        </button>
+
+        <div className="flex-1 overflow-y-auto">
+          <ReportContent item={item} />
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -746,6 +1129,156 @@ function HistoryPage() {
     },
   ];
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<HistoryCategoryFilter>('all');
+  const [sourceFilter, setSourceFilter] = useState<HistorySourceFilter>('all');
+  const [statusFilter, setStatusFilter] = useState<HistoryStatusFilter>('all');
+  const [sortOrder, setSortOrder] = useState<'new' | 'old'>('new');
+  const [openPanel, setOpenPanel] = useState<HistoryFilterPanel>(null);
+  const [openedReportItem, setOpenedReportItem] = useState<HistoryItem | null>(null);
+
+  const resetFilters = () => {
+    setSearchQuery('');
+    setDateFrom('');
+    setDateTo('');
+    setCategoryFilter('all');
+    setSourceFilter('all');
+    setStatusFilter('all');
+    setSortOrder('new');
+    setOpenPanel(null);
+  };
+
+  const togglePanel = (panel: HistoryFilterPanel) => {
+    setOpenPanel((current) => (current === panel ? null : panel));
+  };
+
+  const parseHistoryDate = (value: string) => {
+    const [datePart] = value.split(',');
+    const parts = datePart.trim().split('.');
+    if (parts.length !== 3) return null;
+    const [day, month, year] = parts.map((part) => Number(part));
+    if (!day || !month || !year) return null;
+    return new Date(year, month - 1, day);
+  };
+
+  const parseInputDate = (value: string) => {
+    if (!value) return null;
+    const parts = value.split('-').map((part) => Number(part));
+    if (parts.length !== 3) return null;
+    const [year, month, day] = parts;
+    if (!day || !month || !year) return null;
+    return new Date(year, month - 1, day);
+  };
+
+  const fromDate = parseInputDate(dateFrom);
+  const toDate = parseInputDate(dateTo);
+
+  const filteredAndSortedItems = historyItems
+    .filter((item) => {
+      const query = searchQuery.trim().toLowerCase();
+      if (query) {
+        const haystack = `${item.name} ${item.document}`.toLowerCase();
+        if (!haystack.includes(query)) {
+          return false;
+        }
+      }
+
+      if (categoryFilter === 'legal' && item.type !== 'Юридическое лицо') {
+        return false;
+      }
+      if (categoryFilter === 'individual' && item.type !== 'Физическое лицо') {
+        return false;
+      }
+
+      if (sourceFilter !== 'all' && item.source !== sourceFilter) {
+        return false;
+      }
+
+      if (statusFilter === 'success' && !item.success) {
+        return false;
+      }
+      if (statusFilter === 'error' && item.success) {
+        return false;
+      }
+
+      const itemDate = parseHistoryDate(item.checkedAt);
+      if (itemDate) {
+        if (fromDate && itemDate < fromDate) {
+          return false;
+        }
+        if (toDate && itemDate > toDate) {
+          return false;
+        }
+      }
+
+      return true;
+    })
+    .slice()
+    .sort((a, b) => {
+      const aDate = parseHistoryDate(a.checkedAt);
+      const bDate = parseHistoryDate(b.checkedAt);
+      if (!aDate || !bDate) return 0;
+      return sortOrder === 'new' ? bDate.getTime() - aDate.getTime() : aDate.getTime() - bDate.getTime();
+    });
+
+  const activeChips: Array<{ id: string; label: string; clear: () => void }> = [];
+
+  if (searchQuery.trim()) {
+    activeChips.push({
+      id: 'search',
+      label: `Поиск: «${searchQuery.trim()}»`,
+      clear: () => setSearchQuery(''),
+    });
+  }
+
+  if (dateFrom || dateTo) {
+    activeChips.push({
+      id: 'period',
+      label: `Период: ${dateFrom || '—'} — ${dateTo || '—'}`,
+      clear: () => {
+        setDateFrom('');
+        setDateTo('');
+      },
+    });
+  }
+
+  if (categoryFilter !== 'all') {
+    activeChips.push({
+      id: 'category',
+      label:
+        categoryFilter === 'legal'
+          ? 'Категория: юридическое лицо'
+          : 'Категория: физическое лицо',
+      clear: () => setCategoryFilter('all'),
+    });
+  }
+
+  if (sourceFilter !== 'all') {
+    activeChips.push({
+      id: 'source',
+      label: sourceFilter === 'telegram' ? 'Источник: Telegram-бот' : 'Источник: веб-сервис',
+      clear: () => setSourceFilter('all'),
+    });
+  }
+
+  if (statusFilter !== 'all') {
+    activeChips.push({
+      id: 'status',
+      label: statusFilter === 'success' ? 'Статус: успешно' : 'Статус: ошибка',
+      clear: () => setStatusFilter('all'),
+    });
+  }
+
+  if (sortOrder !== 'new') {
+    activeChips.push({
+      id: 'sort',
+      label: 'Сортировка: сначала старые',
+      clear: () => setSortOrder('new'),
+    });
+  }
+
   return (
     <PageLayout>
       <main className={`${containerClassName} pb-10 sm:pb-14`}>
@@ -755,27 +1288,271 @@ function HistoryPage() {
             description="Все выполненные проверки из Telegram-бота и веб-сервиса «Trust Me»"
           />
 
-          <div className="mb-8 grid gap-3 lg:grid-cols-[1.35fr_repeat(4,minmax(0,1fr))]">
+          <div className="mb-4 grid gap-3 lg:grid-cols-[1.35fr_repeat(4,minmax(0,1fr))]">
             <label className={`${filterControlClassName} gap-3`}>
               <span className="text-white/35">⌕</span>
               <input
                 className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/35"
                 placeholder="Поиск"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
               />
             </label>
-            {['Период', 'Категория', 'Источник', 'Статус'].map((label) => (
-              <button className={filterControlClassName} key={label} type="button">
-                <span>{label}</span>
-                <span className="text-white/35">▾</span>
+            <button
+              className={filterControlClassName}
+              type="button"
+              onClick={() => togglePanel('period')}
+            >
+              <span>Период</span>
+              <span className="text-white/35">▾</span>
+            </button>
+            <button
+              className={filterControlClassName}
+              type="button"
+              onClick={() => togglePanel('category')}
+            >
+              <span>Категория</span>
+              <span className="text-white/35">▾</span>
+            </button>
+            <button
+              className={filterControlClassName}
+              type="button"
+              onClick={() => togglePanel('source')}
+            >
+              <span>Источник</span>
+              <span className="text-white/35">▾</span>
+            </button>
+            <button
+              className={filterControlClassName}
+              type="button"
+              onClick={() => togglePanel('status')}
+            >
+              <span>Статус</span>
+              <span className="text-white/35">▾</span>
+            </button>
+          </div>
+
+          {openPanel === 'period' ? (
+            <section className={`${cardClassName} mb-5 p-4 sm:p-5`}>
+              <div className="grid gap-4 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+                <div className="space-y-2 text-sm text-white/85">
+                  <p className="mb-1 text-xs uppercase tracking-[0.12em] text-white/50">Период</p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label className="flex flex-col gap-1">
+                      <span className="text-xs text-white/55">c</span>
+                      <input
+                        className={`${inputClassName} h-10 bg-[#181818]`}
+                        type="date"
+                        value={dateFrom}
+                        onChange={(event) => setDateFrom(event.target.value)}
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1">
+                      <span className="text-xs text-white/55">по</span>
+                      <input
+                        className={`${inputClassName} h-10 bg-[#181818]`}
+                        type="date"
+                        value={dateTo}
+                        onChange={(event) => setDateTo(event.target.value)}
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                <div className="space-y-3 text-sm text-white/85">
+                  <p className="mb-1 text-xs uppercase tracking-[0.12em] text-white/50">
+                    Сортировка
+                  </p>
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      className={`flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left ${
+                        sortOrder === 'new'
+                          ? 'bg-white text-[#151515]'
+                          : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                      }`}
+                      onClick={() => setSortOrder('new')}
+                    >
+                      <span>Сначала новые</span>
+                    </button>
+                    <button
+                      type="button"
+                      className={`flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left ${
+                        sortOrder === 'old'
+                          ? 'bg-white text-[#151515]'
+                          : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                      }`}
+                      onClick={() => setSortOrder('old')}
+                    >
+                      <span>Сначала старые</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          ) : null}
+
+          {openPanel === 'category' ? (
+            <section className={`${cardClassName} mb-5 p-4 sm:p-5`}>
+              <p className="mb-3 text-xs uppercase tracking-[0.12em] text-white/50">Категория</p>
+              <div className="flex flex-wrap gap-3 text-sm text-white/85">
+                <button
+                  type="button"
+                  className={`rounded-[10px] px-3 py-2 ${
+                    categoryFilter === 'legal'
+                      ? 'bg-white text-[#151515]'
+                      : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                  }`}
+                  onClick={() => setCategoryFilter('legal')}
+                >
+                  Юридическое лицо
+                </button>
+                <button
+                  type="button"
+                  className={`rounded-[10px] px-3 py-2 ${
+                    categoryFilter === 'individual'
+                      ? 'bg-white text-[#151515]'
+                      : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                  }`}
+                  onClick={() => setCategoryFilter('individual')}
+                >
+                  Физическое лицо
+                </button>
+                <button
+                  type="button"
+                  className={`rounded-[10px] px-3 py-2 ${
+                    categoryFilter === 'all'
+                      ? 'bg-white text-[#151515]'
+                      : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                  }`}
+                  onClick={() => setCategoryFilter('all')}
+                >
+                  Все
+                </button>
+              </div>
+            </section>
+          ) : null}
+
+          {openPanel === 'source' ? (
+            <section className={`${cardClassName} mb-5 p-4 sm:p-5`}>
+              <p className="mb-3 text-xs uppercase tracking-[0.12em] text-white/50">Источник</p>
+              <div className="flex flex-wrap gap-3 text-sm text-white/85">
+                <button
+                  type="button"
+                  className={`rounded-[10px] px-3 py-2 ${
+                    sourceFilter === 'telegram'
+                      ? 'bg-white text-[#151515]'
+                      : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                  }`}
+                  onClick={() => setSourceFilter('telegram')}
+                >
+                  Telegram-бот
+                </button>
+                <button
+                  type="button"
+                  className={`rounded-[10px] px-3 py-2 ${
+                    sourceFilter === 'web'
+                      ? 'bg-white text-[#151515]'
+                      : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                  }`}
+                  onClick={() => setSourceFilter('web')}
+                >
+                  Веб-сервис
+                </button>
+                <button
+                  type="button"
+                  className={`rounded-[10px] px-3 py-2 ${
+                    sourceFilter === 'all'
+                      ? 'bg-white text-[#151515]'
+                      : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                  }`}
+                  onClick={() => setSourceFilter('all')}
+                >
+                  Все
+                </button>
+              </div>
+            </section>
+          ) : null}
+
+          {openPanel === 'status' ? (
+            <section className={`${cardClassName} mb-5 p-4 sm:p-5`}>
+              <p className="mb-3 text-xs uppercase tracking-[0.12em] text-white/50">Статус</p>
+              <div className="flex flex-wrap gap-3 text-sm text-white/85">
+                <button
+                  type="button"
+                  className={`rounded-[10px] px-3 py-2 ${
+                    statusFilter === 'success'
+                      ? 'bg-white text-[#151515]'
+                      : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                  }`}
+                  onClick={() => setStatusFilter('success')}
+                >
+                  Успешно
+                </button>
+                <button
+                  type="button"
+                  className={`rounded-[10px] px-3 py-2 ${
+                    statusFilter === 'error'
+                      ? 'bg-white text-[#151515]'
+                      : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                  }`}
+                  onClick={() => setStatusFilter('error')}
+                >
+                  Ошибка
+                </button>
+                <button
+                  type="button"
+                  className={`rounded-[10px] px-3 py-2 ${
+                    statusFilter === 'all'
+                      ? 'bg-white text-[#151515]'
+                      : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                  }`}
+                  onClick={() => setStatusFilter('all')}
+                >
+                  Все
+                </button>
+              </div>
+            </section>
+          ) : null}
+
+          {activeChips.length > 0 ? (
+            <div className="mb-6 flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap gap-2">
+                {activeChips.map((chip) => (
+                  <button
+                    type="button"
+                    key={chip.id}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-[#181818] px-3 py-1 text-xs text-white/80 hover:bg-[#222222]"
+                    onClick={chip.clear}
+                  >
+                    <span>{chip.label}</span>
+                    <span className="text-white/50">×</span>
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                className="ml-auto inline-flex items-center gap-2 text-xs font-medium text-white/75 underline underline-offset-4 hover:text-white"
+                onClick={resetFilters}
+              >
+                Сбросить фильтры
               </button>
+            </div>
+          ) : null}
+
+          <div className="space-y-4 sm:space-y-5">
+            {filteredAndSortedItems.map((item) => (
+              <HistoryRequestCard
+                item={item}
+                key={`${item.name}-${item.checkedAt}`}
+                onOpenReport={() => setOpenedReportItem(item)}
+              />
             ))}
           </div>
 
-          <div className="space-y-4 sm:space-y-5">
-            {historyItems.map((item) => (
-              <HistoryRequestCard item={item} key={`${item.name}-${item.checkedAt}`} />
-            ))}
-          </div>
+          {openedReportItem ? (
+            <HistoryReportModal item={openedReportItem} onClose={() => setOpenedReportItem(null)} />
+          ) : null}
         </section>
       </main>
     </PageLayout>
@@ -783,6 +1560,57 @@ function HistoryPage() {
 }
 
 function NewCheckPage() {
+  const [personType, setPersonType] = useState<'legal' | 'individual'>('legal');
+  const [legalQuery, setLegalQuery] = useState('');
+  const [fio, setFio] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [individualInn, setIndividualInn] = useState('');
+
+  const [reportState, setReportState] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
+  const [showInlineReport, setShowInlineReport] = useState(false);
+
+  const reportItem: HistoryItem = personType === 'legal'
+    ? {
+        type: 'Юридическое лицо',
+        name: 'ООО «УМНЫЙ РИТЕЙЛ»',
+        dotColor: 'bg-[#45C857]',
+        document: 'ИНН: 7811657720',
+        checkedAt: '27.10.2025, 09:32',
+        duration: 'до 10 минут',
+        source: 'web',
+        success: reportState !== 'error',
+      }
+    : {
+        type: 'Физическое лицо',
+        name: (fio || 'ИВАНОВ ИВАН ИВАНОВИЧ').toUpperCase(),
+        dotColor: 'bg-[#45C857]',
+        document: `ИНН: ${individualInn || '7711771234'}`,
+        birthDate: birthDate ? birthDate.split('-').reverse().join('.') : '09.11.1975',
+        checkedAt: '27.10.2025, 09:32',
+        duration: 'до 10 минут',
+        source: 'web',
+        success: reportState !== 'error',
+      };
+
+  const canSubmit =
+    personType === 'legal'
+      ? legalQuery.trim().length > 0
+      : fio.trim().length > 0 && birthDate.trim().length > 0 && individualInn.trim().length > 0;
+
+  const handleCheck = () => {
+    setShowInlineReport(false);
+
+    if (!canSubmit) {
+      setReportState('error');
+      return;
+    }
+
+    setReportState('loading');
+    window.setTimeout(() => {
+      setReportState('ready');
+    }, 1200);
+  };
+
   return (
     <PageLayout>
       <main className={`${containerClassName} pb-10 sm:pb-14`}>
@@ -794,36 +1622,140 @@ function NewCheckPage() {
 
           <div className={`${cardClassName} px-4 py-5 sm:px-6 sm:py-6`}>
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
-              <label className="flex items-center gap-2.5 text-sm text-white/85">
-                <span className="h-4 w-4 rounded-full border border-white/35 bg-transparent" />
-                Юридическое лицо
-              </label>
-              <label className="flex items-center gap-2.5 text-sm text-white/85">
-                <span className="h-4 w-4 rounded-full border border-white/35 bg-transparent" />
-                Физическое лицо
-              </label>
-            </div>
-
-            <div className="flex flex-col gap-4 xl:flex-row">
-              <label className={`${filterControlClassName} h-14 flex-1 justify-start gap-3 px-4`}>
-                <span className="text-white/35">⌕</span>
-                <input
-                  className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/35"
-                  placeholder="ИНН (ЮЛ, ФЛ) / ФИО дд.мм.гггг / ФИО дд.мм.гггг ИНН"
+              <button
+                type="button"
+                className="inline-flex items-center gap-2.5 text-sm text-white/85"
+                onClick={() => setPersonType('legal')}
+              >
+                <span
+                  className={`h-4 w-4 rounded-full border ${
+                    personType === 'legal' ? 'border-white bg-white/15' : 'border-white/35 bg-transparent'
+                  }`}
                 />
-              </label>
-
-              <button className={`${submitButtonClassName} min-w-[188px]`} type="button">
-                Проверить
+                Юридическое лицо
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center gap-2.5 text-sm text-white/85"
+                onClick={() => setPersonType('individual')}
+              >
+                <span
+                  className={`h-4 w-4 rounded-full border ${
+                    personType === 'individual' ? 'border-white bg-white/15' : 'border-white/35 bg-transparent'
+                  }`}
+                />
+                Физическое лицо
               </button>
             </div>
 
-            <button className="mt-4 inline-flex items-center gap-2 text-sm text-white/85 transition-colors hover:text-white" type="button">
+            {personType === 'legal' ? (
+              <div className="flex flex-col gap-4 xl:flex-row">
+                <label className={`${filterControlClassName} h-14 flex-1 justify-start gap-3 px-4`}>
+                  <span className="text-white/35">⌕</span>
+                  <input
+                    className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/35"
+                    placeholder="ИНН (ЮЛ, ФЛ) / ОГРН"
+                    value={legalQuery}
+                    onChange={(event) => setLegalQuery(event.target.value)}
+                  />
+                </label>
+
+                <button className={`${submitButtonClassName} min-w-[188px]`} type="button" onClick={handleCheck}>
+                  Проверить
+                </button>
+              </div>
+            ) : (
+              <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_188px]">
+                <label className="space-y-2">
+                  <span className="text-xs uppercase tracking-[0.12em] text-white/45">ФИО</span>
+                  <input className={inputClassName} placeholder="Введите ФИО" value={fio} onChange={(e) => setFio(e.target.value)} />
+                </label>
+                <label className="space-y-2">
+                  <span className="text-xs uppercase tracking-[0.12em] text-white/45">Дата рождения</span>
+                  <input className={inputClassName} type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
+                </label>
+                <label className="space-y-2">
+                  <span className="text-xs uppercase tracking-[0.12em] text-white/45">ИНН</span>
+                  <input className={inputClassName} placeholder="Введите ИНН" value={individualInn} onChange={(e) => setIndividualInn(e.target.value)} />
+                </label>
+
+                <button className={`${submitButtonClassName} h-12 self-end`} type="button" onClick={handleCheck}>
+                  Проверить
+                </button>
+              </div>
+            )}
+
+            <button
+              className="mt-4 inline-flex items-center gap-2 text-sm text-white/85 transition-colors hover:text-white"
+              type="button"
+            >
               Подробнее
               <span>▾</span>
             </button>
           </div>
         </section>
+
+        {reportState !== 'idle' ? (
+          <section className="pt-4 sm:pt-6">
+            <div className={`${cardClassName} px-4 py-6 sm:px-6 sm:py-8`}>
+              {reportState === 'loading' ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
+                  <h2 className="text-lg font-semibold text-white">Формируем отчет</h2>
+                  <p className="m-0 text-sm text-white/65">Ожидайте, формирование отчета может занять до 10 минут</p>
+                  <div className="mt-4 h-10 w-10 rounded-full border-2 border-white/15 border-t-[#0EB8D2]" />
+                </div>
+              ) : null}
+
+              {reportState === 'ready' ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-2 text-center">
+                  <h2 className="text-lg font-semibold text-white">Отчет готов</h2>
+                  <p className="m-0 text-sm text-white/65">Отчет успешно сформирован. Вы можете посмотреть или скачать его</p>
+                  <div className="mt-3 inline-flex min-h-10 min-w-[260px] items-center justify-center rounded-[10px] border border-[#2C6B3B] bg-[#1E2D21] px-4 text-xs font-medium text-[#45C857]">
+                    Успешно
+                  </div>
+                  <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                    <button
+                      className={`${submitButtonClassName} min-w-[196px]`}
+                      type="button"
+                      onClick={() => setShowInlineReport(true)}
+                    >
+                      Открыть отчет
+                    </button>
+                    <button className={`${submitButtonClassName} min-w-[196px]`} type="button">
+                      Скачать отчет
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+
+              {reportState === 'error' ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-2 text-center">
+                  <h2 className="text-lg font-semibold text-white">Ошибка генерации отчета</h2>
+                  <p className="m-0 max-w-[520px] text-sm text-white/65">
+                    Отчет не удалось сформировать. Вы можете попробовать еще раз или написать в поддержку
+                  </p>
+                  <div className="mt-3 inline-flex min-h-10 min-w-[260px] items-center justify-center rounded-[10px] border border-[#7A2F2F] bg-[#2A1B1B] px-4 text-xs font-medium text-[#FF7A7A]">
+                    Ошибка
+                  </div>
+                  <p className="mt-4 text-xs text-white/65">
+                    Что-то пошло не так?{' '}
+                    <button type="button" className="font-medium text-white/85 underline underline-offset-4 hover:text-white">
+                      Написать в поддержку
+                    </button>
+                  </p>
+                </div>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
+
+        {reportState === 'ready' && showInlineReport ? (
+          <section className="pt-6 sm:pt-8">
+            <div className={`${cardClassName} overflow-hidden`}>
+              <ReportContent item={reportItem} />
+            </div>
+          </section>
+        ) : null}
 
         <SupportSection />
       </main>
@@ -914,6 +1846,8 @@ function TariffPage() {
 
   const durationButtons = ['24 часа', '7 дней', '1 месяц', '3 месяца', '6 месяцев', '12 месяцев'];
 
+  const [showCurrentTariffModal, setShowCurrentTariffModal] = useState(false);
+
   return (
     <PageLayout>
       <main className={`${containerClassName} pb-10 sm:pb-14`}>
@@ -942,11 +1876,62 @@ function TariffPage() {
                   Списания с баланса аккаунта совершаются согласно текущему тарифу
                 </p>
               </div>
-              <button className={`${submitButtonClassName} min-w-[180px]`} type="button">
-                Изменить
+              <button
+                className={`${submitButtonClassName} min-w-[180px]`}
+                type="button"
+                onClick={() => setShowCurrentTariffModal(true)}
+              >
+                Изменить тариф
               </button>
             </div>
           </section>
+
+          {showCurrentTariffModal ? (
+            <div
+              className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4 py-6 sm:px-6 sm:py-10"
+              onClick={() => setShowCurrentTariffModal(false)}
+            >
+              <div
+                className="relative w-full max-w-[430px] rounded-[28px] border border-white/70 bg-[#151515] px-5 py-5 text-sm text-white/85 shadow-[0_0_0_1px_rgba(255,255,255,0.15)] sm:px-6 sm:py-6"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  aria-label="Закрыть"
+                  className="absolute right-4 top-4 text-lg text-white/60 transition hover:text-white"
+                  onClick={() => setShowCurrentTariffModal(false)}
+                >
+                  ×
+                </button>
+
+                <p className="mb-3 text-xs uppercase tracking-[0.12em] text-white/55">
+                  Текущий тарифный план
+                </p>
+                <p className="mb-4 text-[15px] leading-snug text-white">
+                  Ваш тарифный план «Индивидуальный» включает в себя следующие категории:
+                </p>
+
+                <ul className="mb-4 space-y-1.5 text-[15px] leading-snug">
+                  <li className="flex items-center gap-3 text-[#F45353]">
+                    <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/45 bg-transparent" />
+                    <span>Упоминания в Telegram</span>
+                  </li>
+                  <li className="flex items-center gap-3 text-[#F45353]">
+                    <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/45 bg-transparent" />
+                    <span>Упоминания в СМИ</span>
+                  </li>
+                  <li className="flex items-center gap-3 text-[#45C857]">
+                    <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/45 bg-transparent" />
+                    <span>Все факторы проверок</span>
+                  </li>
+                </ul>
+
+                <p className="text-xs leading-snug text-white/60">
+                  Подробнее со всеми тарифными планами можно ознакомиться на странице «Тариф».
+                </p>
+              </div>
+            </div>
+          ) : null}
         </section>
 
         <section className="pt-14 sm:pt-20">
@@ -1418,6 +2403,118 @@ type BalanceOperation = {
   amount: string;
 };
 
+type BalanceTypeFilter = 'all' | 'income' | 'expense';
+type BalanceSourceFilter = 'all' | 'telegram' | 'web';
+type BalanceFilterPanel = 'period' | 'type' | 'source' | null;
+
+type TopUpStep = 'form' | 'waiting' | 'processing';
+
+function BalanceTopUpModal({
+  step,
+  amount,
+  onAmountChange,
+  onChipSelect,
+  onContinue,
+  onClose,
+}: {
+  step: TopUpStep;
+  amount: string;
+  onAmountChange: (value: string) => void;
+  onChipSelect: (value: number) => void;
+  onContinue: () => void;
+  onClose: () => void;
+}) {
+  const numericAmount = Number(amount.replace(/\s/g, ''));
+  const isAmountValid = numericAmount >= 100 && numericAmount <= 100000;
+
+  return (
+    <div
+      className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4 py-6 sm:px-6 sm:py-10"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-[460px] rounded-[28px] border border-white/65 bg-[#151515] px-5 py-6 text-sm text-white/85 shadow-[0_0_0_1px_rgba(255,255,255,0.18)] sm:px-7 sm:py-7"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button
+          type="button"
+          aria-label="Закрыть"
+          className="absolute right-5 top-5 text-lg text-white/65 transition hover:text-white"
+          onClick={onClose}
+        >
+          ×
+        </button>
+
+        <h2 className="mb-2 text-center text-[20px] font-semibold text-white sm:text-[22px]">
+          Пополнение баланса
+        </h2>
+        <p className="mb-5 text-center text-xs text-white/70">
+          Ожидайте, идет пополнение баланса
+        </p>
+
+        {step === 'form' ? (
+          <div className="space-y-5 pt-1">
+            <p className="text-center text-xs text-white/70">
+              Выберите нужную сумму или введите ее вручную
+            </p>
+            <input
+              className={`${inputClassName} h-11 text-center`}
+              placeholder="Введите сумму от 100 до 100 000"
+              value={amount}
+              onChange={(event) => onAmountChange(event.target.value)}
+            />
+            <div className="grid grid-cols-3 gap-2 text-xs sm:grid-cols-4">
+              {[300, 500, 1000, 2000, 5000, 10000, 20000].map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  className={`h-9 rounded-[999px] border px-2 ${
+                    numericAmount === value
+                      ? 'border-white bg-white text-[#151515]'
+                      : 'border-white/35 bg-[#181818] text-white/85 hover:bg-[#212121]'
+                  }`}
+                  onClick={() => onChipSelect(value)}
+                >
+                  {value.toLocaleString('ru-RU')} ₽
+                </button>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              className={`${submitButtonClassName} mt-2 w-full`}
+              onClick={onContinue}
+              disabled={!isAmountValid}
+            >
+              Продолжить
+            </button>
+          </div>
+        ) : null}
+
+        {step === 'waiting' ? (
+          <div className="flex flex-col items-center justify-center gap-4 pt-4 pb-2 text-center">
+            <div className="mt-2 h-10 w-10 rounded-full border-2 border-white/20 border-t-[#0EB8D2]" />
+          </div>
+        ) : null}
+
+        {step === 'processing' ? (
+          <div className="mt-4 rounded-[14px] border border-white/30 bg-[#181818] px-4 py-3 text-xs text-white/80">
+            <p className="mb-1">
+              Сумма:{' '}
+              <span className="font-semibold">
+                {isNaN(numericAmount) ? '—' : `${numericAmount.toLocaleString('ru-RU')} ₽`}
+              </span>
+            </p>
+            <p className="m-0">
+              Чек об оплате вышлем на почту: <span className="font-semibold">user.example@gmail.com</span>
+            </p>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 function BalancePage() {
   const operations: BalanceOperation[] = [
     { date: '23.12.2025', type: 'Поступление', source: 'telegram', amount: '1000 ₽' },
@@ -1425,6 +2522,115 @@ function BalancePage() {
     { date: '23.09.2025', type: 'Списание', source: 'telegram', amount: '1000 ₽' },
     { date: '23.09.2024', type: 'Списание', source: 'web', amount: '2000 ₽' },
   ];
+
+  const [showTopUpModal, setShowTopUpModal] = useState(false);
+  const [topUpAmount, setTopUpAmount] = useState('300');
+  const [topUpStep, setTopUpStep] = useState<TopUpStep>('form');
+
+  const [balanceDateFrom, setBalanceDateFrom] = useState('');
+  const [balanceDateTo, setBalanceDateTo] = useState('');
+  const [balanceTypeFilter, setBalanceTypeFilter] = useState<BalanceTypeFilter>('all');
+  const [balanceSourceFilter, setBalanceSourceFilter] = useState<BalanceSourceFilter>('all');
+  const [balanceOpenPanel, setBalanceOpenPanel] = useState<BalanceFilterPanel>(null);
+
+  const handleOpenTopUp = () => {
+    setTopUpStep('form');
+    setShowTopUpModal(true);
+  };
+
+  const handleCloseTopUp = () => {
+    setShowTopUpModal(false);
+  };
+
+  const handleTopUpContinue = () => {
+    const numericAmount = Number(topUpAmount.replace(/\s/g, ''));
+    if (!numericAmount || numericAmount < 100 || numericAmount > 100000) {
+      return;
+    }
+    setTopUpStep('waiting');
+    window.setTimeout(() => {
+      setTopUpStep('processing');
+    }, 1200);
+  };
+
+  const toggleBalancePanel = (panel: BalanceFilterPanel) => {
+    setBalanceOpenPanel((current) => (current === panel ? null : panel));
+  };
+
+  const resetBalanceFilters = () => {
+    setBalanceDateFrom('');
+    setBalanceDateTo('');
+    setBalanceTypeFilter('all');
+    setBalanceSourceFilter('all');
+    setBalanceOpenPanel(null);
+  };
+
+  const parseBalanceDate = (value: string) => {
+    const parts = value.split('.').map((part) => Number(part));
+    if (parts.length !== 3) return null;
+    const [day, month, year] = parts;
+    if (!day || !month || !year) return null;
+    return new Date(year, month - 1, day);
+  };
+
+  const parseBalanceInputDate = (value: string) => {
+    if (!value) return null;
+    const parts = value.split('-').map((part) => Number(part));
+    if (parts.length !== 3) return null;
+    const [year, month, day] = parts;
+    if (!day || !month || !year) return null;
+    return new Date(year, month - 1, day);
+  };
+
+  const balanceFromDate = parseBalanceInputDate(balanceDateFrom);
+  const balanceToDate = parseBalanceInputDate(balanceDateTo);
+
+  const filteredOperations = operations.filter((operation) => {
+    const opDate = parseBalanceDate(operation.date);
+    if (opDate) {
+      if (balanceFromDate && opDate < balanceFromDate) return false;
+      if (balanceToDate && opDate > balanceToDate) return false;
+    }
+
+    if (balanceTypeFilter === 'income' && operation.type !== 'Поступление') return false;
+    if (balanceTypeFilter === 'expense' && operation.type !== 'Списание') return false;
+
+    if (balanceSourceFilter !== 'all' && operation.source !== balanceSourceFilter) return false;
+
+    return true;
+  });
+
+  const balanceChips: Array<{ id: string; label: string; clear: () => void }> = [];
+
+  if (balanceDateFrom || balanceDateTo) {
+    balanceChips.push({
+      id: 'period',
+      label: `Период: ${balanceDateFrom || '—'} — ${balanceDateTo || '—'}`,
+      clear: () => {
+        setBalanceDateFrom('');
+        setBalanceDateTo('');
+      },
+    });
+  }
+
+  if (balanceTypeFilter !== 'all') {
+    balanceChips.push({
+      id: 'type',
+      label:
+        balanceTypeFilter === 'income'
+          ? 'Тип: поступления'
+          : 'Тип: списания',
+      clear: () => setBalanceTypeFilter('all'),
+    });
+  }
+
+  if (balanceSourceFilter !== 'all') {
+    balanceChips.push({
+      id: 'source',
+      label: balanceSourceFilter === 'telegram' ? 'Источник: Telegram-бот' : 'Источник: веб-сервис',
+      clear: () => setBalanceSourceFilter('all'),
+    });
+  }
 
   return (
     <PageLayout>
@@ -1452,7 +2658,11 @@ function BalancePage() {
                 </p>
               </div>
 
-              <button className={`${submitButtonClassName} min-w-[180px]`} type="button">
+              <button
+                className={`${submitButtonClassName} min-w-[180px]`}
+                type="button"
+                onClick={handleOpenTopUp}
+              >
                 Пополнить
               </button>
             </div>
@@ -1465,21 +2675,178 @@ function BalancePage() {
             description="Вы можете отслеживать историю операций на вашем аккаунте, выбрав нужные данные"
           />
 
-          <div className="mb-8 flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
-            {['Период', 'Тип операции', 'Источник'].map((label) => (
-              <button className={`${filterControlClassName} min-w-[170px]`} key={label} type="button">
-                <span>{label}</span>
-                <span className="text-white/35">▾</span>
-              </button>
-            ))}
-
-            <button className="inline-flex items-center gap-2 text-sm font-medium text-white/85 transition-colors hover:text-white" type="button">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-white/35 text-[11px]">
-                ×
-              </span>
-              Сбросить фильтры
+          <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
+            <button
+              className={`${filterControlClassName} min-w-[170px]`}
+              type="button"
+              onClick={() => toggleBalancePanel('period')}
+            >
+              <span>Период</span>
+              <span className="text-white/35">▾</span>
             </button>
+            <button
+              className={`${filterControlClassName} min-w-[170px]`}
+              type="button"
+              onClick={() => toggleBalancePanel('type')}
+            >
+              <span>Тип операции</span>
+              <span className="text-white/35">▾</span>
+            </button>
+            <button
+              className={`${filterControlClassName} min-w-[170px]`}
+              type="button"
+              onClick={() => toggleBalancePanel('source')}
+            >
+              <span>Источник</span>
+              <span className="text-white/35">▾</span>
+            </button>
+
+            {balanceChips.length > 0 ? (
+              <button
+                className="inline-flex items-center gap-2 text-sm font-medium text-white/85 transition-colors hover:text-white"
+                type="button"
+                onClick={resetBalanceFilters}
+              >
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-white/35 text-[11px]">
+                  ×
+                </span>
+                Сбросить фильтры
+              </button>
+            ) : null}
           </div>
+
+          {balanceOpenPanel === 'period' ? (
+            <section className={`${cardClassName} mb-5 p-4 sm:p-5`}>
+              <p className="mb-3 text-xs uppercase tracking-[0.12em] text-white/50">Период</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="space-y-2 text-xs text-white/80">
+                  <span className="text-white/55">c</span>
+                  <input
+                    className={`${inputClassName} h-10 bg-[#181818]`}
+                    type="date"
+                    value={balanceDateFrom}
+                    onChange={(event) => setBalanceDateFrom(event.target.value)}
+                  />
+                </label>
+                <label className="space-y-2 text-xs text-white/80">
+                  <span className="text-white/55">по</span>
+                  <input
+                    className={`${inputClassName} h-10 bg-[#181818]`}
+                    type="date"
+                    value={balanceDateTo}
+                    onChange={(event) => setBalanceDateTo(event.target.value)}
+                  />
+                </label>
+              </div>
+            </section>
+          ) : null}
+
+          {balanceOpenPanel === 'type' ? (
+            <section className={`${cardClassName} mb-5 p-4 sm:p-5`}>
+              <p className="mb-3 text-xs uppercase tracking-[0.12em] text-white/50">Тип операции</p>
+              <div className="flex flex-wrap gap-3 text-sm text-white/85">
+                <button
+                  type="button"
+                  className={`rounded-[10px] px-3 py-2 ${
+                    balanceTypeFilter === 'income'
+                      ? 'bg-white text-[#151515]'
+                      : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                  }`}
+                  onClick={() => setBalanceTypeFilter('income')}
+                >
+                  Поступление
+                </button>
+                <button
+                  type="button"
+                  className={`rounded-[10px] px-3 py-2 ${
+                    balanceTypeFilter === 'expense'
+                      ? 'bg-white text-[#151515]'
+                      : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                  }`}
+                  onClick={() => setBalanceTypeFilter('expense')}
+                >
+                  Списание
+                </button>
+                <button
+                  type="button"
+                  className={`rounded-[10px] px-3 py-2 ${
+                    balanceTypeFilter === 'all'
+                      ? 'bg-white text-[#151515]'
+                      : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                  }`}
+                  onClick={() => setBalanceTypeFilter('all')}
+                >
+                  Все
+                </button>
+              </div>
+            </section>
+          ) : null}
+
+          {balanceOpenPanel === 'source' ? (
+            <section className={`${cardClassName} mb-5 p-4 sm:p-5`}>
+              <p className="mb-3 text-xs uppercase tracking-[0.12em] text-white/50">Источник</p>
+              <div className="flex flex-wrap gap-3 text-sm text-white/85">
+                <button
+                  type="button"
+                  className={`rounded-[10px] px-3 py-2 ${
+                    balanceSourceFilter === 'telegram'
+                      ? 'bg-white text-[#151515]'
+                      : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                  }`}
+                  onClick={() => setBalanceSourceFilter('telegram')}
+                >
+                  Telegram-бот
+                </button>
+                <button
+                  type="button"
+                  className={`rounded-[10px] px-3 py-2 ${
+                    balanceSourceFilter === 'web'
+                      ? 'bg-white text-[#151515]'
+                      : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                  }`}
+                  onClick={() => setBalanceSourceFilter('web')}
+                >
+                  Веб-сервис
+                </button>
+                <button
+                  type="button"
+                  className={`rounded-[10px] px-3 py-2 ${
+                    balanceSourceFilter === 'all'
+                      ? 'bg-white text-[#151515]'
+                      : 'bg-[#181818] text-white/85 hover:bg-[#1F1F1F]'
+                  }`}
+                  onClick={() => setBalanceSourceFilter('all')}
+                >
+                  Все
+                </button>
+              </div>
+            </section>
+          ) : null}
+
+          {balanceChips.length > 0 ? (
+            <div className="mb-6 flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap gap-2">
+                {balanceChips.map((chip) => (
+                  <button
+                    key={chip.id}
+                    type="button"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-[#181818] px-3 py-1 text-xs text-white/80 hover:bg-[#222222]"
+                    onClick={chip.clear}
+                  >
+                    <span>{chip.label}</span>
+                    <span className="text-white/50">×</span>
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                className="ml-auto inline-flex items-center gap-2 text-xs font-medium text-white/75 underline underline-offset-4 hover:text-white"
+                onClick={resetBalanceFilters}
+              >
+                Сбросить фильтры
+              </button>
+            </div>
+          ) : null}
 
           <section className={`${cardClassName} overflow-hidden p-4 sm:p-6`}>
             <div className="overflow-x-auto">
@@ -1493,7 +2860,7 @@ function BalancePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {operations.map((operation) => (
+                  {filteredOperations.map((operation) => (
                     <tr className="border-t border-white/10 text-white/85" key={`${operation.date}-${operation.type}-${operation.source}`}>
                       <td className="pr-6 pt-3">{operation.date}</td>
                       <td className={`pr-6 pt-3 ${operation.type === 'Списание' ? 'text-[#FF7A7A]' : 'text-[#77D877]'}`}>
@@ -1519,6 +2886,17 @@ function BalancePage() {
             </div>
           </section>
         </section>
+
+        {showTopUpModal ? (
+          <BalanceTopUpModal
+            step={topUpStep}
+            amount={topUpAmount}
+            onAmountChange={setTopUpAmount}
+            onChipSelect={(value) => setTopUpAmount(String(value))}
+            onContinue={handleTopUpContinue}
+            onClose={handleCloseTopUp}
+          />
+        ) : null}
       </main>
     </PageLayout>
   );

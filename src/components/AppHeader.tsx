@@ -2,7 +2,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 
 const containerClassName = 'mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8';
 
-export function AppHeader() {
+export function AppHeader({ onNotificationsClick }: { onNotificationsClick?: () => void }) {
   const location = useLocation();
   const navItems = [
     ['Личный кабинет', '/cabinet'],
@@ -36,6 +36,14 @@ export function AppHeader() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3 text-sm">
+          <button
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-white/5 text-lg text-white/85 transition hover:bg-white/10"
+            type="button"
+            onClick={onNotificationsClick}
+            aria-label="Уведомления"
+          >
+            🔔
+          </button>
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-white/5">
             1
           </span>
