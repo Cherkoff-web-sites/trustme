@@ -2,7 +2,7 @@ const containerClassName = 'mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8';
 const footerLinkClassName = 'text-white/85 transition-colors hover:text-white';
 const footerSectionTitleClassName = 'mb-4 text-[18px] font-semibold text-white';
 
-export function AppFooter() {
+export function Footer() {
   return (
     <footer className="relative z-10 mt-10 border-t border-white/10 py-10 sm:mt-14 sm:py-14" id="footer">
       <div className={containerClassName}>

@@ -1,0 +1,186 @@
+import { useState } from 'react';
+import { PageLayout } from '../../components/layout/PageLayout';
+import { containerClassName } from '../../shared/constants';
+import { cardClassName } from '../../shared/constants';
+import { PersonTypeSwitcher } from '../../components/features/PersonTypeSwitcher';
+import { ReportActions } from '../../components/features/ReportActions';
+import { Button, FilterTrigger, Input } from '../../components/ui';
+import { type HistoryItem, ReportContent } from '../../shared/ReportContent';
+import { PageTitle, SupportSection } from '../../shared/ui';
+
+export function NewCheckPage() {
+  const [personType, setPersonType] = useState<'legal' | 'individual'>('legal');
+  const [legalQuery, setLegalQuery] = useState('');
+  const [fio, setFio] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [individualInn, setIndividualInn] = useState('');
+
+  const [reportState, setReportState] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
+  const [showInlineReport, setShowInlineReport] = useState(false);
+
+  const reportItem: HistoryItem = personType === 'legal'
+    ? {
+        type: 'Юридическое лицо',
+        name: 'ООО «УМНЫЙ РИТЕЙЛ»',
+        dotColor: 'bg-[#45C857]',
+        document: 'ИНН: 7811657720',
+        checkedAt: '27.10.2025, 09:32',
+        duration: 'до 10 минут',
+        source: 'web',
+        success: reportState !== 'error',
+      }
+    : {
+        type: 'Физическое лицо',
+        name: (fio || 'ИВАНОВ ИВАН ИВАНОВИЧ').toUpperCase(),
+        dotColor: 'bg-[#45C857]',
+        document: `ИНН: ${individualInn || '7711771234'}`,
+        birthDate: birthDate ? birthDate.split('-').reverse().join('.') : '09.11.1975',
+        checkedAt: '27.10.2025, 09:32',
+        duration: 'до 10 минут',
+        source: 'web',
+        success: reportState !== 'error',
+      };
+
+  const canSubmit =
+    personType === 'legal'
+      ? legalQuery.trim().length > 0
+      : fio.trim().length > 0 && birthDate.trim().length > 0 && individualInn.trim().length > 0;
+
+  const handleCheck = () => {
+    setShowInlineReport(false);
+
+    if (!canSubmit) {
+      setReportState('error');
+      return;
+    }
+
+    setReportState('loading');
+    window.setTimeout(() => {
+      setReportState('ready');
+    }, 1200);
+  };
+
+  return (
+    <PageLayout>
+      <main className={`${containerClassName} pb-10 sm:pb-14`}>
+        <section className="pt-10 sm:pt-16">
+          <PageTitle
+            title="Новая проверка"
+            description="Проверка осуществляется в рамках текущего тарифа. Стоимость проверки будет списана с вашего баланса"
+          />
+
+          <div className={`${cardClassName} px-4 py-5 sm:px-6 sm:py-6`}>
+            <PersonTypeSwitcher
+              className="mb-5 sm:gap-6"
+              value={personType}
+              onChange={setPersonType}
+              options={[
+                { value: 'legal', label: 'Юридическое лицо' },
+                { value: 'individual', label: 'Физическое лицо' },
+              ]}
+            />
+
+            {personType === 'legal' ? (
+              <div className="flex flex-col gap-4 xl:flex-row">
+                <label className="flex h-14 flex-1 justify-start gap-3 rounded-xl border border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.05))] px-4 text-sm text-white/55">
+                  <span className="text-white/35">⌕</span>
+                  <Input
+                    className="h-auto border-0 bg-transparent px-0 text-sm"
+                    placeholder="ИНН (ЮЛ, ФЛ) / ОГРН"
+                    value={legalQuery}
+                    onChange={(event) => setLegalQuery(event.target.value)}
+                  />
+                </label>
+
+                <Button className="min-w-[188px]" onClick={handleCheck}>
+                  Проверить
+                </Button>
+              </div>
+            ) : (
+              <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_188px]">
+                <label className="space-y-2">
+                  <span className="text-xs uppercase tracking-[0.12em] text-white/45">ФИО</span>
+                  <Input placeholder="Введите ФИО" value={fio} onChange={(e) => setFio(e.target.value)} />
+                </label>
+                <label className="space-y-2">
+                  <span className="text-xs uppercase tracking-[0.12em] text-white/45">Дата рождения</span>
+                  <Input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
+                </label>
+                <label className="space-y-2">
+                  <span className="text-xs uppercase tracking-[0.12em] text-white/45">ИНН</span>
+                  <Input placeholder="Введите ИНН" value={individualInn} onChange={(e) => setIndividualInn(e.target.value)} />
+                </label>
+
+                <Button className="h-12 self-end" onClick={handleCheck}>
+                  Проверить
+                </Button>
+              </div>
+            )}
+
+            <FilterTrigger
+              className="mt-4 inline-flex h-auto border-0 bg-transparent px-0 text-sm text-white/85"
+              label="Подробнее"
+            />
+          </div>
+        </section>
+
+        {reportState !== 'idle' ? (
+          <section className="pt-4 sm:pt-6">
+            <div className={`${cardClassName} px-4 py-6 sm:px-6 sm:py-8`}>
+              {reportState === 'loading' ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
+                  <h2 className="text-lg font-semibold text-white">Формируем отчет</h2>
+                  <p className="m-0 text-sm text-white/65">Ожидайте, формирование отчета может занять до 10 минут</p>
+                  <div className="mt-4 h-10 w-10 rounded-full border-2 border-white/15 border-t-[#0EB8D2]" />
+                </div>
+              ) : null}
+
+              {reportState === 'ready' ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-2 text-center">
+                  <h2 className="text-lg font-semibold text-white">Отчет готов</h2>
+                  <p className="m-0 text-sm text-white/65">Отчет успешно сформирован. Вы можете посмотреть или скачать его</p>
+                  <div className="mt-3 inline-flex min-h-10 min-w-[260px] items-center justify-center rounded-[10px] border border-[#2C6B3B] bg-[#1E2D21] px-4 text-xs font-medium text-[#45C857]">
+                    Успешно
+                  </div>
+                  <ReportActions
+                    onOpen={() => setShowInlineReport(true)}
+                    openLabel="Открыть отчет"
+                    downloadLabel="Скачать отчет"
+                  />
+                </div>
+              ) : null}
+
+              {reportState === 'error' ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-2 text-center">
+                  <h2 className="text-lg font-semibold text-white">Ошибка генерации отчета</h2>
+                  <p className="m-0 max-w-[520px] text-sm text-white/65">
+                    Отчет не удалось сформировать. Вы можете попробовать еще раз или написать в поддержку
+                  </p>
+                  <div className="mt-3 inline-flex min-h-10 min-w-[260px] items-center justify-center rounded-[10px] border border-[#7A2F2F] bg-[#2A1B1B] px-4 text-xs font-medium text-[#FF7A7A]">
+                    Ошибка
+                  </div>
+                  <p className="mt-4 text-xs text-white/65">
+                    Что-то пошло не так?{' '}
+                    <Button variant="ghost" className="font-medium text-white/85 underline underline-offset-4 hover:text-white">
+                      Написать в поддержку
+                    </Button>
+                  </p>
+                </div>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
+
+        {reportState === 'ready' && showInlineReport ? (
+          <section className="pt-6 sm:pt-8">
+            <div className={`${cardClassName} overflow-hidden`}>
+              <ReportContent item={reportItem} />
+            </div>
+          </section>
+        ) : null}
+
+        <SupportSection />
+      </main>
+    </PageLayout>
+  );
+}
