@@ -1,4 +1,4 @@
-import { Button, SectionCard } from '../../ui';
+import { Button, SectionCard, SelectedIcon } from '../../ui';
 import {
   tariffPlanCardFeatureListStyles,
   tariffPlanCardPriceRowStyles,
@@ -36,8 +36,8 @@ export function TariffPlanCard({ plan }: TariffPlanCardProps) {
       <div className={tariffPlanCardFeatureListStyles}>
         {plan.features.map((feature) => (
           <div className="flex items-center gap-3" key={feature.label}>
-            <span className={`text-[18px] ${feature.included ? 'text-[#0EB8D2]' : 'text-white/65'}`}>
-              {feature.included ? '✓' : '⌂'}
+            <span className={`inline-flex items-center text-[18px] ${feature.included ? 'text-[#0EB8D2]' : 'text-white/65'}`}>
+              {feature.included ? <SelectedIcon className="h-[18px] w-[26px]" /> : '⌂'}
             </span>
             <span className={feature.included ? 'text-white/85' : 'text-white/65'}>{feature.label}</span>
           </div>

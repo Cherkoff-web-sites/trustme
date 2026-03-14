@@ -3,6 +3,7 @@ import {
   BalanceFilters,
   TransactionTable,
   type BalanceFilterPanel,
+  type BalanceSortOrder,
   type BalanceSourceFilter,
   type BalanceTypeFilter,
 } from '../../components/features/balance';
@@ -31,6 +32,7 @@ export function BalancePage() {
 
   const [balanceDateFrom, setBalanceDateFrom] = useState('');
   const [balanceDateTo, setBalanceDateTo] = useState('');
+  const [balanceSortOrder, setBalanceSortOrder] = useState<BalanceSortOrder>('new');
   const [balanceTypeFilter, setBalanceTypeFilter] = useState<BalanceTypeFilter>('all');
   const [balanceSourceFilter, setBalanceSourceFilter] = useState<BalanceSourceFilter>('all');
   const [balanceOpenPanel, setBalanceOpenPanel] = useState<BalanceFilterPanel>(null);
@@ -62,6 +64,7 @@ export function BalancePage() {
   const resetBalanceFilters = () => {
     setBalanceDateFrom('');
     setBalanceDateTo('');
+    setBalanceSortOrder('new');
     setBalanceTypeFilter('all');
     setBalanceSourceFilter('all');
     setBalanceOpenPanel(null);
@@ -87,25 +90,35 @@ export function BalancePage() {
   const balanceFromDate = parseBalanceInputDate(balanceDateFrom);
   const balanceToDate = parseBalanceInputDate(balanceDateTo);
 
-  const filteredOperations = operations.filter((operation) => {
-    const opDate = parseBalanceDate(operation.date);
-    if (opDate) {
-      if (balanceFromDate && opDate < balanceFromDate) return false;
-      if (balanceToDate && opDate > balanceToDate) return false;
-    }
+  const filteredOperations = operations
+    .filter((operation) => {
+      const opDate = parseBalanceDate(operation.date);
+      if (opDate) {
+        if (balanceFromDate && opDate < balanceFromDate) return false;
+        if (balanceToDate && opDate > balanceToDate) return false;
+      }
 
-    if (balanceTypeFilter === 'income' && operation.type !== 'Поступление') return false;
-    if (balanceTypeFilter === 'expense' && operation.type !== 'Списание') return false;
+      if (balanceTypeFilter === 'income' && operation.type !== 'Поступление') return false;
+      if (balanceTypeFilter === 'expense' && operation.type !== 'Списание') return false;
 
-    if (balanceSourceFilter !== 'all' && operation.source !== balanceSourceFilter) return false;
+      if (balanceSourceFilter !== 'all' && operation.source !== balanceSourceFilter) return false;
 
-    return true;
-  });
+      return true;
+    })
+    .slice()
+    .sort((a, b) => {
+      const aDate = parseBalanceDate(a.date);
+      const bDate = parseBalanceDate(b.date);
+      if (!aDate || !bDate) return 0;
+      return balanceSortOrder === 'new'
+        ? bDate.getTime() - aDate.getTime()
+        : aDate.getTime() - bDate.getTime();
+    });
 
-  const balanceChips: Array<{ id: string; label: string; clear: () => void }> = [];
+  const activeChips: Array<{ id: string; label: string; clear: () => void }> = [];
 
   if (balanceDateFrom || balanceDateTo) {
-    balanceChips.push({
+    activeChips.push({
       id: 'period',
       label: `Период: ${balanceDateFrom || '—'} — ${balanceDateTo || '—'}`,
       clear: () => {
@@ -115,8 +128,16 @@ export function BalancePage() {
     });
   }
 
+  if (balanceSortOrder !== 'new') {
+    activeChips.push({
+      id: 'sort',
+      label: 'Сортировка: сначала старые',
+      clear: () => setBalanceSortOrder('new'),
+    });
+  }
+
   if (balanceTypeFilter !== 'all') {
-    balanceChips.push({
+    activeChips.push({
       id: 'type',
       label:
         balanceTypeFilter === 'income'
@@ -127,7 +148,7 @@ export function BalancePage() {
   }
 
   if (balanceSourceFilter !== 'all') {
-    balanceChips.push({
+    activeChips.push({
       id: 'source',
       label: balanceSourceFilter === 'telegram' ? 'Источник: Telegram-бот' : 'Источник: веб-сервис',
       clear: () => setBalanceSourceFilter('all'),
@@ -181,11 +202,13 @@ export function BalancePage() {
             dateTo={balanceDateTo}
             onDateFromChange={setBalanceDateFrom}
             onDateToChange={setBalanceDateTo}
+            sortOrder={balanceSortOrder}
+            onSortOrderChange={setBalanceSortOrder}
             typeFilter={balanceTypeFilter}
             onTypeFilterChange={setBalanceTypeFilter}
             sourceFilter={balanceSourceFilter}
             onSourceFilterChange={setBalanceSourceFilter}
-            chips={balanceChips}
+            activeChips={activeChips}
             onReset={resetBalanceFilters}
           />
 

@@ -15,7 +15,7 @@ type AccountType = 'legal' | 'individual';
 export function AuthModal({ open, onClose }: AuthModalProps) {
   const navigate = useNavigate();
   const [view, setView] = useState<AuthView>('login');
-  const [email, setEmail] = useState('ivanivanov1999@mail.ru');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -85,7 +85,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder=""
+                  placeholder="ivanivanov1999@mail.ru"
                 />
               </div>
               <div>

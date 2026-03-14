@@ -23,3 +23,5 @@ export { PageTitle } from './PageTitle';
 export type { PageTitleProps } from './PageTitle';
 export { DashboardCard } from './DashboardCard';
 export type { DashboardCardProps } from './DashboardCard';
+export { SelectedIcon } from './SelectedIcon';
+export type { SelectedIconProps } from './SelectedIcon';

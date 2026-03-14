@@ -3,7 +3,7 @@ import { PageLayout } from '../../components/layout/PageLayout';
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
 import { SupportSection } from '../../components/features/SupportSection';
 import { TariffPlanCard, type TariffPlanCardData } from '../../components/features/TariffPlanCard';
-import { AlertBanner, Button, FilterChip, OptionIndicator, PageTitle, SectionCard, uiTokens } from '../../components/ui';
+import { AlertBanner, Button, FilterChip, OptionIndicator, PageTitle, SectionCard, SelectedIcon, uiTokens } from '../../components/ui';
 
 export function TariffPage() {
   const plans: TariffPlanCardData[] = [
@@ -70,7 +70,7 @@ export function TariffPage() {
             <div className="mb-6 h-px w-full bg-white/15" />
             <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <div className="text-[34px] leading-[0.95] font-semibold uppercase text-white sm:text-[56px]">
+                <div className="text-[18px] leading-[0.95] font-semibold uppercase text-white sm:text-[36px]">
                   Индивидуальный
                 </div>
                 <p className="mt-3 text-[#FDFEFF]/70">
@@ -154,8 +154,8 @@ export function TariffPage() {
               <div className="space-y-4 text-[#FDFEFF]/85">
                 {['Скоринг', 'Упоминания в СМИ', 'Упоминания в Telegram', '7 дней', '2 учетные записи'].map((item) => (
                   <div className="flex items-center gap-3" key={item}>
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#057889] text-[12px] text-[#FDFEFF]">
-                      ✓
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#057889] text-[#FDFEFF]">
+                      <SelectedIcon className="h-3 w-3" />
                     </span>
                     <span>{item}</span>
                   </div>

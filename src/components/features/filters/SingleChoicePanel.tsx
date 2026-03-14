@@ -11,6 +11,7 @@ export interface SingleChoicePanelProps<T extends string> {
   value: T;
   options: Array<SingleChoiceOption<T>>;
   onChange: (value: T) => void;
+  compact?: boolean;
 }
 
 export function SingleChoicePanel<T extends string>({
@@ -18,11 +19,14 @@ export function SingleChoicePanel<T extends string>({
   value,
   options,
   onChange,
+  compact = false,
 }: SingleChoicePanelProps<T>) {
-  return (
-    <SectionCard variant="compact" className="mb-5">
-      <p className={filterPanelTitleStyles}>{title}</p>
-      <div className={filterPanelGroupStyles}>
+  const content = (
+    <>
+      {title ? (
+        <p className={compact ? 'mb-2 text-base text-[#FDFEFF]/85' : filterPanelTitleStyles}>{title}</p>
+      ) : null}
+      <div className={compact ? 'flex flex-wrap gap-2 text-base text-[#FDFEFF]/85' : filterPanelGroupStyles}>
         {options.map((option) => (
           <FilterChip
             key={option.value}
@@ -33,6 +37,16 @@ export function SingleChoicePanel<T extends string>({
           </FilterChip>
         ))}
       </div>
+    </>
+  );
+
+  if (compact) {
+    return <div className="text-base">{content}</div>;
+  }
+
+  return (
+    <SectionCard variant="compact" className="mb-5">
+      {content}
     </SectionCard>
   );
 }

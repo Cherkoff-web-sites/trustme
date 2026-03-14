@@ -11,4 +11,4 @@ export const pageTitleAccentLineStyles =
   'hidden h-px w-[160px] bg-[linear-gradient(90deg,#057889,transparent)] sm:block';
 
 export const pageTitleDescriptionStyles =
-  'max-w-[900px] text-base leading-[1.45] text-[#FDFEFF]/75 lg:text-[24px]';
+  'text-base leading-[1.45] text-[#FDFEFF]/75 lg:text-[24px]';

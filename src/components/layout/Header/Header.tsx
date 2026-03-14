@@ -1,13 +1,28 @@
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { MAIN_NAV_ITEMS } from '../../../shared/navConfig';
 import { uiTokens } from '../../ui';
 import logoSvg from '../../../assets/icons/logo.svg';
 import notificationsSvg from '../../../assets/icons/notifications.svg';
 import accountSvg from '../../../assets/icons/account.svg';
+import chevronSvg from '../../../assets/icons/chevron.svg';
 
 export function Header() {
+  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const [currentAccount, setCurrentAccount] = useState('user.example@gmail.com');
+
+  const accounts = [
+    'user1.example@gmail.com',
+    'user2.example@gmail.com',
+    'user3.example@gmail.com',
+  ] as const;
+
+  const handleLogout = () => {
+    setShowAccountMenu(false);
+    navigate('/');
+  };
 
   return (
     <>
@@ -41,19 +56,74 @@ export function Header() {
             >
               <img src={notificationsSvg} alt="" width={19} height={20} className="h-5 w-5" />
             </button>
-            <Link
-              to="/settings"
-              className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[100px] border border-[#FDFEFF]/20 bg-[#FDFEFF]/5 transition hover:bg-[#FDFEFF]/10"
-              aria-label="Аккаунт"
-            >
-              <img src={accountSvg} alt="" width={20} height={20} className="h-5 w-5" />
-            </Link>
-            <Link
-              className="text-[#FDFEFF]/90 transition-colors hover:text-[#FDFEFF]"
-              to="/settings"
-            >
-              user.example@gmail.com
-            </Link>
+            <div className="relative">
+              {showAccountMenu ? (
+                <button
+                  type="button"
+                  className="fixed inset-0 z-30 cursor-default"
+                  onClick={() => setShowAccountMenu(false)}
+                  aria-label="Закрыть меню аккаунта"
+                />
+              ) : null}
+              <button
+                type="button"
+                onClick={() => setShowAccountMenu((current) => !current)}
+                className={`relative z-40 inline-flex items-center gap-2 bg-transparent p-0 transition-colors ${
+                  showAccountMenu ? 'text-[#0EB8D2]' : 'text-[#FDFEFF]/90 hover:text-[#FDFEFF]'
+                }`}
+                aria-haspopup="menu"
+                aria-expanded={showAccountMenu}
+              >
+                <span className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[100px] border border-[#FDFEFF]/20 bg-[#FDFEFF]/5">
+                  <img src={accountSvg} alt="" width={20} height={20} className="h-5 w-5" />
+                </span>
+                <span>{currentAccount}</span>
+                <img
+                  src={chevronSvg}
+                  alt=""
+                  width={16}
+                  height={16}
+                  className={`h-4 w-4 shrink-0 transition-transform ${showAccountMenu ? 'rotate-180' : ''}`}
+                />
+              </button>
+
+              {showAccountMenu ? (
+                <div
+                  className="absolute right-0 top-full z-40 mt-4 w-[320px] rounded-[18px] border border-[#FDFEFF]/65 bg-[#1A1A1A] p-4 shadow-[0_16px_40px_rgba(0,0,0,0.35)]"
+                  role="menu"
+                >
+                  <div className="max-h-[180px] space-y-3 overflow-y-auto pr-2">
+                    {accounts.map((account) => (
+                      <button
+                        key={account}
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                          setCurrentAccount(account);
+                          setShowAccountMenu(false);
+                        }}
+                        className="flex w-full items-center border-b border-[#FDFEFF]/15 pb-3 text-left text-base text-[#FDFEFF]/92 transition hover:text-[#FDFEFF] lg:text-[18px]"
+                      >
+                        {account}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="mt-4 flex w-full items-center gap-3 rounded-[12px] bg-[#2A2A2A] px-4 py-4 text-left text-base text-[#FDFEFF] transition hover:bg-[#333333] lg:text-[18px]"
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+                      <path d="M10 17L15 12L10 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M15 12H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M20 19V5C20 4.44772 19.5523 4 19 4H12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <span>Выход из аккаунта</span>
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       </header>

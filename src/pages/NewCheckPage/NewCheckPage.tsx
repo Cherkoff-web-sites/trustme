@@ -5,6 +5,9 @@ import { ReportActions } from '../../components/features/ReportActions';
 import { SupportSection } from '../../components/features/SupportSection';
 import { Button, FilterTrigger, Input, PageTitle, uiTokens } from '../../components/ui';
 import { type HistoryItem, ReportContent } from '../../shared/ReportContent';
+import searchSvg from '../../assets/icons/search.svg';
+import chevronSvg from '../../assets/icons/chevron.svg';
+import loadSvg from '../../assets/icons/load.svg';
 
 export function NewCheckPage() {
   const [personType, setPersonType] = useState<'legal' | 'individual'>('legal');
@@ -81,7 +84,7 @@ export function NewCheckPage() {
             {personType === 'legal' ? (
               <div className="flex flex-col gap-4 xl:flex-row">
                 <label className="flex h-14 flex-1 justify-start gap-3 rounded-xl border border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.05))] px-4 text-sm text-white/55">
-                  <span className="text-white/35">⌕</span>
+                  <img src={searchSvg} alt="" className="h-5 w-5 shrink-0 text-white/35" aria-hidden />
                   <Input
                     className="h-auto border-0 bg-transparent px-0 text-sm"
                     placeholder="ИНН (ЮЛ, ФЛ) / ОГРН"
@@ -118,6 +121,7 @@ export function NewCheckPage() {
             <FilterTrigger
               className="mt-4 inline-flex h-auto border-0 bg-transparent px-0 text-[#FDFEFF]/85"
               label="Подробнее"
+              icon={<img src={chevronSvg} alt="" className="h-4 w-4 shrink-0 opacity-70" aria-hidden />}
             />
           </div>
         </section>
@@ -129,7 +133,12 @@ export function NewCheckPage() {
                 <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
                   <h3 className="text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Формируем отчет</h3>
                   <p className="m-0 text-[#FDFEFF]/65">Ожидайте, формирование отчета может занять до 10 минут</p>
-                  <div className="mt-4 h-10 w-10 rounded-full border-2 border-white/15 border-t-[#057889]" />
+                  <img
+                    src={loadSvg}
+                    alt=""
+                    className="mt-4 h-[35px] w-[35px] animate-spin lg:h-[60px] lg:w-[60px]"
+                    aria-hidden
+                  />
                 </div>
               ) : null}
 
