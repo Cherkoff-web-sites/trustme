@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { MAIN_NAV_ITEMS } from '../../../shared/navConfig';
 import { uiTokens } from '../../ui';
 import logoSvg from '../../../assets/icons/logo.svg';
 import notificationsSvg from '../../../assets/icons/notifications.svg';
@@ -7,15 +8,6 @@ import accountSvg from '../../../assets/icons/account.svg';
 
 export function Header() {
   const [showNotifications, setShowNotifications] = useState(false);
-
-  const navItems = [
-    ['Личный кабинет', '/cabinet'],
-    ['История запросов', '/history'],
-    ['Новая проверка', '/new-check'],
-    ['Тариф', '/tariff'],
-    ['Баланс', '/balance'],
-    ['Настройки', '/settings'],
-  ] as const;
 
   return (
     <>
@@ -26,7 +18,7 @@ export function Header() {
               <img src={logoSvg} alt="" width={122} height={29} className="h-7 w-auto lg:h-8" />
             </Link>
             <nav className="flex flex-wrap gap-x-6 gap-y-3 text-[14px] font-semibold text-[#FDFEFF]/90 lg:text-[20px]">
-              {navItems.map(([label, to]) => (
+              {MAIN_NAV_ITEMS.map(([label, to]) => (
                 <NavLink
                   className={({ isActive }) =>
                     `transition-colors hover:text-[#FDFEFF] ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]/85'}`

@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
+import { LandingPage } from './pages/LandingPage/LandingPage';
 import { DashboardPage } from './pages/DashboardPage/DashboardPage';
 import { HistoryPage } from './pages/HistoryPage/HistoryPage';
 import { NewCheckPage } from './pages/NewCheckPage/NewCheckPage';
@@ -9,7 +10,7 @@ import { SettingsPage } from './pages/SettingsPage/SettingsPage';
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/cabinet" replace />} />
+      <Route path="/" element={<LandingPage />} />
       <Route path="/cabinet" element={<DashboardPage />} />
       <Route path="/history" element={<HistoryPage />} />
       <Route path="/new-check" element={<NewCheckPage />} />

@@ -1,0 +1,25 @@
+import { useState } from 'react';
+import { PageLayout } from '../../components/layout/PageLayout';
+import { AuthModal } from '../../components/features/AuthModal';
+import { Button, uiTokens } from '../../components/ui';
+
+export function LandingPage() {
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const openAuthModal = () => setShowAuthModal(true);
+  const closeAuthModal = () => setShowAuthModal(false);
+
+  return (
+    <PageLayout>
+      <main className={uiTokens.container}>
+        {/* Центральная кнопка Войти */}
+        <section className="flex min-h-[50vh] flex-col items-center justify-center pb-10 pt-10 sm:pb-14 sm:pt-14">
+          <Button className="min-w-[200px]" onClick={openAuthModal}>
+            Войти
+          </Button>
+        </section>
+      </main>
+      <AuthModal open={showAuthModal} onClose={closeAuthModal} />
+    </PageLayout>
+  );
+}
