@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
-import { containerClassName } from '../../shared/constants';
-import { cardClassName } from '../../shared/constants';
 import { PersonTypeSwitcher } from '../../components/features/PersonTypeSwitcher';
 import { ReportActions } from '../../components/features/ReportActions';
-import { Button, FilterTrigger, Input } from '../../components/ui';
+import { SupportSection } from '../../components/features/SupportSection';
+import { Button, FilterTrigger, Input, PageTitle, uiTokens } from '../../components/ui';
 import { type HistoryItem, ReportContent } from '../../shared/ReportContent';
-import { PageTitle, SupportSection } from '../../shared/ui';
 
 export function NewCheckPage() {
   const [personType, setPersonType] = useState<'legal' | 'individual'>('legal');
@@ -62,14 +60,14 @@ export function NewCheckPage() {
 
   return (
     <PageLayout>
-      <main className={`${containerClassName} pb-10 sm:pb-14`}>
+      <main className={`${uiTokens.container} pb-10 sm:pb-14`}>
         <section className="pt-10 sm:pt-16">
           <PageTitle
             title="Новая проверка"
             description="Проверка осуществляется в рамках текущего тарифа. Стоимость проверки будет списана с вашего баланса"
           />
 
-          <div className={`${cardClassName} px-4 py-5 sm:px-6 sm:py-6`}>
+          <div className={`${uiTokens.card} px-4 py-5 sm:px-6 sm:py-6`}>
             <PersonTypeSwitcher
               className="mb-5 sm:gap-6"
               value={personType}
@@ -126,7 +124,7 @@ export function NewCheckPage() {
 
         {reportState !== 'idle' ? (
           <section className="pt-4 sm:pt-6">
-            <div className={`${cardClassName} px-4 py-6 sm:px-6 sm:py-8`}>
+            <div className={`${uiTokens.card} px-4 py-6 sm:px-6 sm:py-8`}>
               {reportState === 'loading' ? (
                 <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
                   <h2 className="text-lg font-semibold text-white">Формируем отчет</h2>
@@ -173,7 +171,7 @@ export function NewCheckPage() {
 
         {reportState === 'ready' && showInlineReport ? (
           <section className="pt-6 sm:pt-8">
-            <div className={`${cardClassName} overflow-hidden`}>
+            <div className={`${uiTokens.card} overflow-hidden`}>
               <ReportContent item={reportItem} />
             </div>
           </section>

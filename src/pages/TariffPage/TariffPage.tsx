@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
-import { containerClassName } from '../../shared/constants';
-import { cardClassName } from '../../shared/constants';
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
+import { SupportSection } from '../../components/features/SupportSection';
 import { TariffPlanCard, type TariffPlanCardData } from '../../components/features/TariffPlanCard';
-import { AlertBanner, Button, FilterChip, OptionIndicator, SectionCard } from '../../components/ui';
-import { PageTitle, SupportSection } from '../../shared/ui';
+import { AlertBanner, Button, FilterChip, OptionIndicator, PageTitle, SectionCard, uiTokens } from '../../components/ui';
 
 export function TariffPage() {
   const plans: TariffPlanCardData[] = [
@@ -56,7 +54,7 @@ export function TariffPage() {
 
   return (
     <PageLayout>
-      <main className={`${containerClassName} pb-10 sm:pb-14`}>
+      <main className={`${uiTokens.container} pb-10 sm:pb-14`}>
         <section className="pt-10 sm:pt-16">
           <PageTitle title="Тариф" description="Управляйте тарифом аккаунта" />
 
@@ -104,7 +102,7 @@ export function TariffPage() {
           />
 
           <div className="grid gap-4 xl:grid-cols-[1.55fr_0.75fr]">
-            <section className={`${cardClassName} p-4 sm:p-6`}>
+            <section className={`${uiTokens.card} p-4 sm:p-6`}>
               <div className="space-y-8">
                 <div>
                   <h2 className="mb-4 text-[24px] font-semibold text-white">Функциональные модули тарифа</h2>
@@ -150,7 +148,7 @@ export function TariffPage() {
               </div>
             </section>
 
-            <section className={`${cardClassName} p-4 sm:p-6`}>
+            <section className={`${uiTokens.card} p-4 sm:p-6`}>
               <h2 className="mb-5 text-[24px] font-semibold text-white">Расчет стоимости тарифа</h2>
               <div className="space-y-4 text-sm text-white/85">
                 {['Скоринг', 'Упоминания в СМИ', 'Упоминания в Telegram', '7 дней', '2 учетные записи'].map((item) => (

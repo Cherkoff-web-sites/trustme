@@ -17,4 +17,5 @@ export const uiTokens = {
   filterControl:
     'flex h-12 items-center justify-between rounded-xl border border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.05))] px-4 text-sm text-white/55',
   chip: 'inline-flex items-center gap-2 rounded-full border border-white/30 bg-[#181818] px-3 py-1 text-xs text-white/80 hover:bg-[#222222]',
+  formLabel: 'text-[15px] leading-[1.2] text-white/85',
 } as const;

@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
-import { containerClassName } from '../../shared/constants';
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
-import { AlertBanner, Button, Input, OptionIndicator } from '../../components/ui';
+import { AlertBanner, Button, DashboardCard, Input, OptionIndicator, uiTokens } from '../../components/ui';
 import { TelegramCircleIcon, TelegramQrIcon } from '../../shared/icons';
-import { DashboardCard } from '../../shared/ui';
 
 export function DashboardPage() {
   const lastRequests = [
@@ -18,7 +16,7 @@ export function DashboardPage() {
 
   return (
     <PageLayout>
-      <main className={`${containerClassName} pb-10 sm:pb-14`}>
+      <main className={`${uiTokens.container} pb-10 sm:pb-14`}>
           <AlertBanner className="mb-4">
             <p className="m-0">
               Тариф заканчивается через 3 дня. Пополните баланс или измените тариф, чтобы избежать отключения от сервиса

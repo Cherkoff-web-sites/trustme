@@ -19,3 +19,7 @@ export { SourceBadge } from './SourceBadge';
 export type { SourceBadgeProps } from './SourceBadge';
 export { ToggleSwitch } from './ToggleSwitch';
 export type { ToggleSwitchProps } from './ToggleSwitch';
+export { PageTitle } from './PageTitle';
+export type { PageTitleProps } from './PageTitle';
+export { DashboardCard } from './DashboardCard';
+export type { DashboardCardProps } from './DashboardCard';

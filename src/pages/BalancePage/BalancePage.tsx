@@ -1,11 +1,14 @@
 import { useState } from 'react';
+import {
+  BalanceFilters,
+  TransactionTable,
+  type BalanceFilterPanel,
+  type BalanceSourceFilter,
+  type BalanceTypeFilter,
+} from '../../components/features/balance';
 import { PageLayout } from '../../components/layout/PageLayout';
-import { containerClassName } from '../../shared/constants';
 import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
-import { AppliedFiltersRow, DateRangePanel, SingleChoicePanel } from '../../components/features/filters';
-import { cardClassName } from '../../shared/constants';
-import { Button, FilterTrigger, SourceBadge } from '../../components/ui';
-import { PageTitle } from '../../shared/ui';
+import { Button, PageTitle, uiTokens } from '../../components/ui';
 
 type BalanceOperation = {
   date: string;
@@ -13,10 +16,6 @@ type BalanceOperation = {
   source: 'telegram' | 'web';
   amount: string;
 };
-
-type BalanceTypeFilter = 'all' | 'income' | 'expense';
-type BalanceSourceFilter = 'all' | 'telegram' | 'web';
-type BalanceFilterPanel = 'period' | 'type' | 'source' | null;
 
 export function BalancePage() {
   const operations: BalanceOperation[] = [
@@ -137,14 +136,14 @@ export function BalancePage() {
 
   return (
     <PageLayout>
-      <main className={`${containerClassName} pb-10 sm:pb-14`}>
+      <main className={`${uiTokens.container} pb-10 sm:pb-14`}>
         <section className="pt-10 sm:pt-16">
           <PageTitle
             title="Баланс"
             description="Управляйте балансом аккаунта и отслеживайте историю финансовых операций"
           />
 
-          <section className={`${cardClassName} p-4 sm:p-6`}>
+          <section className={`${uiTokens.card} p-4 sm:p-6`}>
             <h2 className="mb-4 text-[24px] font-semibold text-white">Текущий баланс</h2>
             <div className="mb-6 h-px w-full bg-white/15" />
 
@@ -174,88 +173,23 @@ export function BalancePage() {
             description="Вы можете отслеживать историю операций на вашем аккаунте, выбрав нужные данные"
           />
 
-          <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
-            <FilterTrigger minWidth="md" label="Период" active={balanceOpenPanel === 'period'} onClick={() => toggleBalancePanel('period')} />
-            <FilterTrigger minWidth="md" label="Тип операции" active={balanceOpenPanel === 'type'} onClick={() => toggleBalancePanel('type')} />
-            <FilterTrigger minWidth="md" label="Источник" active={balanceOpenPanel === 'source'} onClick={() => toggleBalancePanel('source')} />
+          <BalanceFilters
+            openPanel={balanceOpenPanel}
+            onTogglePanel={toggleBalancePanel}
+            dateFrom={balanceDateFrom}
+            dateTo={balanceDateTo}
+            onDateFromChange={setBalanceDateFrom}
+            onDateToChange={setBalanceDateTo}
+            typeFilter={balanceTypeFilter}
+            onTypeFilterChange={setBalanceTypeFilter}
+            sourceFilter={balanceSourceFilter}
+            onSourceFilterChange={setBalanceSourceFilter}
+            chips={balanceChips}
+            onReset={resetBalanceFilters}
+          />
 
-            {balanceChips.length > 0 ? (
-              <Button variant="ghost" className="text-sm font-medium text-white/85" onClick={resetBalanceFilters}>
-                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-white/35 text-[11px]">
-                  ×
-                </span>
-                Сбросить фильтры
-              </Button>
-            ) : null}
-          </div>
-
-          {balanceOpenPanel === 'period' ? (
-            <DateRangePanel
-              title="Период"
-              fromValue={balanceDateFrom}
-              toValue={balanceDateTo}
-              onFromChange={setBalanceDateFrom}
-              onToChange={setBalanceDateTo}
-            />
-          ) : null}
-
-          {balanceOpenPanel === 'type' ? (
-            <SingleChoicePanel
-              title="Тип операции"
-              value={balanceTypeFilter}
-              options={[
-                { value: 'income', label: 'Поступление' },
-                { value: 'expense', label: 'Списание' },
-                { value: 'all', label: 'Все' },
-              ]}
-              onChange={setBalanceTypeFilter}
-            />
-          ) : null}
-
-          {balanceOpenPanel === 'source' ? (
-            <SingleChoicePanel
-              title="Источник"
-              value={balanceSourceFilter}
-              options={[
-                { value: 'telegram', label: 'Telegram-бот' },
-                { value: 'web', label: 'Веб-сервис' },
-                { value: 'all', label: 'Все' },
-              ]}
-              onChange={setBalanceSourceFilter}
-            />
-          ) : null}
-
-          <AppliedFiltersRow filters={balanceChips} onReset={resetBalanceFilters} />
-
-          <section className={`${cardClassName} overflow-hidden p-4 sm:p-6`}>
-            <div className="overflow-x-auto">
-              <table className="min-w-full border-separate border-spacing-y-3 text-left text-sm">
-                <thead className="text-white/60">
-                  <tr>
-                    <th className="pr-6 font-normal">Дата операции</th>
-                    <th className="pr-6 font-normal">Тип операции</th>
-                    <th className="pr-6 font-normal">Источник операции</th>
-                    <th className="font-normal">Сумма</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredOperations.map((operation) => (
-                    <tr className="border-t border-white/10 text-white/85" key={`${operation.date}-${operation.type}-${operation.source}`}>
-                      <td className="pr-6 pt-3">{operation.date}</td>
-                      <td className={`pr-6 pt-3 ${operation.type === 'Списание' ? 'text-[#FF7A7A]' : 'text-[#77D877]'}`}>
-                        {operation.type}
-                      </td>
-                      <td className="pr-6 pt-3">
-                        <div className="flex items-center gap-2.5">
-                          <SourceBadge source={operation.source} label size="sm" />
-                        </div>
-                      </td>
-                      <td className="pt-3">{operation.amount}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <section className={`${uiTokens.card} overflow-hidden p-4 sm:p-6`}>
+            <TransactionTable operations={filteredOperations} />
           </section>
         </section>
 

@@ -1,4 +1,4 @@
-import { pageClassName } from '../../shared/constants';
+import { uiTokens } from '../ui';
 import { Footer } from './Footer/Footer';
 import { Header } from './Header/Header';
 
@@ -14,7 +14,7 @@ function BackgroundDecor() {
 
 export function PageLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={pageClassName}>
+    <div className={uiTokens.page}>
       <BackgroundDecor />
       <div className="relative z-10 flex min-h-screen flex-col">
         <Header />
