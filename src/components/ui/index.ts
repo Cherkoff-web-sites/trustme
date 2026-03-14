@@ -1,4 +1,4 @@
-export { uiTokens } from './design-tokens';
+export { uiTokens, designTokens } from './design-tokens';
 export { Button } from './Button';
 export type { ButtonProps } from './Button';
 export { Input } from './Input';

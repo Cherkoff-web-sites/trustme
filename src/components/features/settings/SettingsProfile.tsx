@@ -14,7 +14,7 @@ export function SettingsProfile() {
           <div className={settingsProfileAvatarStyles}>
             <img src="/user.png" alt="Аватар пользователя" />
           </div>
-          <Button variant="ghost" className="text-lg font-medium text-white hover:text-[#0EB8D2]">
+          <Button variant="ghost" className="text-lg font-medium text-[#FDFEFF] hover:text-[#057889]">
             Изменить фото
           </Button>
         </div>
@@ -41,12 +41,12 @@ export function SettingsProfile() {
               <Input defaultValue="user.example@gmail.com" />
             </label>
 
-            <label className="flex items-start gap-3 text-sm text-white/75">
+            <label className="flex items-start gap-3 text-[#FDFEFF]/75">
               <OptionIndicator type="checkbox" checked={false} className="mt-0.5" />
               <span>Я даю согласие на получение рекламных материалов на указанный адрес электронной почты</span>
             </label>
 
-            <Button variant="ghost" className="gap-2 text-sm text-white/85">
+            <Button variant="ghost" className="gap-2 text-[#FDFEFF]/85">
               Подробнее
               <span>▾</span>
             </Button>

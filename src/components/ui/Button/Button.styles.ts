@@ -6,12 +6,12 @@ export const buttonStyles = cva(
     variants: {
       variant: {
         primary:
-          'min-h-14 rounded-full bg-[#0A8EA7] px-6 py-4 text-lg font-semibold text-[#FDFEFF] duration-200 hover:-translate-y-px hover:bg-[#10A7C4] focus-visible:ring-2 focus-visible:ring-[#0EB8D2]/50',
+          'min-h-14 rounded-[100px] bg-[#057889] px-6 py-4 text-[14px] lg:text-[20px] font-semibold text-[#FDFEFF] duration-200 hover:-translate-y-px hover:bg-[#068a9c] focus-visible:ring-2 focus-visible:ring-[#057889]/50',
         secondary:
-          'min-h-14 rounded-full border border-white/55 px-6 py-4 text-lg font-semibold text-white hover:bg-white/5',
-        ghost: 'text-sm text-white/80 hover:text-white',
-        icon: 'rounded-full border border-white/20 text-white/85 hover:bg-white/5',
-        pill: 'rounded-full border px-3 py-2 text-sm transition',
+          'min-h-14 rounded-[100px] border border-[#FDFEFF]/55 px-6 py-4 text-[14px] lg:text-[20px] font-semibold text-[#FDFEFF] hover:bg-[#FDFEFF]/5',
+        ghost: 'text-sm text-[#FDFEFF]/80 hover:text-[#FDFEFF]',
+        icon: 'rounded-[100px] border border-[#FDFEFF]/20 text-[#FDFEFF]/85 hover:bg-[#FDFEFF]/5',
+        pill: 'rounded-[100px] border px-3 py-2 text-sm transition',
       },
       size: {
         default: '',
@@ -31,12 +31,12 @@ export const buttonStyles = cva(
       {
         variant: 'pill',
         selected: true,
-        className: 'border-white bg-white text-[#151515]',
+        className: 'border-[#FDFEFF] bg-[#FDFEFF] text-[#1A1A1A]',
       },
       {
         variant: 'pill',
         selected: false,
-        className: 'border-white/35 bg-[#181818] text-white/85 hover:bg-[#1F1F1F]',
+        className: 'border-[#FDFEFF]/35 bg-[#1A1A1A] text-[#FDFEFF]/85 hover:bg-[#2A2A2A]',
       },
       {
         variant: 'icon',

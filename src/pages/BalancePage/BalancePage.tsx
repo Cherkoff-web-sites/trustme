@@ -144,18 +144,18 @@ export function BalancePage() {
           />
 
           <section className={`${uiTokens.card} p-4 sm:p-6`}>
-            <h2 className="mb-4 text-[24px] font-semibold text-white">Текущий баланс</h2>
+            <h3 className="mb-4 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Текущий баланс</h3>
             <div className="mb-6 h-px w-full bg-white/15" />
 
             <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <div className="flex items-center gap-3 text-[34px] leading-[0.95] font-semibold text-white sm:text-[56px]">
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] bg-white text-lg text-[#151515] sm:h-10 sm:w-10">
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] bg-white text-lg text-[#1A1A1A] sm:h-10 sm:w-10">
                     •
                   </span>
                   <span>100 ₽</span>
                 </div>
-                <p className="mt-4 text-sm text-white/70">
+                <p className="mt-4 text-[#FDFEFF]/70">
                   Используется для списаний по операциям сервиса согласно текущему тарифу
                 </p>
               </div>
@@ -171,6 +171,7 @@ export function BalancePage() {
           <PageTitle
             title="История операций"
             description="Вы можете отслеживать историю операций на вашем аккаунте, выбрав нужные данные"
+            as="h2"
           />
 
           <BalanceFilters

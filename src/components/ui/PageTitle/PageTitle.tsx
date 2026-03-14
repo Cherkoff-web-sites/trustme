@@ -10,13 +10,15 @@ import {
 export interface PageTitleProps {
   title: string;
   description: string;
+  /** Semantic heading level: only one h1 per page, use h2 for section titles */
+  as?: 'h1' | 'h2';
 }
 
-export function PageTitle({ title, description }: PageTitleProps) {
+export function PageTitle({ title, description, as: Heading = 'h1' }: PageTitleProps) {
   return (
     <div className={pageTitleWrapStyles}>
       <div className={pageTitleHeadingRowStyles}>
-        <h1 className={pageTitleHeadingStyles}>{title}</h1>
+        <Heading className={pageTitleHeadingStyles}>{title}</Heading>
         <span className={pageTitleAccentStyles} />
         <span className={pageTitleAccentLineStyles} />
       </div>

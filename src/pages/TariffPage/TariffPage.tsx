@@ -66,14 +66,14 @@ export function TariffPage() {
           </AlertBanner>
 
           <SectionCard className="p-4 sm:p-6">
-            <h2 className="mb-4 text-[24px] font-semibold text-white">Текущий тариф</h2>
+            <h3 className="mb-4 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Текущий тариф</h3>
             <div className="mb-6 h-px w-full bg-white/15" />
             <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <div className="text-[34px] leading-[0.95] font-semibold uppercase text-white sm:text-[56px]">
                   Индивидуальный
                 </div>
-                <p className="mt-3 text-sm text-white/70">
+                <p className="mt-3 text-[#FDFEFF]/70">
                   Списания с баланса аккаунта совершаются согласно текущему тарифу
                 </p>
               </div>
@@ -87,7 +87,7 @@ export function TariffPage() {
         </section>
 
         <section className="pt-14 sm:pt-20">
-          <PageTitle title="Оформление подписки" description="Выберите подходящий для вас тарифный план" />
+          <PageTitle title="Оформление подписки" description="Выберите подходящий для вас тарифный план" as="h2" />
           <div className="grid gap-4 xl:grid-cols-3">
             {plans.map((plan) => (
               <TariffPlanCard key={plan.title} plan={plan} />
@@ -99,14 +99,15 @@ export function TariffPage() {
           <PageTitle
             title="Индивидуальный тариф"
             description="Настройте индивидуальный тариф под задачи вашего бизнеса и узнайте стоимость мгновенно"
+            as="h2"
           />
 
           <div className="grid gap-4 xl:grid-cols-[1.55fr_0.75fr]">
             <section className={`${uiTokens.card} p-4 sm:p-6`}>
               <div className="space-y-8">
                 <div>
-                  <h2 className="mb-4 text-[24px] font-semibold text-white">Функциональные модули тарифа</h2>
-                  <div className="space-y-3 text-sm text-white/85">
+                  <h3 className="mb-4 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Функциональные модули тарифа</h3>
+                  <div className="space-y-3 text-[#FDFEFF]/85">
                     {['Скоринг', 'Упоминания в СМИ', 'Упоминания в Telegram'].map((label) => (
                       <label className="flex items-center gap-3" key={label}>
                         <OptionIndicator type="checkbox" checked={false} />
@@ -117,7 +118,7 @@ export function TariffPage() {
                 </div>
 
                 <div>
-                  <h2 className="mb-4 text-[24px] font-semibold text-white">Длительность тарифа</h2>
+                  <h3 className="mb-4 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Длительность тарифа</h3>
                   <div className="flex flex-wrap gap-2">
                     {durationButtons.map((label, index) => (
                       <FilterChip
@@ -132,7 +133,7 @@ export function TariffPage() {
                 </div>
 
                 <div>
-                  <h2 className="mb-4 text-[24px] font-semibold text-white">Учетные записи</h2>
+                  <h3 className="mb-4 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Учетные записи</h3>
                   <div className="inline-flex items-center overflow-hidden rounded-[8px] border border-white/20">
                     <button className="h-9 w-9 bg-white/5 text-white/85" type="button">
                       -
@@ -149,11 +150,11 @@ export function TariffPage() {
             </section>
 
             <section className={`${uiTokens.card} p-4 sm:p-6`}>
-              <h2 className="mb-5 text-[24px] font-semibold text-white">Расчет стоимости тарифа</h2>
-              <div className="space-y-4 text-sm text-white/85">
+              <h3 className="mb-5 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Расчет стоимости тарифа</h3>
+              <div className="space-y-4 text-[#FDFEFF]/85">
                 {['Скоринг', 'Упоминания в СМИ', 'Упоминания в Telegram', '7 дней', '2 учетные записи'].map((item) => (
                   <div className="flex items-center gap-3" key={item}>
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#0EB8D2] text-[12px] text-white">
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#057889] text-[12px] text-[#FDFEFF]">
                       ✓
                     </span>
                     <span>{item}</span>

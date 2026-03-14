@@ -11,9 +11,16 @@
   body {
     margin: 0;
     font-family: Inter, Arial, sans-serif;
-    color: #fdfeff;
-    background: #1a1a1a;
+    color: #FDFEFF;
+    background: #1A1A1A;
+    font-size: 16px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  @media (min-width: 1024px) {
+    body {
+      font-size: 24px;
+    }
   }
 }

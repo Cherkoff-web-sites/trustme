@@ -5,8 +5,8 @@ export const toggleSwitchStyles = cva(
   {
     variants: {
       checked: {
-        true: 'border-[#0EB8D2] bg-[#0EB8D2]',
-        false: 'border-white/20 bg-white/10',
+        true: 'border-[#057889] bg-[#057889]',
+        false: 'border-[#FDFEFF]/20 bg-[#FDFEFF]/10',
       },
     },
     defaultVariants: {
@@ -16,7 +16,7 @@ export const toggleSwitchStyles = cva(
 );
 
 export const toggleSwitchThumbStyles = cva(
-  'inline-block h-6 w-6 rounded-full bg-white transition-transform',
+  'inline-block h-6 w-6 rounded-full bg-[#FDFEFF] transition-transform',
   {
     variants: {
       checked: {

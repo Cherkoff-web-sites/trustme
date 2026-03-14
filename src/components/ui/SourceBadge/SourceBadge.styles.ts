@@ -13,7 +13,7 @@ export const sourceBadgeStyles = cva('inline-flex items-center gap-2.5', {
 });
 
 export const sourceBadgeFallbackStyles = cva(
-  'inline-flex items-center justify-center rounded-full bg-white font-semibold text-[#151515]',
+  'inline-flex items-center justify-center rounded-full bg-[#FDFEFF] font-semibold text-[#1A1A1A]',
   {
     variants: {
       size: {

@@ -17,32 +17,32 @@ export const optionIndicatorStyles = cva('shrink-0 border', {
     {
       type: 'radio',
       checked: true,
-      className: 'border-white bg-white/15',
+      className: 'border-[#FDFEFF] bg-[#FDFEFF]/15',
     },
     {
       type: 'radio',
       checked: false,
-      className: 'border-white/35 bg-transparent',
+      className: 'border-[#FDFEFF]/35 bg-transparent',
     },
     {
       type: 'checkbox',
       checked: true,
-      className: 'border-[#0EB8D2] bg-[#0EB8D2]',
+      className: 'border-[#057889] bg-[#057889]',
     },
     {
       type: 'checkbox',
       checked: false,
-      className: 'border-white/35 bg-transparent',
+      className: 'border-[#FDFEFF]/35 bg-transparent',
     },
     {
       type: 'toggleMarker',
       checked: true,
-      className: 'border-[#0EB8D2]',
+      className: 'border-[#057889]',
     },
     {
       type: 'toggleMarker',
       checked: false,
-      className: 'border-white/35 bg-transparent',
+      className: 'border-[#FDFEFF]/35 bg-transparent',
     },
   ],
   defaultVariants: {
@@ -54,7 +54,7 @@ export const optionIndicatorStyles = cva('shrink-0 border', {
 export const optionIndicatorDotStyles = cva('rounded-full', {
   variants: {
     visible: {
-      true: 'h-2 w-2 bg-[#0EB8D2]',
+      true: 'h-2 w-2 bg-[#057889]',
       false: 'hidden',
     },
   },

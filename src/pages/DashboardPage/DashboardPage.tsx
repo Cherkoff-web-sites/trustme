@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
+import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
-import { AlertBanner, Button, DashboardCard, Input, OptionIndicator, uiTokens } from '../../components/ui';
+import { AlertBanner, Button, DashboardCard, Input, OptionIndicator, PageTitle, uiTokens } from '../../components/ui';
 import { TelegramCircleIcon, TelegramQrIcon } from '../../shared/icons';
 
 export function DashboardPage() {
@@ -13,10 +14,36 @@ export function DashboardPage() {
   ] as const;
 
   const [showCurrentTariffModal, setShowCurrentTariffModal] = useState(false);
+  const [showTopUpModal, setShowTopUpModal] = useState(false);
+  const [topUpAmount, setTopUpAmount] = useState('300');
+  const [topUpStep, setTopUpStep] = useState<TopUpStep>('form');
+
+  const handleOpenTopUp = () => {
+    setTopUpStep('form');
+    setShowTopUpModal(true);
+  };
+
+  const handleCloseTopUp = () => {
+    setShowTopUpModal(false);
+  };
+
+  const handleTopUpContinue = () => {
+    const numericAmount = Number(topUpAmount.replace(/\s/g, ''));
+    if (!numericAmount || numericAmount < 100 || numericAmount > 100000) {
+      return;
+    }
+    setTopUpStep('waiting');
+    window.setTimeout(() => {
+      setTopUpStep('processing');
+    }, 1200);
+  };
 
   return (
     <PageLayout>
       <main className={`${uiTokens.container} pb-10 sm:pb-14`}>
+          <section className="pt-10 sm:pt-16">
+            <PageTitle title="Личный кабинет" description="Управляйте проверками, балансом и тарифом" />
+          </section>
           <AlertBanner className="mb-4">
             <p className="m-0">
               Тариф заканчивается через 3 дня. Пополните баланс или измените тариф, чтобы избежать отключения от сервиса
@@ -26,7 +53,7 @@ export function DashboardPage() {
 
           <div className="grid gap-4 lg:grid-cols-[1.05fr_1.35fr_0.78fr]">
             <DashboardCard title="Новая проверка" className="lg:row-span-1">
-              <div className="mb-4 flex flex-col gap-2 text-sm text-white/85">
+              <div className="mb-4 flex flex-col gap-2 text-[#FDFEFF]/85">
                 <label className="flex items-center gap-2.5">
                   <OptionIndicator type="radio" checked={false} />
                   Юридическое лицо
@@ -43,7 +70,7 @@ export function DashboardPage() {
                 Запустить проверку
               </Button>
 
-              <p className="mt-4 text-xs leading-[1.45] text-white/65">
+              <p className="mt-4 leading-[1.45] text-[#FDFEFF]/65">
                 Стоимость проверки будет списана с баланса вашего аккаунта согласно текущему тарифу
               </p>
             </DashboardCard>
@@ -54,7 +81,7 @@ export function DashboardPage() {
                   <div className="inline-flex min-h-12 min-w-[160px] items-center justify-center rounded-full border border-white/15 bg-white/10 px-5 text-[28px] font-semibold">
                     4 550 ₽
                   </div>
-                  <Button className="min-w-[160px]">
+                  <Button className="min-w-[160px]" onClick={handleOpenTopUp}>
                     Пополнить
                   </Button>
                 </div>
@@ -86,7 +113,7 @@ export function DashboardPage() {
 
             <DashboardCard title="Последние запросы" aside="Вся история запросов →" className="lg:col-span-2">
               <div className="overflow-x-auto">
-                <table className="min-w-full border-separate border-spacing-y-3 text-left text-sm">
+                <table className="min-w-full border-separate border-spacing-y-3 text-left">
                   <thead className="text-white/60">
                     <tr>
                       <th className="pr-6 font-normal">Дата / Время</th>
@@ -122,11 +149,11 @@ export function DashboardPage() {
                 </Button>
               </div>
 
-              <div className="mx-auto mb-5 flex h-[170px] w-[170px] items-center justify-center rounded-full border-[10px] border-[#0EB8D2] border-t-white border-r-[#1A1A1A]">
+              <div className="mx-auto mb-5 flex h-[170px] w-[170px] items-center justify-center rounded-full border-[10px] border-[#057889] border-t-white border-r-[#1A1A1A]">
                 <span className="text-lg font-medium">Отчёты</span>
               </div>
 
-              <div className="space-y-2 text-sm text-white/80">
+              <div className="space-y-2 text-[#FDFEFF]/80">
                 <div className="flex items-center justify-between gap-4">
                   <span className="flex items-center gap-2.5">
                     <span className="h-3 w-3 rounded-full bg-white" />
@@ -136,7 +163,7 @@ export function DashboardPage() {
                 </div>
                 <div className="flex items-center justify-between gap-4">
                   <span className="flex items-center gap-2.5">
-                    <span className="h-3 w-3 rounded-full bg-[#0EB8D2]" />
+                    <span className="h-3 w-3 rounded-full bg-[#057889]" />
                     Юридическое лицо
                   </span>
                   <span>75 отчётов</span>
@@ -145,6 +172,15 @@ export function DashboardPage() {
             </DashboardCard>
           </div>
         <CurrentTariffInfoModal open={showCurrentTariffModal} onClose={() => setShowCurrentTariffModal(false)} />
+        <BalanceTopUpModal
+          open={showTopUpModal}
+          step={topUpStep}
+          amount={topUpAmount}
+          onAmountChange={setTopUpAmount}
+          onChipSelect={(value) => setTopUpAmount(String(value))}
+          onContinue={handleTopUpContinue}
+          onClose={handleCloseTopUp}
+        />
       </main>
     </PageLayout>
   );

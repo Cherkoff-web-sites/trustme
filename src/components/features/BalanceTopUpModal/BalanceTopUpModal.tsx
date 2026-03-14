@@ -34,12 +34,12 @@ export function BalanceTopUpModal({
 
   return (
     <ModalShell open={open} size="md" onClose={onClose}>
-      <h2 className={balanceTopUpTitleStyles}>Пополнение баланса</h2>
+      <h3 className={balanceTopUpTitleStyles}>Пополнение баланса</h3>
       <p className={balanceTopUpSubtitleStyles}>Ожидайте, идет пополнение баланса</p>
 
       {step === 'form' ? (
         <div className={balanceTopUpFormStyles}>
-          <p className="text-center text-xs text-white/70">
+          <p className="text-center text-[#FDFEFF]/70">
             Выберите нужную сумму или введите ее вручную
           </p>
           <Input
@@ -69,7 +69,7 @@ export function BalanceTopUpModal({
 
       {step === 'waiting' ? (
         <div className={balanceTopUpWaitingStyles}>
-          <div className="mt-2 h-10 w-10 rounded-full border-2 border-white/20 border-t-[#0EB8D2]" />
+          <div className="mt-2 h-10 w-10 rounded-full border-2 border-white/20 border-t-[#057889]" />
         </div>
       ) : null}
 

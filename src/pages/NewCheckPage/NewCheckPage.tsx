@@ -116,7 +116,7 @@ export function NewCheckPage() {
             )}
 
             <FilterTrigger
-              className="mt-4 inline-flex h-auto border-0 bg-transparent px-0 text-sm text-white/85"
+              className="mt-4 inline-flex h-auto border-0 bg-transparent px-0 text-[#FDFEFF]/85"
               label="Подробнее"
             />
           </div>
@@ -127,16 +127,16 @@ export function NewCheckPage() {
             <div className={`${uiTokens.card} px-4 py-6 sm:px-6 sm:py-8`}>
               {reportState === 'loading' ? (
                 <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
-                  <h2 className="text-lg font-semibold text-white">Формируем отчет</h2>
-                  <p className="m-0 text-sm text-white/65">Ожидайте, формирование отчета может занять до 10 минут</p>
-                  <div className="mt-4 h-10 w-10 rounded-full border-2 border-white/15 border-t-[#0EB8D2]" />
+                  <h3 className="text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Формируем отчет</h3>
+                  <p className="m-0 text-[#FDFEFF]/65">Ожидайте, формирование отчета может занять до 10 минут</p>
+                  <div className="mt-4 h-10 w-10 rounded-full border-2 border-white/15 border-t-[#057889]" />
                 </div>
               ) : null}
 
               {reportState === 'ready' ? (
                 <div className="flex flex-col items-center justify-center gap-3 py-2 text-center">
-                  <h2 className="text-lg font-semibold text-white">Отчет готов</h2>
-                  <p className="m-0 text-sm text-white/65">Отчет успешно сформирован. Вы можете посмотреть или скачать его</p>
+                  <h3 className="text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Отчет готов</h3>
+                  <p className="m-0 text-[#FDFEFF]/65">Отчет успешно сформирован. Вы можете посмотреть или скачать его</p>
                   <div className="mt-3 inline-flex min-h-10 min-w-[260px] items-center justify-center rounded-[10px] border border-[#2C6B3B] bg-[#1E2D21] px-4 text-xs font-medium text-[#45C857]">
                     Успешно
                   </div>
@@ -150,14 +150,14 @@ export function NewCheckPage() {
 
               {reportState === 'error' ? (
                 <div className="flex flex-col items-center justify-center gap-3 py-2 text-center">
-                  <h2 className="text-lg font-semibold text-white">Ошибка генерации отчета</h2>
+                  <h3 className="text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Ошибка генерации отчета</h3>
                   <p className="m-0 max-w-[520px] text-sm text-white/65">
                     Отчет не удалось сформировать. Вы можете попробовать еще раз или написать в поддержку
                   </p>
                   <div className="mt-3 inline-flex min-h-10 min-w-[260px] items-center justify-center rounded-[10px] border border-[#7A2F2F] bg-[#2A1B1B] px-4 text-xs font-medium text-[#FF7A7A]">
                     Ошибка
                   </div>
-                  <p className="mt-4 text-xs text-white/65">
+                  <p className="mt-4 text-[#FDFEFF]/65">
                     Что-то пошло не так?{' '}
                     <Button variant="ghost" className="font-medium text-white/85 underline underline-offset-4 hover:text-white">
                       Написать в поддержку

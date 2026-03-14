@@ -1,12 +1,12 @@
 import { cva } from 'class-variance-authority';
 
 export const alertBannerStyles = cva(
-  'flex items-center gap-3 rounded-[28px] px-4 py-4 text-sm sm:px-6',
+  'flex items-center gap-3 rounded-[28px] px-4 py-4 text-base font-normal sm:px-6 lg:text-[18px]',
   {
     variants: {
       tone: {
-        warning: 'border border-white/85 bg-[#151515]/95 text-white/90',
-        info: 'border border-[#0EB8D2]/50 bg-[#151515]/95 text-white/90',
+        warning: 'border border-[#FDFEFF] bg-[#1A1A1A] text-[#FDFEFF]/90',
+        info: 'border border-[#057889]/50 bg-[#1A1A1A] text-[#FDFEFF]/90',
       },
     },
     defaultVariants: {
@@ -16,12 +16,12 @@ export const alertBannerStyles = cva(
 );
 
 export const alertBannerIconStyles = cva(
-  'inline-flex h-6 w-6 items-center justify-center rounded-md text-[#151515]',
+  'inline-flex h-6 w-6 items-center justify-center rounded-md text-[#1A1A1A]',
   {
     variants: {
       tone: {
-        warning: 'bg-[#D89B1D]',
-        info: 'bg-[#0EB8D2]',
+        warning: 'bg-[#EBA535]',
+        info: 'bg-[#057889]',
       },
     },
     defaultVariants: {

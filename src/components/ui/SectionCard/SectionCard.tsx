@@ -33,7 +33,7 @@ export function SectionCard({
       {title || aside ? (
         <>
           <div className={sectionCardHeaderStyles}>
-            {title ? <h2 className={sectionCardTitleStyles}>{title}</h2> : <div />}
+            {title ? <h3 className={sectionCardTitleStyles}>{title}</h3> : <div />}
             {aside ? <span className={sectionCardAsideStyles}>{aside}</span> : null}
           </div>
           {divider ? <div className={sectionCardDividerStyles} /> : null}
