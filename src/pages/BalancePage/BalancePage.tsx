@@ -10,6 +10,7 @@ import {
 import { PageLayout } from '../../components/layout/PageLayout';
 import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
 import { Button, PageTitle, uiTokens } from '../../components/ui';
+import walletSvg from '../../assets/icons/wallet.svg';
 
 type BalanceOperation = {
   date: string;
@@ -171,9 +172,7 @@ export function BalancePage() {
             <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <div className="flex items-center gap-3 text-[34px] leading-[0.95] font-semibold text-white sm:text-[56px]">
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] bg-white text-lg text-[#1A1A1A] sm:h-10 sm:w-10">
-                    •
-                  </span>
+                  <img src={walletSvg} alt="" className="h-10 w-10 sm:h-12 sm:w-12" />
                   <span>100 ₽</span>
                 </div>
                 <p className="mt-4 text-[#FDFEFF]/70">

@@ -9,6 +9,8 @@ import { TelegramCircleIcon } from '../../shared/icons';
 import { type HistoryItem } from '../../shared/ReportContent';
 import qrSvg from '../../assets/icons/qr.svg';
 import warningSvg from '../../assets/icons/warning.svg';
+import arrowLinkNextSvg from '../../assets/icons/arrow_link_next.svg';
+import walletSvg from '../../assets/icons/wallet.svg';
 
 export function DashboardPage() {
   const lastRequests = [
@@ -65,7 +67,7 @@ export function DashboardPage() {
             </p>
           </AlertBanner>
 
-          <div className="grid gap-4 lg:grid-cols-[1.05fr_1.35fr_0.78fr]">
+          <div className="grid w-full gap-4 lg:grid-cols-[1.05fr_1.35fr_0.78fr]">
             <DashboardCard title="Новая проверка" className="lg:row-span-1">
               <div className="mb-4 flex flex-col gap-2 text-[#FDFEFF]/85">
                 <label className="flex items-center gap-2.5">
@@ -93,14 +95,16 @@ export function DashboardPage() {
               <DashboardCard
                 title="Баланс"
                 aside={
-                  <Link to="/balance" className="text-[#FDFEFF]/85 transition-colors hover:text-[#FDFEFF]">
-                    История операций →
+                  <Link to="/balance" className="inline-flex items-center gap-1 text-[#FDFEFF]/85 transition-colors hover:text-[#FDFEFF]">
+                    <span>История операций</span>
+                    <img src={arrowLinkNextSvg} alt="" className="h-4 w-4" />
                   </Link>
                 }
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="inline-flex min-h-12 min-w-[160px] items-center justify-center rounded-full border border-white/15 bg-white/10 px-5 text-[28px] font-semibold">
-                    4 550 ₽
+                  <div className="inline-flex min-h-12 min-w-[160px] items-center justify-center gap-3 rounded-full border border-white/15 bg-white/10 px-5 text-[28px] font-semibold">
+                    <img src={walletSvg} alt="" className="h-6 w-6" />
+                    <span>4 550 ₽</span>
                   </div>
                   <Button className="min-w-[160px]" onClick={handleOpenTopUp}>
                     Пополнить
@@ -132,7 +136,16 @@ export function DashboardPage() {
               </div>
             </DashboardCard>
 
-            <DashboardCard title="Последние запросы" aside="Вся история запросов →" className="lg:col-span-2">
+            <DashboardCard
+              title="Последние запросы"
+              aside={
+                <span className="inline-flex items-center gap-1">
+                  <span>Вся история запросов</span>
+                  <img src={arrowLinkNextSvg} alt="" className="h-4 w-4" />
+                </span>
+              }
+              className="lg:col-span-2"
+            >
               <div className="overflow-x-auto">
                 <table className="min-w-full border-separate border-spacing-y-3 text-left">
                   <thead className="text-white/60">

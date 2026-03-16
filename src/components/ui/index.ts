@@ -25,3 +25,5 @@ export { DashboardCard } from './DashboardCard';
 export type { DashboardCardProps } from './DashboardCard';
 export { SelectedIcon } from './SelectedIcon';
 export type { SelectedIconProps } from './SelectedIcon';
+export { MoreDetailsSection } from './MoreDetailsSection/MoreDetailsSection';
+export type { MoreDetailsSectionProps } from './MoreDetailsSection/MoreDetailsSection';

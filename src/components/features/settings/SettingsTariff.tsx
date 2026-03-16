@@ -1,4 +1,4 @@
-import { Button, OptionIndicator, SectionCard, ToggleSwitch } from '../../ui';
+import { MoreDetailsSection, OptionIndicator, SectionCard, ToggleSwitch } from '../../ui';
 import {
   settingsTariffFactorsGridStyles,
   settingsTariffWrapStyles,
@@ -39,19 +39,16 @@ export function SettingsTariff({
           <ToggleSwitch checked={factorsEnabled} onChange={onToggleFactors} />
         </div>
 
-        <Button variant="ghost" className="gap-2 text-base text-white/85">
-          Подробнее
-          <span>▴</span>
-        </Button>
-
-        <div className={settingsTariffFactorsGridStyles}>
-          {personalizationFactors.map((factor) => (
-            <label className="flex items-center gap-3" key={factor}>
-              <OptionIndicator type="checkbox" checked={false} />
-              <span>{factor}</span>
-            </label>
-          ))}
-        </div>
+        <MoreDetailsSection>
+          <div className={settingsTariffFactorsGridStyles}>
+            {personalizationFactors.map((factor) => (
+              <label className="flex items-center gap-3" key={factor}>
+                <OptionIndicator type="checkbox" checked={false} />
+                <span>{factor}</span>
+              </label>
+            ))}
+          </div>
+        </MoreDetailsSection>
 
         <div className="space-y-5 border-t border-white/10 pt-6">
           <div className="flex items-center justify-between gap-4">

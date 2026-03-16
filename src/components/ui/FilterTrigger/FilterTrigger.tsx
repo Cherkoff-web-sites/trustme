@@ -1,6 +1,7 @@
 import type { VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { cn } from '../../../lib/cn';
+import chevronSvg from '../../../assets/icons/chevron.svg';
 import { filterTriggerStyles } from './FilterTrigger.styles';
 
 export interface FilterTriggerProps
@@ -12,7 +13,7 @@ export interface FilterTriggerProps
 
 export function FilterTrigger({
   label,
-  icon = <span className="text-white/35">▾</span>,
+  icon = <img src={chevronSvg} alt="" className="h-[10px] w-[17px]" />,
   active,
   minWidth,
   className,

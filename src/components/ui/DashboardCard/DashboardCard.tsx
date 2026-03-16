@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { SectionCard } from '../SectionCard';
+import { cn } from '../../../lib/cn';
 
 export interface DashboardCardProps {
   title: string;
@@ -15,7 +16,7 @@ export function DashboardCard({
   className,
 }: DashboardCardProps) {
   return (
-    <SectionCard title={title} aside={aside} className={className}>
+    <SectionCard title={title} aside={aside} className={cn('w-full', className)}>
       {children}
     </SectionCard>
   );

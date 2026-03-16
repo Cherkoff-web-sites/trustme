@@ -7,6 +7,8 @@ import {
 import { uiTokens } from '../../ui';
 import supportSvg from '../../../assets/icons/support.svg';
 import arrowUpSvg from '../../../assets/icons/arrow_up.svg';
+import footerDecorMob from '../../../assets/footer_decor_mob.svg';
+import footerDecor from '../../../assets/footer_decor.svg';
 
 const EmailIcon = () => (
   <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0 lg:h-[29px] lg:w-[29px]">
@@ -135,13 +137,13 @@ export function Footer() {
           {/* Decor line: mobile */}
           <div
             className="absolute top-0 left-0 right-0 h-[11px] bg-contain bg-center bg-no-repeat lg:hidden"
-            style={{ backgroundImage: 'url(/footer_decor_mob.svg)' }}
+            style={{ backgroundImage: `url(${footerDecorMob})` }}
             aria-hidden
           />
           {/* Decor line: desktop */}
           <div
             className="absolute top-0 left-0 right-0 hidden h-[11px] bg-contain bg-center bg-no-repeat lg:block"
-            style={{ backgroundImage: 'url(/footer_decor.svg)' }}
+            style={{ backgroundImage: `url(${footerDecor})` }}
             aria-hidden
           />
 

@@ -3,10 +3,9 @@ import { PageLayout } from '../../components/layout/PageLayout';
 import { PersonTypeSwitcher } from '../../components/features/PersonTypeSwitcher';
 import { ReportActions } from '../../components/features/ReportActions';
 import { SupportSection } from '../../components/features/SupportSection';
-import { Button, FilterTrigger, Input, PageTitle, uiTokens } from '../../components/ui';
+import { Button, Input, MoreDetailsSection, PageTitle, uiTokens } from '../../components/ui';
 import { type HistoryItem, ReportContent } from '../../shared/ReportContent';
 import searchSvg from '../../assets/icons/search.svg';
-import chevronSvg from '../../assets/icons/chevron.svg';
 import loadSvg from '../../assets/icons/load.svg';
 
 export function NewCheckPage() {
@@ -118,11 +117,11 @@ export function NewCheckPage() {
               </div>
             )}
 
-            <FilterTrigger
-              className="mt-4 inline-flex h-auto border-0 bg-transparent px-0 text-[#FDFEFF]/85"
-              label="Подробнее"
-              icon={<img src={chevronSvg} alt="" className="h-4 w-4 shrink-0 opacity-70" aria-hidden />}
-            />
+            <MoreDetailsSection className="mt-4">
+              <p className="text-sm text-[#FDFEFF]/70">
+                Здесь можно разместить дополнительные пояснения по работе проверки и использованию полей формы.
+              </p>
+            </MoreDetailsSection>
           </div>
         </section>
 

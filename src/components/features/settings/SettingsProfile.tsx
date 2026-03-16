@@ -1,5 +1,6 @@
 import { PersonTypeSwitcher } from '../PersonTypeSwitcher';
-import { Button, Input, OptionIndicator, SectionCard, uiTokens } from '../../ui';
+import { Button, Input, MoreDetailsSection, OptionIndicator, SectionCard, uiTokens } from '../../ui';
+import userPng from '../../../assets/user.png';
 import {
   settingsProfileAvatarStyles,
   settingsProfileAvatarWrapStyles,
@@ -12,7 +13,7 @@ export function SettingsProfile() {
       <div className={settingsProfileLayoutStyles}>
         <div className={settingsProfileAvatarWrapStyles}>
           <div className={settingsProfileAvatarStyles}>
-            <img src="/user.png" alt="Аватар пользователя" />
+            <img src={userPng} alt="Аватар пользователя" />
           </div>
           <Button variant="ghost" className="text-lg font-medium text-[#FDFEFF] hover:text-[#057889]">
             Изменить фото
@@ -46,12 +47,13 @@ export function SettingsProfile() {
               <span>Я даю согласие на получение рекламных материалов на указанный адрес электронной почты</span>
             </label>
 
-            <Button variant="ghost" className="gap-2 text-[#FDFEFF]/85">
-              Подробнее
-              <span>▾</span>
-            </Button>
+            <MoreDetailsSection className="mt-1">
+              <p className="text-sm text-[#FDFEFF]/70">
+                Здесь можно вывести дополнительную информацию или подсказки по настройкам профиля.
+              </p>
+            </MoreDetailsSection>
 
-            <div className="flex justify-end">
+            <div className="mt-2 flex justify-end">
               <Button className="min-w-[260px]">Сохранить изменения</Button>
             </div>
           </div>
