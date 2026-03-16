@@ -4,7 +4,8 @@ import {
   FOOTER_SUPPORT_LINKS,
   FOOTER_EXTRA_LINKS,
 } from '../../../shared/navConfig';
-import { uiTokens } from '../../ui';
+import { uiTokens, designTokens } from '../../ui';
+import { combineStyles } from '../../../lib/combineStyles';
 import supportSvg from '../../../assets/icons/support.svg';
 import arrowUpSvg from '../../../assets/icons/arrow_up.svg';
 import footerDecorMob from '../../../assets/footer_decor_mob.svg';
@@ -26,7 +27,12 @@ export function Footer() {
   return (
     <footer
       id="footer"
-      className="relative z-10 bg-[#1A1A1A] py-[30px] mx-4 rounded-[28px] border border-[#FDFEFF] lg:mx-0 lg:py-20 lg:rounded-none lg:border-x-0 lg:border-b-0 lg:border-t lg:border-[#FDFEFF]"
+      className={combineStyles(
+        'relative z-10 mx-4 py-[30px] lg:mx-0 lg:py-20 lg:rounded-none lg:border-x-0 lg:border-b-0 lg:border-t',
+        designTokens.borderRadius.card,
+        designTokens.colors.background.page,
+        designTokens.colors.border.primary,
+      )}
     >
       <div className={uiTokens.container}>
         {/* Row: contacts (col-lg-5) + nav (col-lg-7) */}
@@ -37,22 +43,32 @@ export function Footer() {
               <div>
                 <a
                   href="mailto:admin@trstme.com"
-                  className="footer__contact__link inline-flex items-center gap-[11px] font-semibold leading-[100%] text-[#FDFEFF] transition-colors hover:text-[#0EB8D2] active:text-[#057889] mb-5 lg:mb-5"
+                  className={combineStyles(
+                    'footer__contact__link inline-flex items-center gap-[11px] font-semibold leading-[100%] mb-5 lg:mb-5 transition-colors',
+                    designTokens.colors.text.primary,
+                  )}
                 >
                   <EmailIcon />
                   admin@trstme.com
                 </a>
-                <p className="text-base leading-[100%] text-[#FDFEFF]/80 lg:text-[18px]">Запросите тестовый доступ уже сегодня</p>
+                <p className="text-base leading-[100%] text-[#FDFEFF]/80 lg:text-[18px]">
+                  Запросите тестовый доступ уже сегодня
+                </p>
               </div>
               <div>
                 <a
                   href="https://t.me/ceo_trustme"
-                  className="footer__contact__link inline-flex items-center gap-[11px] font-semibold leading-[100%] text-[#FDFEFF] transition-colors hover:text-[#0EB8D2] active:text-[#057889] mb-5 lg:mb-5"
+                  className={combineStyles(
+                    'footer__contact__link inline-flex items-center gap-[11px] font-semibold leading-[100%] mb-5 lg:mb-5 transition-colors',
+                    designTokens.colors.text.primary,
+                  )}
                 >
                   <TelegramIcon />
                   ceo_trustme
                 </a>
-                <p className="text-base leading-[100%] text-[#FDFEFF]/80 lg:text-[18px]">Запросите тестовый доступ уже сегодня</p>
+                <p className="text-base leading-[100%] text-[#FDFEFF]/80 lg:text-[18px]">
+                  Запросите тестовый доступ уже сегодня
+                </p>
               </div>
               </div>
             </div>
@@ -68,7 +84,10 @@ export function Footer() {
                   <li key={to}>
                     <Link
                       to={to}
-                      className="text-[#FDFEFF]/80 transition hover:text-[#0EB8D2] hover:underline active:underline active:text-[#057889]"
+                      className={combineStyles(
+                        'transition hover:underline active:underline',
+                        designTokens.colors.text.muted,
+                      )}
                     >
                       {label}
                     </Link>
@@ -85,7 +104,10 @@ export function Footer() {
                   <li key={href}>
                     <a
                       href={href}
-                      className="text-[#FDFEFF]/80 transition hover:text-[#0EB8D2] hover:underline active:underline active:text-[#057889]"
+                      className={combineStyles(
+                        'transition hover:underline active:underline',
+                        designTokens.colors.text.muted,
+                      )}
                     >
                       {label}
                     </a>
@@ -104,7 +126,10 @@ export function Footer() {
                       href={href}
                       target={external ? '_blank' : undefined}
                       rel={external ? 'noreferrer' : undefined}
-                      className="text-[#FDFEFF]/80 transition hover:text-[#0EB8D2] hover:underline active:underline active:text-[#057889]"
+                      className={combineStyles(
+                        'transition hover:underline active:underline',
+                        designTokens.colors.text.muted,
+                      )}
                     >
                       {label}
                     </a>

@@ -9,7 +9,8 @@ import {
 } from '../../components/features/balance';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
-import { Button, PageTitle, uiTokens } from '../../components/ui';
+import { Button, PageTitle, uiTokens, designTokens } from '../../components/ui';
+import { combineStyles } from '../../lib/combineStyles';
 import walletSvg from '../../assets/icons/wallet.svg';
 
 type BalanceOperation = {
@@ -166,7 +167,15 @@ export function BalancePage() {
           />
 
           <section className={`${uiTokens.card} p-4 sm:p-6`}>
-            <h3 className="mb-4 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Текущий баланс</h3>
+            <h3
+              className={combineStyles(
+                'mb-4',
+                designTokens.typography.h3,
+                designTokens.colors.text.primary,
+              )}
+            >
+              Текущий баланс
+            </h3>
             <div className="mb-6 h-px w-full bg-white/15" />
 
             <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -175,7 +184,13 @@ export function BalancePage() {
                   <img src={walletSvg} alt="" className="h-10 w-10 sm:h-12 sm:w-12" />
                   <span>100 ₽</span>
                 </div>
-                <p className="mt-4 text-[#FDFEFF]/70">
+                <p
+                  className={combineStyles(
+                    'mt-4',
+                    designTokens.typography.body,
+                    designTokens.colors.text.muted,
+                  )}
+                >
                   Используется для списаний по операциям сервиса согласно текущему тарифу
                 </p>
               </div>

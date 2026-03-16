@@ -4,7 +4,8 @@ import { PageLayout } from '../../components/layout/PageLayout';
 import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
 import { HistoryReportModal } from '../../components/features/history';
-import { AlertBanner, Button, DashboardCard, Input, OptionIndicator, uiTokens } from '../../components/ui';
+import { AlertBanner, Button, DashboardCard, Input, OptionIndicator, uiTokens, designTokens } from '../../components/ui';
+import { combineStyles } from '../../lib/combineStyles';
 import { TelegramCircleIcon } from '../../shared/icons';
 import { type HistoryItem } from '../../shared/ReportContent';
 import qrSvg from '../../assets/icons/qr.svg';
@@ -23,7 +24,7 @@ export function DashboardPage() {
   const sampleReportItem: HistoryItem = {
     type: 'Юридическое лицо',
     name: 'ООО «УМНЫЙ РИТЕЙЛ»',
-    dotColor: 'bg-[#F45353]',
+    dotColor: designTokens.colors.status.errorBg,
     document: 'ИНН: 7711771234',
     checkedAt: '23.12.2025, 12:00',
     duration: '2 минуты',
@@ -69,7 +70,12 @@ export function DashboardPage() {
 
           <div className="grid w-full gap-4 lg:grid-cols-[1.05fr_1.35fr_0.78fr]">
             <DashboardCard title="Новая проверка" className="lg:row-span-1">
-              <div className="mb-4 flex flex-col gap-2 text-[#FDFEFF]/85">
+              <div
+                className={combineStyles(
+                  'mb-4 flex flex-col gap-2',
+                  designTokens.colors.text.primary,
+                )}
+              >
                 <label className="flex items-center gap-2.5">
                   <OptionIndicator type="radio" checked={false} />
                   Юридическое лицо
@@ -86,20 +92,34 @@ export function DashboardPage() {
                 Запустить проверку
               </Button>
 
-              <p className="mt-4 leading-[1.45] text-[#FDFEFF]/65">
+              <p
+                className={combineStyles(
+                  'mt-4',
+                  designTokens.typography.body,
+                  'leading-[1.45]',
+                  designTokens.colors.text.muted,
+                )}
+              >
                 Стоимость проверки будет списана с баланса вашего аккаунта согласно текущему тарифу
               </p>
             </DashboardCard>
 
-            <div className="flex flex-col gap-4">
+            <div className="flex h-full flex-col gap-4">
               <DashboardCard
                 title="Баланс"
                 aside={
-                  <Link to="/balance" className="inline-flex items-center gap-1 text-[#FDFEFF]/85 transition-colors hover:text-[#FDFEFF]">
+                  <Link
+                    to="/balance"
+                    className={combineStyles(
+                      'inline-flex items-center gap-1 transition-colors',
+                      designTokens.colors.text.primary,
+                    )}
+                  >
                     <span>История операций</span>
                     <img src={arrowLinkNextSvg} alt="" className="h-4 w-4" />
                   </Link>
                 }
+                className="flex flex-1 flex-col"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="inline-flex min-h-12 min-w-[160px] items-center justify-center gap-3 rounded-full border border-white/15 bg-white/10 px-5 text-[28px] font-semibold">
@@ -112,7 +132,11 @@ export function DashboardPage() {
                 </div>
               </DashboardCard>
 
-              <DashboardCard title="Текущий тариф" aside="Что в тарифе ?">
+              <DashboardCard
+                title="Текущий тариф"
+                aside="Что в тарифе ?"
+                className="flex flex-1 flex-col"
+              >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="inline-flex min-h-12 min-w-[180px] items-center justify-center rounded-full border border-white/15 bg-white/10 px-5 text-lg font-medium">
                     Индивидуальный
@@ -163,7 +187,16 @@ export function DashboardPage() {
                         <td className="pr-6 pt-3">{date}</td>
                         <td className="pr-6 pt-3">{category}</td>
                         <td className="pr-6 pt-3">{source}</td>
-                        <td className={`pr-6 pt-3 ${status === 'Ошибка' ? 'text-[#FF7A7A]' : 'text-[#77D877]'}`}>{status}</td>
+                        <td
+                          className={combineStyles(
+                            'pr-6 pt-3',
+                            status === 'Ошибка'
+                              ? designTokens.colors.text.statusError
+                              : designTokens.colors.text.statusSuccess,
+                          )}
+                        >
+                          {status}
+                        </td>
                         <td className="pt-3">
                           <Button
                             variant="secondary"

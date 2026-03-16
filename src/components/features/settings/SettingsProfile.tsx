@@ -1,5 +1,6 @@
 import { PersonTypeSwitcher } from '../PersonTypeSwitcher';
-import { Button, Input, MoreDetailsSection, OptionIndicator, SectionCard, uiTokens } from '../../ui';
+import { Button, Input, MoreDetailsSection, OptionIndicator, SectionCard, uiTokens, designTokens } from '../../ui';
+import { combineStyles } from '../../../lib/combineStyles';
 import userPng from '../../../assets/user.png';
 import {
   settingsProfileAvatarStyles,
@@ -15,7 +16,10 @@ export function SettingsProfile() {
           <div className={settingsProfileAvatarStyles}>
             <img src={userPng} alt="Аватар пользователя" />
           </div>
-          <Button variant="ghost" className="text-lg font-medium text-[#FDFEFF] hover:text-[#057889]">
+          <Button
+            variant="ghost"
+            className={combineStyles('text-lg font-medium hover:text-[#057889]', designTokens.colors.text.primary)}
+          >
             Изменить фото
           </Button>
         </div>
@@ -42,13 +46,23 @@ export function SettingsProfile() {
               <Input defaultValue="user.example@gmail.com" />
             </label>
 
-            <label className="flex items-start gap-3 text-[#FDFEFF]/75">
+            <label
+              className={combineStyles(
+                'flex items-start gap-3',
+                designTokens.colors.text.muted,
+              )}
+            >
               <OptionIndicator type="checkbox" checked={false} className="mt-0.5" />
               <span>Я даю согласие на получение рекламных материалов на указанный адрес электронной почты</span>
             </label>
 
             <MoreDetailsSection className="mt-1">
-              <p className="text-sm text-[#FDFEFF]/70">
+              <p
+                className={combineStyles(
+                  'text-sm',
+                  designTokens.colors.text.muted,
+                )}
+              >
                 Здесь можно вывести дополнительную информацию или подсказки по настройкам профиля.
               </p>
             </MoreDetailsSection>
