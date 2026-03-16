@@ -63,11 +63,10 @@ export function NewCheckPage() {
 
   return (
     <PageLayout>
-      <main className="pb-10 sm:pb-14">
-        <PageStructure
-          title="Новая проверка"
-          description="Проверка осуществляется в рамках текущего тарифа. Стоимость проверки будет списана с вашего баланса"
-        >
+      <PageStructure
+        title="Новая проверка"
+        description="Проверка осуществляется в рамках текущего тарифа. Стоимость проверки будет списана с вашего баланса"
+      >
           <Card>
             <PersonTypeSwitcher
               className="mb-5 sm:gap-6"
@@ -122,11 +121,11 @@ export function NewCheckPage() {
               </p>
             </MoreDetailsSection>
           </Card>
-        </PageStructure>
+      </PageStructure>
 
-        {reportState !== 'idle' ? (
-          <section className={`${uiTokens.container} pt-4 sm:pt-6`}>
-            <Card className="px-4 py-6 sm:px-6 sm:py-8" divider={false}>
+      {reportState !== 'idle' ? (
+        <section className={`${uiTokens.container} pt-4 sm:pt-6`}>
+          <Card className="px-4 py-6 sm:px-6 sm:py-8" divider={false}>
               {reportState === 'loading' ? (
                 <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
                   <h3 className="text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Формируем отчет</h3>
@@ -172,20 +171,19 @@ export function NewCheckPage() {
                   </p>
                 </div>
               ) : null}
-            </Card>
-          </section>
-        ) : null}
+          </Card>
+        </section>
+      ) : null}
 
-        {reportState === 'ready' && showInlineReport ? (
-          <section className={`${uiTokens.container} pt-6 sm:pt-8`}>
-            <Card className="overflow-hidden" divider={false}>
-              <ReportContent item={reportItem} />
-            </Card>
-          </section>
-        ) : null}
+      {reportState === 'ready' && showInlineReport ? (
+        <section className={`${uiTokens.container} pt-6 sm:pt-8`}>
+          <Card className="overflow-hidden" divider={false}>
+            <ReportContent item={reportItem} />
+          </Card>
+        </section>
+      ) : null}
 
-        <SupportSection />
-      </main>
+      <SupportSection />
     </PageLayout>
   );
 }

@@ -98,6 +98,8 @@ export interface SpacingPaddingTokens {
   cardVertical: string;
   /** Горизонтальные паддинги информативных карточек. */
   cardHorizontal: string;
+  /** Вертикальные паддинги основного контента страницы (main). */
+  pageMain: string;
 }
 
 export interface SpacingMarginTokens {
@@ -226,6 +228,7 @@ export const designTokens: DesignTokens = {
       button: 'px-[20px] py-[20px] lg:px-[60px]', // кнопки: 20px, PC: 60px по горизонтали
       cardVertical: 'py-[30px]', // плитки: 30px top/bottom
       cardHorizontal: 'px-[30px] lg:px-[15px]', // плитки: 30px / 15px left/right (mobile / desktop)
+      pageMain: 'pt-[80px] pb-[80px] lg:pt-[180px] lg:pb-[240px]', // вертикальные отступы основного контента
     },
     margin: {
       horizontal: 'mx-[32px]', // 32px — расстояние между плитками по горизонтали (при inline‑использовании)

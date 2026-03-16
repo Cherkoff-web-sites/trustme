@@ -39,48 +39,46 @@ export function SettingsPage() {
 
   return (
     <PageLayout>
-      <main className="pb-10 sm:pb-14">
-        <PageStructure title="Настройки аккаунта" description="Управляйте настройками аккаунта">
-          <Grid preset="settings" className={uiTokens.container}>
-            <Card className="h-fit p-3" variant="settings" as="aside">
-              <SettingsSidebarNav
-                activeKey={activeTab}
-                onChange={setActiveTab}
-                items={[
-                  { key: 'profile', label: 'Профиль' },
-                  { key: 'security', label: 'Безопасность и вход' },
-                  { key: 'tariff', label: 'Персонализация тарифа' },
-                ]}
+      <PageStructure title="Настройки аккаунта" description="Управляйте настройками аккаунта">
+        <Grid preset="settings" className={uiTokens.container}>
+          <Card className="h-fit p-3" variant="settings" as="aside">
+            <SettingsSidebarNav
+              activeKey={activeTab}
+              onChange={setActiveTab}
+              items={[
+                { key: 'profile', label: 'Профиль' },
+                { key: 'security', label: 'Безопасность и вход' },
+                { key: 'tariff', label: 'Персонализация тарифа' },
+              ]}
+            />
+          </Card>
+
+          <div className="space-y-4">
+            {activeTab === 'profile' ? <SettingsProfile /> : null}
+
+            {activeTab === 'security' ? (
+              <SettingsSecurity
+                twoFactorEnabled={twoFactorEnabled}
+                onToggleTwoFactor={() => setTwoFactorEnabled((value) => !value)}
+                email2faEnabled={email2faEnabled}
+                onToggleEmail2fa={() => setEmail2faEnabled((value) => !value)}
               />
-            </Card>
+            ) : null}
 
-            <div className="space-y-4">
-              {activeTab === 'profile' ? <SettingsProfile /> : null}
-
-              {activeTab === 'security' ? (
-                <SettingsSecurity
-                  twoFactorEnabled={twoFactorEnabled}
-                  onToggleTwoFactor={() => setTwoFactorEnabled((value) => !value)}
-                  email2faEnabled={email2faEnabled}
-                  onToggleEmail2fa={() => setEmail2faEnabled((value) => !value)}
-                />
-              ) : null}
-
-              {activeTab === 'tariff' ? (
-                <SettingsTariff
-                  personalizationFactors={personalizationFactors}
-                  factorsEnabled={factorsEnabled}
-                  onToggleFactors={() => setFactorsEnabled((value) => !value)}
-                  mentionsMediaEnabled={mentionsMediaEnabled}
-                  onToggleMentionsMedia={() => setMentionsMediaEnabled((value) => !value)}
-                  mentionsTelegramEnabled={mentionsTelegramEnabled}
-                  onToggleMentionsTelegram={() => setMentionsTelegramEnabled((value) => !value)}
-                />
-              ) : null}
-            </div>
-          </Grid>
-        </PageStructure>
-      </main>
+            {activeTab === 'tariff' ? (
+              <SettingsTariff
+                personalizationFactors={personalizationFactors}
+                factorsEnabled={factorsEnabled}
+                onToggleFactors={() => setFactorsEnabled((value) => !value)}
+                mentionsMediaEnabled={mentionsMediaEnabled}
+                onToggleMentionsMedia={() => setMentionsMediaEnabled((value) => !value)}
+                mentionsTelegramEnabled={mentionsTelegramEnabled}
+                onToggleMentionsTelegram={() => setMentionsTelegramEnabled((value) => !value)}
+              />
+            ) : null}
+          </div>
+        </Grid>
+      </PageStructure>
     </PageLayout>
   );
 }

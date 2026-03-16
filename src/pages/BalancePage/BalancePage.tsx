@@ -160,85 +160,83 @@ export function BalancePage() {
 
   return (
     <PageLayout>
-      <main className="pb-10 sm:pb-14">
-        <PageStructure
-          title="Баланс"
-          description="Управляйте балансом аккаунта и отслеживайте историю финансовых операций"
-        >
-          <Card>
-            <h3
-              className={combineStyles(
-                'mb-4',
-                designTokens.typography.h3,
-                designTokens.colors.text.primary,
-              )}
-            >
-              Текущий баланс
-            </h3>
-            <div className="mb-6 h-px w-full bg-white/15" />
+      <PageStructure
+        title="Баланс"
+        description="Управляйте балансом аккаунта и отслеживайте историю финансовых операций"
+      >
+        <Card>
+          <h3
+            className={combineStyles(
+              'mb-4',
+              designTokens.typography.h3,
+              designTokens.colors.text.primary,
+            )}
+          >
+            Текущий баланс
+          </h3>
+          <div className="mb-6 h-px w-full bg-white/15" />
 
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <div className="flex items-center gap-3 text-[34px] leading-[0.95] font-semibold text-white sm:text-[56px]">
-                  <img src={walletSvg} alt="" className="h-10 w-10 sm:h-12 sm:w-12" />
-                  <span>100 ₽</span>
-                </div>
-                <p
-                  className={combineStyles(
-                    'mt-4',
-                    designTokens.typography.body,
-                    designTokens.colors.text.muted,
-                  )}
-                >
-                  Используется для списаний по операциям сервиса согласно текущему тарифу
-                </p>
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div className="flex items-center gap-3 text-[34px] leading-[0.95] font-semibold text-white sm:text-[56px]">
+                <img src={walletSvg} alt="" className="h-10 w-10 sm:h-12 sm:w-12" />
+                <span>100 ₽</span>
               </div>
-
-              <Button className="min-w-[180px]" onClick={handleOpenTopUp}>
-                Пополнить
-              </Button>
+              <p
+                className={combineStyles(
+                  'mt-4',
+                  designTokens.typography.body,
+                  designTokens.colors.text.muted,
+                )}
+              >
+                Используется для списаний по операциям сервиса согласно текущему тарифу
+              </p>
             </div>
-          </Card>
-        </PageStructure>
 
-        <section className={`${uiTokens.container} pt-14 sm:pt-20`}>
-          <SectionHeader
-            title="История операций"
-            description="Вы можете отслеживать историю операций на вашем аккаунте, выбрав нужные данные"
-          />
+            <Button className="min-w-[180px]" onClick={handleOpenTopUp}>
+              Пополнить
+            </Button>
+          </div>
+        </Card>
+      </PageStructure>
 
-          <BalanceFilters
-            openPanel={balanceOpenPanel}
-            onTogglePanel={toggleBalancePanel}
-            dateFrom={balanceDateFrom}
-            dateTo={balanceDateTo}
-            onDateFromChange={setBalanceDateFrom}
-            onDateToChange={setBalanceDateTo}
-            sortOrder={balanceSortOrder}
-            onSortOrderChange={setBalanceSortOrder}
-            typeFilter={balanceTypeFilter}
-            onTypeFilterChange={setBalanceTypeFilter}
-            sourceFilter={balanceSourceFilter}
-            onSourceFilterChange={setBalanceSourceFilter}
-            activeChips={activeChips}
-            onReset={resetBalanceFilters}
-          />
-
-          <Card className="overflow-hidden p-4 sm:p-6" divider={false}>
-            <TransactionTable operations={filteredOperations} />
-          </Card>
-        </section>
-
-        <BalanceTopUpModal
-          open={showTopUpModal}
-          step={topUpStep}
-          amount={topUpAmount}
-          onAmountChange={setTopUpAmount}
-          onChipSelect={(value) => setTopUpAmount(String(value))}
-          onContinue={handleTopUpContinue}
-          onClose={handleCloseTopUp}
+      <section className={`${uiTokens.container} pt-14 sm:pt-20`}>
+        <SectionHeader
+          title="История операций"
+          description="Вы можете отслеживать историю операций на вашем аккаунте, выбрав нужные данные"
         />
-      </main>
+
+        <BalanceFilters
+          openPanel={balanceOpenPanel}
+          onTogglePanel={toggleBalancePanel}
+          dateFrom={balanceDateFrom}
+          dateTo={balanceDateTo}
+          onDateFromChange={setBalanceDateFrom}
+          onDateToChange={setBalanceDateTo}
+          sortOrder={balanceSortOrder}
+          onSortOrderChange={setBalanceSortOrder}
+          typeFilter={balanceTypeFilter}
+          onTypeFilterChange={setBalanceTypeFilter}
+          sourceFilter={balanceSourceFilter}
+          onSourceFilterChange={setBalanceSourceFilter}
+          activeChips={activeChips}
+          onReset={resetBalanceFilters}
+        />
+
+        <Card className="overflow-hidden p-4 sm:p-6" divider={false}>
+          <TransactionTable operations={filteredOperations} />
+        </Card>
+      </section>
+
+      <BalanceTopUpModal
+        open={showTopUpModal}
+        step={topUpStep}
+        amount={topUpAmount}
+        onAmountChange={setTopUpAmount}
+        onChipSelect={(value) => setTopUpAmount(String(value))}
+        onContinue={handleTopUpContinue}
+        onClose={handleCloseTopUp}
+      />
     </PageLayout>
   );
 }

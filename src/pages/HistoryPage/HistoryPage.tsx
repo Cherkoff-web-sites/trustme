@@ -210,45 +210,43 @@ export function HistoryPage() {
 
   return (
     <PageLayout>
-      <main className="pb-10 sm:pb-14">
-        <PageStructure
-          title="История запросов"
-          description="Все выполненные проверки из Telegram-бота и веб-сервиса «Trust Me»"
-        >
-          <HistoryFilters
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            dateFrom={dateFrom}
-            dateTo={dateTo}
-            onDateFromChange={setDateFrom}
-            onDateToChange={setDateTo}
-            categoryFilter={categoryFilter}
-            onCategoryFilterChange={setCategoryFilter}
-            sourceFilter={sourceFilter}
-            onSourceFilterChange={setSourceFilter}
-            statusFilter={statusFilter}
-            onStatusFilterChange={setStatusFilter}
-            sortOrder={sortOrder}
-            onSortOrderChange={setSortOrder}
-            openPanel={openPanel}
-            onTogglePanel={togglePanel}
-            activeChips={activeChips}
-            onReset={resetFilters}
-          />
+      <PageStructure
+        title="История запросов"
+        description="Все выполненные проверки из Telegram-бота и веб-сервиса «Trust Me»"
+      >
+        <HistoryFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          dateFrom={dateFrom}
+          dateTo={dateTo}
+          onDateFromChange={setDateFrom}
+          onDateToChange={setDateTo}
+          categoryFilter={categoryFilter}
+          onCategoryFilterChange={setCategoryFilter}
+          sourceFilter={sourceFilter}
+          onSourceFilterChange={setSourceFilter}
+          statusFilter={statusFilter}
+          onStatusFilterChange={setStatusFilter}
+          sortOrder={sortOrder}
+          onSortOrderChange={setSortOrder}
+          openPanel={openPanel}
+          onTogglePanel={togglePanel}
+          activeChips={activeChips}
+          onReset={resetFilters}
+        />
 
-          <div className="space-y-4 sm:space-y-5">
-            {filteredAndSortedItems.map((item) => (
-              <HistoryRequestCard
-                item={item}
-                key={`${item.name}-${item.checkedAt}`}
-                onOpenReport={() => setOpenedReportItem(item)}
-              />
-            ))}
-          </div>
+        <div className="space-y-4 sm:space-y-5">
+          {filteredAndSortedItems.map((item) => (
+            <HistoryRequestCard
+              item={item}
+              key={`${item.name}-${item.checkedAt}`}
+              onOpenReport={() => setOpenedReportItem(item)}
+            />
+          ))}
+        </div>
 
-          <HistoryReportModal item={openedReportItem} onClose={() => setOpenedReportItem(null)} />
-        </PageStructure>
-      </main>
+        <HistoryReportModal item={openedReportItem} onClose={() => setOpenedReportItem(null)} />
+      </PageStructure>
     </PageLayout>
   );
 }

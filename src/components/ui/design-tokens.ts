@@ -3,7 +3,7 @@ import { combineStyles } from '../../lib/combineStyles';
 
 export const uiTokens = {
   /** Контейнер страницы. */
-  container: 'mx-auto w-full max-w-[1600px] px-[15px] lg:px-[30px]',
+  container: 'mx-auto w-full max-w-[1660px] px-[15px] lg:px-[30px]',
 
   /** Фон страницы. */
   page: combineStyles('relative min-h-screen overflow-hidden', designTokens.colors.background.page),
