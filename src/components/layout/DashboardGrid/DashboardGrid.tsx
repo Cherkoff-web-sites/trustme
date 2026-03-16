@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { cn } from '../../../lib/cn';
 import {
-  dashboardGridFullRowStyles,
   dashboardGridMiddleColumnStackStyles,
   dashboardGridRootStyles,
+  dashboardGridSecondRowLeftStyles,
 } from './DashboardGrid.styles';
 
 export interface DashboardGridProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -36,7 +36,7 @@ export function DashboardGrid({
 
       {telegram}
 
-      <div className={dashboardGridFullRowStyles}>{recentRequests}</div>
+      <div className={dashboardGridSecondRowLeftStyles}>{recentRequests}</div>
 
       {stats}
     </div>

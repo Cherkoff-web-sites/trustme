@@ -172,7 +172,6 @@ export function DashboardPage() {
                   <img src={arrowLinkNextSvg} alt="" className="h-4 w-4" />
                 </span>
             }
-            className="lg:col-span-2"
             variant="dashboard"
           >
               <div className="overflow-x-auto">
