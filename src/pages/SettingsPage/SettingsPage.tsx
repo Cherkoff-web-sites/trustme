@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
+import { Grid } from '../../components/layout/Grid/Grid';
+import { PageStructure } from '../../components/layout/PageStructure/PageStructure';
 import {
   SettingsProfile,
   SettingsSecurity,
   SettingsTariff,
 } from '../../components/features/settings';
 import { SettingsSidebarNav } from '../../components/features/SettingsSidebarNav';
-import { PageTitle, uiTokens } from '../../components/ui';
+import { Card, uiTokens } from '../../components/ui';
 
 type SettingsTab = 'profile' | 'security' | 'tariff';
 
@@ -37,12 +39,10 @@ export function SettingsPage() {
 
   return (
     <PageLayout>
-      <main className={`${uiTokens.container} pb-10 sm:pb-14`}>
-        <section className="pt-10 sm:pt-16">
-          <PageTitle title="Настройки аккаунта" description="Управляйте настройками аккаунта" />
-
-          <div className="grid gap-4 xl:grid-cols-[320px_1fr]">
-            <aside className={`${uiTokens.card} h-fit p-3`}>
+      <main className="pb-10 sm:pb-14">
+        <PageStructure title="Настройки аккаунта" description="Управляйте настройками аккаунта">
+          <Grid preset="settings" className={uiTokens.container}>
+            <Card className="h-fit p-3" variant="settings" as="aside">
               <SettingsSidebarNav
                 activeKey={activeTab}
                 onChange={setActiveTab}
@@ -52,7 +52,7 @@ export function SettingsPage() {
                   { key: 'tariff', label: 'Персонализация тарифа' },
                 ]}
               />
-            </aside>
+            </Card>
 
             <div className="space-y-4">
               {activeTab === 'profile' ? <SettingsProfile /> : null}
@@ -78,8 +78,8 @@ export function SettingsPage() {
                 />
               ) : null}
             </div>
-          </div>
-        </section>
+          </Grid>
+        </PageStructure>
       </main>
     </PageLayout>
   );

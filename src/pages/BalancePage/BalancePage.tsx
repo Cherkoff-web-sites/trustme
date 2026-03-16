@@ -8,8 +8,9 @@ import {
   type BalanceTypeFilter,
 } from '../../components/features/balance';
 import { PageLayout } from '../../components/layout/PageLayout';
+import { PageStructure } from '../../components/layout/PageStructure/PageStructure';
 import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
-import { Button, PageTitle, uiTokens, designTokens } from '../../components/ui';
+import { Button, Card, SectionHeader, uiTokens, designTokens } from '../../components/ui';
 import { combineStyles } from '../../lib/combineStyles';
 import walletSvg from '../../assets/icons/wallet.svg';
 
@@ -159,14 +160,12 @@ export function BalancePage() {
 
   return (
     <PageLayout>
-      <main className={`${uiTokens.container} pb-10 sm:pb-14`}>
-        <section className="pt-10 sm:pt-16">
-          <PageTitle
-            title="Баланс"
-            description="Управляйте балансом аккаунта и отслеживайте историю финансовых операций"
-          />
-
-          <section className={`${uiTokens.card} p-4 sm:p-6`}>
+      <main className="pb-10 sm:pb-14">
+        <PageStructure
+          title="Баланс"
+          description="Управляйте балансом аккаунта и отслеживайте историю финансовых операций"
+        >
+          <Card>
             <h3
               className={combineStyles(
                 'mb-4',
@@ -199,14 +198,13 @@ export function BalancePage() {
                 Пополнить
               </Button>
             </div>
-          </section>
-        </section>
+          </Card>
+        </PageStructure>
 
-        <section className="pt-14 sm:pt-20">
-          <PageTitle
+        <section className={`${uiTokens.container} pt-14 sm:pt-20`}>
+          <SectionHeader
             title="История операций"
             description="Вы можете отслеживать историю операций на вашем аккаунте, выбрав нужные данные"
-            as="h2"
           />
 
           <BalanceFilters
@@ -226,9 +224,9 @@ export function BalancePage() {
             onReset={resetBalanceFilters}
           />
 
-          <section className={`${uiTokens.card} overflow-hidden p-4 sm:p-6`}>
+          <Card className="overflow-hidden p-4 sm:p-6" divider={false}>
             <TransactionTable operations={filteredOperations} />
-          </section>
+          </Card>
         </section>
 
         <BalanceTopUpModal

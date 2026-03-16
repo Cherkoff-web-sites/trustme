@@ -2,6 +2,7 @@ import type { VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { cn } from '../../../lib/cn';
 import { alertBannerIconStyles, alertBannerStyles } from './AlertBanner.styles';
+import warningSvg from '../../../assets/icons/warning.svg';
 
 export interface AlertBannerProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -11,7 +12,7 @@ export interface AlertBannerProps
 
 export function AlertBanner({
   tone,
-  icon = '!',
+  icon = <img src={warningSvg} alt="" className="h-6 w-6 shrink-0" />,
   children,
   className,
   ...props

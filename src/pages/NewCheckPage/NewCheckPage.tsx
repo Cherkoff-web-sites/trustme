@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
+import { PageStructure } from '../../components/layout/PageStructure/PageStructure';
 import { PersonTypeSwitcher } from '../../components/features/PersonTypeSwitcher';
 import { ReportActions } from '../../components/features/ReportActions';
-import { SupportSection } from '../../components/features/SupportSection';
-import { Button, Input, MoreDetailsSection, PageTitle, uiTokens } from '../../components/ui';
+import { SupportSection } from '../../components/features/Support/SupportSection';
+import { Button, Card, Input, MoreDetailsSection, uiTokens } from '../../components/ui';
 import { type HistoryItem, ReportContent } from '../../shared/ReportContent';
 import searchSvg from '../../assets/icons/search.svg';
 import loadSvg from '../../assets/icons/load.svg';
@@ -62,14 +63,12 @@ export function NewCheckPage() {
 
   return (
     <PageLayout>
-      <main className={`${uiTokens.container} pb-10 sm:pb-14`}>
-        <section className="pt-10 sm:pt-16">
-          <PageTitle
-            title="Новая проверка"
-            description="Проверка осуществляется в рамках текущего тарифа. Стоимость проверки будет списана с вашего баланса"
-          />
-
-          <div className={`${uiTokens.card} px-4 py-5 sm:px-6 sm:py-6`}>
+      <main className="pb-10 sm:pb-14">
+        <PageStructure
+          title="Новая проверка"
+          description="Проверка осуществляется в рамках текущего тарифа. Стоимость проверки будет списана с вашего баланса"
+        >
+          <Card>
             <PersonTypeSwitcher
               className="mb-5 sm:gap-6"
               value={personType}
@@ -122,12 +121,12 @@ export function NewCheckPage() {
                 Здесь можно разместить дополнительные пояснения по работе проверки и использованию полей формы.
               </p>
             </MoreDetailsSection>
-          </div>
-        </section>
+          </Card>
+        </PageStructure>
 
         {reportState !== 'idle' ? (
-          <section className="pt-4 sm:pt-6">
-            <div className={`${uiTokens.card} px-4 py-6 sm:px-6 sm:py-8`}>
+          <section className={`${uiTokens.container} pt-4 sm:pt-6`}>
+            <Card className="px-4 py-6 sm:px-6 sm:py-8" divider={false}>
               {reportState === 'loading' ? (
                 <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
                   <h3 className="text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Формируем отчет</h3>
@@ -173,15 +172,15 @@ export function NewCheckPage() {
                   </p>
                 </div>
               ) : null}
-            </div>
+            </Card>
           </section>
         ) : null}
 
         {reportState === 'ready' && showInlineReport ? (
-          <section className="pt-6 sm:pt-8">
-            <div className={`${uiTokens.card} overflow-hidden`}>
+          <section className={`${uiTokens.container} pt-6 sm:pt-8`}>
+            <Card className="overflow-hidden" divider={false}>
               <ReportContent item={reportItem} />
-            </div>
+            </Card>
           </section>
         ) : null}
 

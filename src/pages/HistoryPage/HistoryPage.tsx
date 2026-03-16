@@ -9,7 +9,7 @@ import {
   type HistoryStatusFilter,
 } from '../../components/features/history';
 import { PageLayout } from '../../components/layout/PageLayout';
-import { PageTitle, uiTokens } from '../../components/ui';
+import { PageStructure } from '../../components/layout/PageStructure/PageStructure';
 import { type HistoryItem } from '../../shared/ReportContent';
 
 export function HistoryPage() {
@@ -210,13 +210,11 @@ export function HistoryPage() {
 
   return (
     <PageLayout>
-      <main className={`${uiTokens.container} pb-10 sm:pb-14`}>
-        <section className="pt-10 sm:pt-16">
-          <PageTitle
-            title="История запросов"
-            description="Все выполненные проверки из Telegram-бота и веб-сервиса «Trust Me»"
-          />
-
+      <main className="pb-10 sm:pb-14">
+        <PageStructure
+          title="История запросов"
+          description="Все выполненные проверки из Telegram-бота и веб-сервиса «Trust Me»"
+        >
           <HistoryFilters
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -249,7 +247,7 @@ export function HistoryPage() {
           </div>
 
           <HistoryReportModal item={openedReportItem} onClose={() => setOpenedReportItem(null)} />
-        </section>
+        </PageStructure>
       </main>
     </PageLayout>
   );

@@ -1,5 +1,5 @@
 import { ReportActions } from '../ReportActions';
-import { SourceBadge, uiTokens } from '../../ui';
+import { Card, SourceBadge } from '../../ui';
 import { SuccessStatusIcon, ErrorStatusIcon } from '../../../shared/icons';
 import type { HistoryItem } from '../../../shared/ReportContent';
 import {
@@ -19,7 +19,7 @@ export function HistoryRequestCard({
   onOpenReport,
 }: HistoryRequestCardProps) {
   return (
-    <article className={`${uiTokens.card} p-4 sm:p-5`}>
+    <Card as="article" className="p-4 sm:p-5" variant="history">
       <div className={historyRequestCardHeaderStyles}>
         <div>
           <span className={historyRequestCardTypeChipStyles}>{item.type}</span>
@@ -57,6 +57,6 @@ export function HistoryRequestCard({
       </div>
 
       <ReportActions onOpen={onOpenReport} showDelete />
-    </article>
+    </Card>
   );
 }

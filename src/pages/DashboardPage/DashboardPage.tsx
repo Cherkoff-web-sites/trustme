@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PageLayout } from '../../components/layout/PageLayout';
+import { DashboardGrid } from '../../components/layout/DashboardGrid/DashboardGrid';
 import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
 import { HistoryReportModal } from '../../components/features/history';
-import { AlertBanner, Button, DashboardCard, Input, OptionIndicator, uiTokens, designTokens } from '../../components/ui';
+import { AlertBanner, Button, Card, Input, OptionIndicator, uiTokens, designTokens } from '../../components/ui';
 import { combineStyles } from '../../lib/combineStyles';
 import { TelegramCircleIcon } from '../../shared/icons';
 import { type HistoryItem } from '../../shared/ReportContent';
 import qrSvg from '../../assets/icons/qr.svg';
-import warningSvg from '../../assets/icons/warning.svg';
 import arrowLinkNextSvg from '../../assets/icons/arrow_link_next.svg';
 import walletSvg from '../../assets/icons/wallet.svg';
 
@@ -60,16 +60,18 @@ export function DashboardPage() {
 
   return (
     <PageLayout>
-      <main className={`${uiTokens.container} pt-8 pb-10 sm:pb-14`}>
-          <AlertBanner className="mb-4" icon={<img src={warningSvg} alt="" className="h-6 w-6 shrink-0" />}>
+      <main className="pt-8 pb-10 sm:pb-14">
+        <div className={uiTokens.container}>
+          <AlertBanner className="mb-4">
             <p className="m-0">
               Тариф заканчивается через 3 дня. Пополните баланс или измените тариф, чтобы избежать отключения от сервиса
               проверки контрагентов «Trust Me».
             </p>
           </AlertBanner>
 
-          <div className="grid w-full gap-4 lg:grid-cols-[1.05fr_1.35fr_0.78fr]">
-            <DashboardCard title="Новая проверка" className="lg:row-span-1">
+          <DashboardGrid
+            newCheck={
+              <Card title="Новая проверка" className="lg:row-span-1" variant="dashboard">
               <div
                 className={combineStyles(
                   'mb-4 flex flex-col gap-2',
@@ -102,10 +104,10 @@ export function DashboardPage() {
               >
                 Стоимость проверки будет списана с баланса вашего аккаунта согласно текущему тарифу
               </p>
-            </DashboardCard>
-
-            <div className="flex h-full flex-col gap-4">
-              <DashboardCard
+              </Card>
+            }
+            balance={
+              <Card
                 title="Баланс"
                 aside={
                   <Link
@@ -120,6 +122,7 @@ export function DashboardPage() {
                   </Link>
                 }
                 className="flex flex-1 flex-col"
+                variant="dashboard"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="inline-flex min-h-12 min-w-[160px] items-center justify-center gap-3 rounded-full border border-white/15 bg-white/10 px-5 text-[28px] font-semibold">
@@ -130,12 +133,14 @@ export function DashboardPage() {
                     Пополнить
                   </Button>
                 </div>
-              </DashboardCard>
-
-              <DashboardCard
+              </Card>
+            }
+            tariff={
+              <Card
                 title="Текущий тариф"
                 aside="Что в тарифе ?"
                 className="flex flex-1 flex-col"
+                variant="dashboard"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="inline-flex min-h-12 min-w-[180px] items-center justify-center rounded-full border border-white/15 bg-white/10 px-5 text-lg font-medium">
@@ -145,10 +150,10 @@ export function DashboardPage() {
                     Изменить
                   </Button>
                 </div>
-              </DashboardCard>
-            </div>
-
-            <DashboardCard title="Telegram-бот" className="lg:row-span-1">
+              </Card>
+            }
+            telegram={
+              <Card title="Telegram-бот" className="lg:row-span-1" variant="dashboard">
               <div className="flex flex-col items-center text-center">
                 <div className="mb-4">
                   <TelegramCircleIcon />
@@ -158,18 +163,20 @@ export function DashboardPage() {
                 </p>
                 <img src={qrSvg} alt="" className="h-auto w-[144px] max-w-full" />
               </div>
-            </DashboardCard>
-
-            <DashboardCard
-              title="Последние запросы"
-              aside={
+              </Card>
+            }
+            recentRequests={
+              <Card
+                title="Последние запросы"
+                aside={
                 <span className="inline-flex items-center gap-1">
                   <span>Вся история запросов</span>
                   <img src={arrowLinkNextSvg} alt="" className="h-4 w-4" />
                 </span>
-              }
-              className="lg:col-span-2"
-            >
+                }
+                className="lg:col-span-2"
+                variant="dashboard"
+              >
               <div className="overflow-x-auto">
                 <table className="min-w-full border-separate border-spacing-y-3 text-left">
                   <thead className="text-white/60">
@@ -212,9 +219,10 @@ export function DashboardPage() {
                   </tbody>
                 </table>
               </div>
-            </DashboardCard>
-
-            <DashboardCard title="Статистика проверок">
+              </Card>
+            }
+            stats={
+              <Card title="Статистика проверок" variant="dashboard">
               <div className="flex flex-col items-center">
                 <p className="mb-4">
                 Сводные данные по проверкам
@@ -251,8 +259,10 @@ export function DashboardPage() {
                   <span>75 отчётов</span>
                 </div>
               </div>
-            </DashboardCard>
-          </div>
+              </Card>
+            }
+          />
+        </div>
         <CurrentTariffInfoModal open={showCurrentTariffModal} onClose={() => setShowCurrentTariffModal(false)} />
         <BalanceTopUpModal
           open={showTopUpModal}

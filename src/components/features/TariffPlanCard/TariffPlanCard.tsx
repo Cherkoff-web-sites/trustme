@@ -1,4 +1,4 @@
-import { Button, SectionCard, SelectedIcon } from '../../ui';
+import { Button, Card, SelectedIcon } from '../../ui';
 import {
   tariffPlanCardFeatureListStyles,
   tariffPlanCardPriceRowStyles,
@@ -23,7 +23,7 @@ export interface TariffPlanCardProps {
 
 export function TariffPlanCard({ plan }: TariffPlanCardProps) {
   return (
-    <SectionCard as="article" className="flex h-full flex-col p-4 sm:p-5" divider={false}>
+    <Card as="article" className="flex h-full flex-col p-4 sm:p-5" divider={false} variant="tariff">
       <h3 className="mb-5 text-[24px] leading-[1.05] font-semibold text-white">{plan.title}</h3>
       <div className={tariffPlanCardPriceRowStyles}>
         <span className="text-[22px] font-semibold text-white/55 line-through sm:text-[34px]">{plan.oldPrice}</span>
@@ -45,6 +45,6 @@ export function TariffPlanCard({ plan }: TariffPlanCardProps) {
       </div>
 
       <Button className="mt-auto w-full">Выбрать</Button>
-    </SectionCard>
+    </Card>
   );
 }

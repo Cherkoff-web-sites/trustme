@@ -1,45 +1,7 @@
-import type { VariantProps } from 'class-variance-authority';
-import * as React from 'react';
-import { cn } from '../../../lib/cn';
-import {
-  sectionCardAsideStyles,
-  sectionCardDividerStyles,
-  sectionCardHeaderStyles,
-  sectionCardStyles,
-  sectionCardTitleStyles,
-} from './SectionCard.styles';
+import { Card, type CardProps } from '../Card/Card';
 
-export interface SectionCardProps
-  extends Omit<React.HTMLAttributes<HTMLElement>, 'title'>,
-    VariantProps<typeof sectionCardStyles> {
-  title?: React.ReactNode;
-  aside?: React.ReactNode;
-  divider?: boolean;
-  as?: React.ElementType;
-}
+export type SectionCardProps = CardProps;
 
-export function SectionCard({
-  title,
-  aside,
-  divider = !!title,
-  className,
-  children,
-  variant,
-  as: Comp = 'section',
-  ...props
-}: SectionCardProps) {
-  return (
-    <Comp className={cn(sectionCardStyles({ variant }), className)} {...props}>
-      {title || aside ? (
-        <>
-          <div className={sectionCardHeaderStyles}>
-            {title ? <h3 className={sectionCardTitleStyles}>{title}</h3> : <div />}
-            {aside ? <span className={sectionCardAsideStyles}>{aside}</span> : null}
-          </div>
-          {divider ? <div className={sectionCardDividerStyles} /> : null}
-        </>
-      ) : null}
-      {children}
-    </Comp>
-  );
+export function SectionCard(props: SectionCardProps) {
+  return <Card {...props} />;
 }

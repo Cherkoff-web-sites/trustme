@@ -148,6 +148,22 @@ export interface PresetsTokens {
   input: PresetInputTokens;
 }
 
+/** Layout-токены (гриды/шаблоны колонок). */
+export interface LayoutGridTokens {
+  /** Грид дашборда (3 колонки на desktop). */
+  dashboard: string;
+  /** Грид настроек (26% / 74% на desktop). */
+  settings: string;
+  /** Грид тарифа: 3 колонки на desktop. */
+  tariffPlans: string;
+  /** Грид тарифа: 2 колонки 2/3 + 1/3 на desktop. */
+  tariffSplit: string;
+}
+
+export interface LayoutTokens {
+  grid: LayoutGridTokens;
+}
+
 /** Корневой объект дизайн‑токенов. */
 export interface DesignTokens {
   colors: ColorsTokens;
@@ -155,6 +171,7 @@ export interface DesignTokens {
   borderRadius: BorderRadiusTokens;
   spacing: SpacingTokens;
   presets: PresetsTokens;
+  layout: LayoutTokens;
 }
 
 export const designTokens: DesignTokens = {
@@ -252,6 +269,15 @@ export const designTokens: DesignTokens = {
         'bg-[#2A2A2A] border border-[#FDFEFF]/50 rounded-[10px] ' +
         'text-[16px] lg:text-[14px] font-normal text-[#FDFEFF] ' +
         'placeholder:text-[#FDFEFF]/50',
+    },
+  },
+
+  layout: {
+    grid: {
+      dashboard: 'lg:grid-cols-[1.05fr_1.35fr_0.78fr]',
+      settings: 'lg:grid-cols-[0.261fr_0.739fr]',
+      tariffPlans: 'lg:grid-cols-3',
+      tariffSplit: 'lg:grid-cols-[2fr_1fr]',
     },
   },
 };

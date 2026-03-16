@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
+import { PageStructure } from '../../components/layout/PageStructure/PageStructure';
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
-import { SupportSection } from '../../components/features/SupportSection';
+import { SupportSection } from '../../components/features/Support/SupportSection';
 import { TariffPlanCard, type TariffPlanCardData } from '../../components/features/TariffPlanCard';
-import { AlertBanner, Button, FilterChip, OptionIndicator, PageTitle, SectionCard, SelectedIcon, uiTokens } from '../../components/ui';
+import { AlertBanner, Button, Card, FilterChip, OptionIndicator, SectionHeader, SelectedIcon, uiTokens } from '../../components/ui';
 
 export function TariffPage() {
   const plans: TariffPlanCardData[] = [
@@ -54,10 +55,8 @@ export function TariffPage() {
 
   return (
     <PageLayout>
-      <main className={`${uiTokens.container} pb-10 sm:pb-14`}>
-        <section className="pt-10 sm:pt-16">
-          <PageTitle title="Тариф" description="Управляйте тарифом аккаунта" />
-
+      <main className="pb-10 sm:pb-14">
+        <PageStructure title="Тариф" description="Управляйте тарифом аккаунта">
           <AlertBanner className="mb-4">
             <p className="m-0">
               Тариф заканчивается через 3 дня. Пополните баланс или измените тариф, чтобы избежать отключения от сервиса
@@ -65,9 +64,7 @@ export function TariffPage() {
             </p>
           </AlertBanner>
 
-          <SectionCard className="p-4 sm:p-6">
-            <h3 className="mb-4 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Текущий тариф</h3>
-            <div className="mb-6 h-px w-full bg-white/15" />
+          <Card title="Текущий тариф">
             <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <div className="text-[18px] leading-[0.95] font-semibold uppercase text-white sm:text-[36px]">
@@ -81,13 +78,13 @@ export function TariffPage() {
                 Изменить тариф
               </Button>
             </div>
-          </SectionCard>
+          </Card>
 
           <CurrentTariffInfoModal open={showCurrentTariffModal} onClose={() => setShowCurrentTariffModal(false)} />
-        </section>
+        </PageStructure>
 
-        <section className="pt-14 sm:pt-20">
-          <PageTitle title="Оформление подписки" description="Выберите подходящий для вас тарифный план" as="h2" />
+        <section className={`${uiTokens.container} pt-14 sm:pt-20`}>
+          <SectionHeader title="Оформление подписки" description="Выберите подходящий для вас тарифный план" />
           <div className="grid gap-4 xl:grid-cols-3">
             {plans.map((plan) => (
               <TariffPlanCard key={plan.title} plan={plan} />
@@ -95,15 +92,14 @@ export function TariffPage() {
           </div>
         </section>
 
-        <section className="pt-14 sm:pt-20">
-          <PageTitle
+        <section className={`${uiTokens.container} pt-14 sm:pt-20`}>
+          <SectionHeader
             title="Индивидуальный тариф"
             description="Настройте индивидуальный тариф под задачи вашего бизнеса и узнайте стоимость мгновенно"
-            as="h2"
           />
 
           <div className="grid gap-4 xl:grid-cols-[1.55fr_0.75fr]">
-            <section className={`${uiTokens.card} p-4 sm:p-6`}>
+            <Card>
               <div className="space-y-8">
                 <div>
                   <h3 className="mb-4 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Функциональные модули тарифа</h3>
@@ -147,9 +143,9 @@ export function TariffPage() {
                   </div>
                 </div>
               </div>
-            </section>
+            </Card>
 
-            <section className={`${uiTokens.card} p-4 sm:p-6`}>
+            <Card>
               <h3 className="mb-5 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Расчет стоимости тарифа</h3>
               <div className="space-y-4 text-[#FDFEFF]/85">
                 {['Скоринг', 'Упоминания в СМИ', 'Упоминания в Telegram', '7 дней', '2 учетные записи'].map((item) => (
@@ -170,7 +166,7 @@ export function TariffPage() {
               <Button className="mt-8 w-full">
                 Продолжить
               </Button>
-            </section>
+            </Card>
           </div>
         </section>
 
