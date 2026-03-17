@@ -95,7 +95,7 @@ export function SettingsSecurity({
         <div className="space-y-8">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="m-0 text-base text-white/80">
+              <p className="m-0 text-base text-[#FDFEFF]">
                 Двухфакторная аутентификация (2FA) обеспечит более надежную защиту вашего аккаунта
               </p>
             </div>
@@ -105,7 +105,7 @@ export function SettingsSecurity({
           <div className="flex items-start justify-between gap-4 border-t border-white/10 pt-6">
             <div>
               <h3 className="mb-2 text-[24px] font-semibold text-white">Электронная почта</h3>
-              <p className="m-0 text-base text-white/80">
+              <p className="m-0 text-base text-[#FDFEFF]">
                 Использовать электронную почту для двухфакторной аутентификации
               </p>
             </div>
@@ -121,7 +121,7 @@ export function SettingsSecurity({
               <SourceBadge source="telegram" />
               <div>
                 <div className="text-[20px] font-semibold text-white">Telegram</div>
-                <div className="text-sm text-white/70">@llllllllkk_01</div>
+                <div className="text-sm text-[#FDFEFF]">@llllllllkk_01</div>
               </div>
             </div>
 

@@ -37,21 +37,21 @@ export function HistoryRequestCard({
 
       <div className={historyRequestCardMetaGridStyles}>
         <div>
-          <p className="mb-2 text-white/45">Документ</p>
+          <p className="mb-2 text-[#FDFEFF]">Документ</p>
           <p className="m-0">{item.document}</p>
         </div>
         {item.birthDate ? (
           <div>
-            <p className="mb-2 text-white/45">Дата рождения</p>
+            <p className="mb-2 text-[#FDFEFF]">Дата рождения</p>
             <p className="m-0">{item.birthDate}</p>
           </div>
         ) : null}
         <div>
-          <p className="mb-2 text-white/45">Дата и время проверки</p>
+          <p className="mb-2 text-[#FDFEFF]">Дата и время проверки</p>
           <p className="m-0">{item.checkedAt}</p>
         </div>
         <div>
-          <p className="mb-2 text-white/45">Длительность проверки</p>
+          <p className="mb-2 text-[#FDFEFF]">Длительность проверки</p>
           <p className="m-0">{item.duration}</p>
         </div>
       </div>

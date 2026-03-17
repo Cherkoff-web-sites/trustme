@@ -12,7 +12,7 @@ export function LandingPage() {
   return (
     <PageLayout>
       {/* Центральная кнопка Войти */}
-      <section className="flex min-h-[50vh] flex-col items-center justify-center pb-10 pt-10 sm:pb-14 sm:pt-14">
+      <section className="flex min-h-[50vh] flex-col items-center justify-center pb-10 sm:pb-14">
         <Button className="min-w-[200px]" onClick={openAuthModal}>
           Войти
         </Button>

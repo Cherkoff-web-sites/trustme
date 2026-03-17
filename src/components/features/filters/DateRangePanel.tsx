@@ -24,12 +24,12 @@ export function DateRangePanel({
     <SectionCard variant="compact" className="mb-5">
       <p className={filterPanelTitleStyles}>{title}</p>
       <div className="grid gap-3 sm:grid-cols-2">
-        <label className="space-y-2 text-xs text-white/80">
-          <span className="text-white/55">{fromLabel}</span>
+        <label className="space-y-2 text-xs text-[#FDFEFF]">
+          <span className="text-[#FDFEFF]">{fromLabel}</span>
           <Input type="date" variant="date" value={fromValue} onChange={(event) => onFromChange(event.target.value)} />
         </label>
-        <label className="space-y-2 text-xs text-white/80">
-          <span className="text-white/55">{toLabel}</span>
+        <label className="space-y-2 text-xs text-[#FDFEFF]">
+          <span className="text-[#FDFEFF]">{toLabel}</span>
           <Input type="date" variant="date" value={toValue} onChange={(event) => onToChange(event.target.value)} />
         </label>
       </div>

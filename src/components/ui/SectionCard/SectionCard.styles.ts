@@ -15,5 +15,5 @@ export const sectionCardStyles = cva('rounded-[28px] border border-[#FDFEFF] bg-
 
 export const sectionCardHeaderStyles = 'mb-4 flex items-center justify-between gap-4';
 export const sectionCardTitleStyles = 'text-[16px] lg:text-[24px] leading-none font-semibold text-[#FDFEFF]';
-export const sectionCardAsideStyles = 'text-base text-[#FDFEFF]/85 lg:text-[18px]';
+export const sectionCardAsideStyles = 'text-base text-[#FDFEFF] lg:text-[18px]';
 export const sectionCardDividerStyles = 'mb-4 h-px w-full bg-[#FDFEFF]/15';

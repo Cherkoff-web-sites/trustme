@@ -15,7 +15,7 @@ export function MoreDetailsSection({ buttonText = 'Подробнее', classNam
     <div className={className}>
       <Button
         variant="ghost"
-        className="gap-2 text-base text-white/85"
+        className="gap-2 text-base text-[#FDFEFF]"
         onClick={() => setOpen((prev) => !prev)}
       >
         {buttonText}

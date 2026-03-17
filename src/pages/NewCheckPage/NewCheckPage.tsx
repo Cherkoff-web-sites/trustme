@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
-import { PageStructure } from '../../components/layout/PageStructure/PageStructure';
+import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { PersonTypeSwitcher } from '../../components/features/PersonTypeSwitcher';
 import { ReportActions } from '../../components/features/ReportActions';
 import { SupportSection } from '../../components/features/Support/SupportSection';
@@ -63,7 +63,7 @@ export function NewCheckPage() {
 
   return (
     <PageLayout>
-      <PageStructure
+      <PageSection
         title="Новая проверка"
         description="Проверка осуществляется в рамках текущего тарифа. Стоимость проверки будет списана с вашего баланса"
       >
@@ -80,8 +80,8 @@ export function NewCheckPage() {
 
             {personType === 'legal' ? (
               <div className="flex flex-col gap-4 xl:flex-row">
-                <label className="flex h-14 flex-1 justify-start gap-3 rounded-xl border border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.05))] px-4 text-sm text-white/55">
-                  <img src={searchSvg} alt="" className="h-5 w-5 shrink-0 text-white/35" aria-hidden />
+                <label className="flex h-14 flex-1 items-center justify-start gap-3 rounded-xl border border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.05))] px-4 text-sm text-[#FDFEFF]">
+                  <img src={searchSvg} alt="" className="h-5 w-5 shrink-0 text-[#FDFEFF]" aria-hidden />
                   <Input
                     className="h-auto border-0 bg-transparent px-0 text-sm"
                     placeholder="ИНН (ЮЛ, ФЛ) / ОГРН"
@@ -97,15 +97,15 @@ export function NewCheckPage() {
             ) : (
               <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_188px]">
                 <label className="space-y-2">
-                  <span className="text-xs uppercase tracking-[0.12em] text-white/45">ФИО</span>
+                  <span className="text-xs uppercase tracking-[0.12em] text-[#FDFEFF]">ФИО</span>
                   <Input placeholder="Введите ФИО" value={fio} onChange={(e) => setFio(e.target.value)} />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-xs uppercase tracking-[0.12em] text-white/45">Дата рождения</span>
+                  <span className="text-xs uppercase tracking-[0.12em] text-[#FDFEFF]">Дата рождения</span>
                   <Input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-xs uppercase tracking-[0.12em] text-white/45">ИНН</span>
+                  <span className="text-xs uppercase tracking-[0.12em] text-[#FDFEFF]">ИНН</span>
                   <Input placeholder="Введите ИНН" value={individualInn} onChange={(e) => setIndividualInn(e.target.value)} />
                 </label>
 
@@ -116,20 +116,20 @@ export function NewCheckPage() {
             )}
 
             <MoreDetailsSection className="mt-4">
-              <p className="text-sm text-[#FDFEFF]/70">
+              <p className="text-sm text-[#FDFEFF]">
                 Здесь можно разместить дополнительные пояснения по работе проверки и использованию полей формы.
               </p>
             </MoreDetailsSection>
           </Card>
-      </PageStructure>
+      </PageSection>
 
       {reportState !== 'idle' ? (
-        <section className={`${uiTokens.container} pt-4 sm:pt-6`}>
+        <section className={uiTokens.container}>
           <Card className="px-4 py-6 sm:px-6 sm:py-8" divider={false}>
               {reportState === 'loading' ? (
                 <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
                   <h3 className="text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Формируем отчет</h3>
-                  <p className="m-0 text-[#FDFEFF]/65">Ожидайте, формирование отчета может занять до 10 минут</p>
+                  <p className="m-0 text-[#FDFEFF]">Ожидайте, формирование отчета может занять до 10 минут</p>
                   <img
                     src={loadSvg}
                     alt=""
@@ -142,7 +142,7 @@ export function NewCheckPage() {
               {reportState === 'ready' ? (
                 <div className="flex flex-col items-center justify-center gap-3 py-2 text-center">
                   <h3 className="text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Отчет готов</h3>
-                  <p className="m-0 text-[#FDFEFF]/65">Отчет успешно сформирован. Вы можете посмотреть или скачать его</p>
+                  <p className="m-0 text-[#FDFEFF]">Отчет успешно сформирован. Вы можете посмотреть или скачать его</p>
                   <div className="mt-3 inline-flex min-h-10 min-w-[260px] items-center justify-center rounded-[10px] border border-[#2C6B3B] bg-[#1E2D21] px-4 text-xs font-medium text-[#45C857]">
                     Успешно
                   </div>
@@ -157,15 +157,15 @@ export function NewCheckPage() {
               {reportState === 'error' ? (
                 <div className="flex flex-col items-center justify-center gap-3 py-2 text-center">
                   <h3 className="text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Ошибка генерации отчета</h3>
-                  <p className="m-0 max-w-[520px] text-sm text-white/65">
+                  <p className="m-0 max-w-[520px] text-sm text-[#FDFEFF]">
                     Отчет не удалось сформировать. Вы можете попробовать еще раз или написать в поддержку
                   </p>
                   <div className="mt-3 inline-flex min-h-10 min-w-[260px] items-center justify-center rounded-[10px] border border-[#7A2F2F] bg-[#2A1B1B] px-4 text-xs font-medium text-[#FF7A7A]">
                     Ошибка
                   </div>
-                  <p className="mt-4 text-[#FDFEFF]/65">
+                  <p className="mt-4 text-[#FDFEFF]">
                     Что-то пошло не так?{' '}
-                    <Button variant="ghost" className="font-medium text-white/85 underline underline-offset-4 hover:text-white">
+                    <Button variant="ghost" className="font-medium text-[#FDFEFF] underline underline-offset-4 hover:text-[#FDFEFF]">
                       Написать в поддержку
                     </Button>
                   </p>
@@ -176,7 +176,7 @@ export function NewCheckPage() {
       ) : null}
 
       {reportState === 'ready' && showInlineReport ? (
-        <section className={`${uiTokens.container} pt-6 sm:pt-8`}>
+        <section className={uiTokens.container}>
           <Card className="overflow-hidden" divider={false}>
             <ReportContent item={reportItem} />
           </Card>

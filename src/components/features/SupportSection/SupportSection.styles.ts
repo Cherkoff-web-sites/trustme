@@ -1,16 +1,34 @@
-export const supportSectionWrapStyles = 'pt-10 sm:pt-16';
+import { designTokens } from '../../ui';
 
-export const supportSectionCardStyles =
-  'rounded-[28px] border border-[#FDFEFF] bg-[linear-gradient(90deg,rgba(5,120,137,0.28),rgba(5,120,137,0.12)_55%,rgba(5,120,137,0.18))] px-5 py-7 sm:px-8 sm:py-9';
+export const supportSectionWrapStyles = '';
 
-export const supportSectionTitleStyles =
-  'mb-5 text-[24px] leading-[1] font-semibold uppercase text-[#FDFEFF] lg:text-[48px]';
+export const supportSectionCardStyles = [
+  designTokens.presets.card.default,
+  designTokens.spacing.padding.cardVertical,
+  designTokens.spacing.padding.cardHorizontal,
+  'lg:p-[60px]',
+  'bg-[linear-gradient(117.04deg,rgba(26,26,26,0.2)0.57%,rgba(14,184,210,0.2)48.85%,rgba(28,56,73,0.2)100%),rgba(5,120,137,0.1)]',
+].join(' ');
 
-export const supportSectionLeadStyles =
-  'mb-5 text-base font-semibold leading-[1.4] text-[#FDFEFF] lg:text-[18px]';
+export const supportSectionTitleStyles = [
+  designTokens.typography.h1h2,
+  designTokens.colors.text.primary,
+  designTokens.spacing.margin.pageStructureTitleToDescription,
+].join(' ');
 
-export const supportSectionTextStyles =
-  'max-w-[980px] text-base font-normal leading-[1.45] text-[#FDFEFF]/85 lg:text-[18px]';
+export const supportSectionLeadStyles = [
+  designTokens.typography.body,
+  designTokens.colors.text.primary,
+  'font-semibold',
+  'mb-[15px]',
+].join(' ');
 
-export const supportSectionActionsStyles =
-  'mt-8 flex flex-col justify-center gap-4 sm:mt-10 sm:flex-row';
+export const supportSectionTextStyles = [
+  designTokens.typography.body,
+  designTokens.colors.text.primary,
+].join(' ');
+
+export const supportSectionActionsStyles = [
+  'mt-[40px] lg:mt-[60px]',
+  'flex flex-col items-center justify-center gap-5 lg:flex-row lg:gap-[30px]',
+].join(' ');

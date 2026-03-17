@@ -52,15 +52,15 @@ export const uiTokens = {
 
   /** «Призрачная» текстовая кнопка. */
   ghostButton:
-    'inline-flex items-center justify-center text-sm text-[#FDFEFF]/80 transition-colors hover:text-[#FDFEFF]',
+    'inline-flex items-center justify-center text-sm text-[#FDFEFF] transition-colors hover:text-[#FDFEFF]',
 
   /** Кнопка‑иконка. */
   iconButton:
-    'inline-flex items-center justify-center rounded-[100px] border border-[#FDFEFF]/20 text-[#FDFEFF]/85 transition hover:bg-[#FDFEFF]/5',
+    'inline-flex items-center justify-center rounded-[100px] border border-[#FDFEFF]/20 text-[#FDFEFF] transition hover:bg-[#FDFEFF]/5',
 
   /** Контрол фильтра (триггер). */
   filterControl: combineStyles(
-    'flex h-12 items-center justify-between px-4 text-[#FDFEFF]/55',
+    'flex h-12 items-center justify-between px-4 text-[#FDFEFF]',
     designTokens.borderRadius.input,
     designTokens.colors.border.input,
     designTokens.colors.background.control,
@@ -69,10 +69,10 @@ export const uiTokens = {
 
   /** Чип активного фильтра. */
   chip:
-    'inline-flex items-center gap-2 rounded-[100px] border border-[#FDFEFF]/30 bg-[#1A1A1A] px-3 py-1 text-xs text-[#FDFEFF]/80 hover:bg-[#2A2A2A]',
+    'inline-flex items-center gap-2 rounded-[100px] border border-[#FDFEFF]/30 bg-[#1A1A1A] px-3 py-1 text-xs text-[#FDFEFF] hover:bg-[#2A2A2A]',
 
   /** Лейбл формы. */
-  formLabel: 'text-[15px] leading-[1.2] text-[#FDFEFF]/85',
+  formLabel: 'text-[15px] leading-[1.2] text-[#FDFEFF]',
 
   /** Текст внутри карточек. */
   cardBody: designTokens.typography.cardBody,

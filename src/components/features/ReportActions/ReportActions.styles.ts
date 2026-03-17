@@ -4,4 +4,4 @@ export const reportActionsWrapStyles =
 export const reportActionsPrimaryStyles = 'flex flex-col gap-3 sm:flex-row';
 
 export const reportActionsDeleteStyles =
-  'text-sm text-[#FDFEFF]/80 transition-colors hover:text-[#FDFEFF]';
+  'text-sm text-[#FDFEFF] transition-colors hover:text-[#FDFEFF]';

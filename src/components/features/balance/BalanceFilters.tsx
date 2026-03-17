@@ -61,14 +61,14 @@ export function BalanceFilters({
   ) => (
     <div className={`${historyFiltersDropdownPanelStyles} min-w-[150px] p-3`}>
       <div className="space-y-3">
-        {title ? <p className="text-base text-[#FDFEFF]/85">{title}</p> : null}
+        {title ? <p className="text-base text-[#FDFEFF]">{title}</p> : null}
         <div className="space-y-2">
           {options.map((option) => (
             <button
               key={option.value}
               type="button"
               onClick={() => onChange(option.value)}
-              className="flex w-full items-center gap-2.5 text-left text-base text-[#FDFEFF]/90 transition hover:text-[#FDFEFF]"
+              className="flex w-full items-center gap-2.5 text-left text-base text-[#FDFEFF] transition hover:text-[#FDFEFF]"
             >
               <OptionIndicator type="checkbox" checked={value === option.value} />
               <span>{option.label}</span>
@@ -101,7 +101,7 @@ export function BalanceFilters({
                     onChange={(e) => onDateFromChange(e.target.value)}
                     className="text-base"
                   />
-                  <span className="text-[#FDFEFF]/60">–</span>
+                  <span className="text-[#FDFEFF]">–</span>
                   <Input
                     type="date"
                     variant="date"
@@ -111,7 +111,7 @@ export function BalanceFilters({
                   />
                 </div>
                 <div className="border-t border-[#FDFEFF]/15 pt-3">
-                  <p className="mb-2 text-base text-[#FDFEFF]/55">Сортировка</p>
+                  <p className="mb-2 text-base text-[#FDFEFF]">Сортировка</p>
                   <div className="space-y-2">
                     {[
                       { value: 'new' as const, label: 'Сначала новые', icon: '⇣' },
@@ -122,10 +122,10 @@ export function BalanceFilters({
                         type="button"
                         onClick={() => onSortOrderChange(opt.value)}
                         className={`flex w-full items-center gap-2 text-left text-base transition ${
-                          sortOrder === opt.value ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]/75 hover:text-[#FDFEFF]'
+                          sortOrder === opt.value ? 'text-[#FDFEFF]' : 'text-[#FDFEFF] hover:text-[#FDFEFF]'
                         }`}
                       >
-                        <span className="w-4 text-[#FDFEFF]/60">{opt.icon}</span>
+                        <span className="w-4 text-[#FDFEFF]">{opt.icon}</span>
                         <span>{opt.label}</span>
                       </button>
                     ))}

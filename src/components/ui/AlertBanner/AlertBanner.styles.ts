@@ -4,7 +4,7 @@ import { designTokens } from '../design-tokens';
 export const alertBannerStyles = cva(
   [
     // spacing
-    'mb-[20px] lg:mb-[60px]',
+    'mb-[20px] lg:mb-[30px]',
     // card tokens (border/bg/rounded + paddings)
     designTokens.presets.card.default,
     designTokens.spacing.padding.cardVertical,
@@ -16,8 +16,8 @@ export const alertBannerStyles = cva(
   {
     variants: {
       tone: {
-        warning: 'text-[#FDFEFF]/90',
-        info: 'border border-[#057889]/50 text-[#FDFEFF]/90',
+        warning: designTokens.colors.text.primary,
+        info: `border border-[#057889]/50 ${designTokens.colors.text.primary}`,
       },
     },
     defaultVariants: {

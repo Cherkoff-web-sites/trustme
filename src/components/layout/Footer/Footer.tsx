@@ -51,7 +51,7 @@ export function Footer() {
                   <EmailIcon />
                   admin@trstme.com
                 </a>
-                <p className="text-base leading-[100%] text-[#FDFEFF]/80 lg:text-[18px]">
+                <p className="text-base leading-[100%] text-[#FDFEFF] lg:text-[18px]">
                   Запросите тестовый доступ уже сегодня
                 </p>
               </div>
@@ -66,7 +66,7 @@ export function Footer() {
                   <TelegramIcon />
                   ceo_trustme
                 </a>
-                <p className="text-base leading-[100%] text-[#FDFEFF]/80 lg:text-[18px]">
+                <p className="text-base leading-[100%] text-[#FDFEFF] lg:text-[18px]">
                   Запросите тестовый доступ уже сегодня
                 </p>
               </div>
@@ -86,7 +86,7 @@ export function Footer() {
                       to={to}
                       className={combineStyles(
                         'transition hover:underline active:underline',
-                        designTokens.colors.text.muted,
+                        designTokens.colors.text.primary,
                       )}
                     >
                       {label}
@@ -106,7 +106,7 @@ export function Footer() {
                       href={href}
                       className={combineStyles(
                         'transition hover:underline active:underline',
-                        designTokens.colors.text.muted,
+                        designTokens.colors.text.primary,
                       )}
                     >
                       {label}
@@ -128,7 +128,7 @@ export function Footer() {
                       rel={external ? 'noreferrer' : undefined}
                       className={combineStyles(
                         'transition hover:underline active:underline',
-                        designTokens.colors.text.muted,
+                        designTokens.colors.text.primary,
                       )}
                     >
                       {label}
@@ -142,7 +142,7 @@ export function Footer() {
 
         {/* Row: legal + scroll top */}
         <div className="flex flex-col gap-4 border-t border-[#FDFEFF]/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <ul className="flex flex-col gap-[3px] text-base text-[#FDFEFF]/80">
+          <ul className="flex flex-col gap-[3px] text-base text-[#FDFEFF]">
             <li>ИП Гуженков Н.П</li>
             <li>ИНН 302500352845</li>
             <li>ОГРН 325508100615523</li>
@@ -184,7 +184,7 @@ export function Footer() {
               Служба поддержки с&nbsp;10:00&nbsp;до&nbsp;22:00
             </button>
           </div>
-          <p className="max-w-[880px] text-[18px] leading-[1.45] text-[#FDFEFF]/80">
+          <p className="max-w-[880px] text-[18px] leading-[1.45] text-[#FDFEFF]">
             По&nbsp;Вашему запросу мы&nbsp;можем предоставить примеры отчётов, кейсы из&nbsp;практики или провести онлайн‑демонстрацию
           </p>
         </div>

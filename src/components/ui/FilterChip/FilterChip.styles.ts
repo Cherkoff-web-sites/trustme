@@ -6,7 +6,7 @@ export const filterChipStyles = cva(
     variants: {
       variant: {
         selectable: 'rounded-[10px] px-3 py-2',
-        applied: 'rounded-[100px] border-[#FDFEFF]/30 bg-[#1A1A1A] px-3 py-1 text-xs text-[#FDFEFF]/80 hover:bg-[#2A2A2A]',
+        applied: 'rounded-[100px] border-[#FDFEFF]/30 bg-[#1A1A1A] px-3 py-1 text-xs text-[#FDFEFF] hover:bg-[#2A2A2A]',
       },
       selected: {
         true: '',
@@ -22,7 +22,7 @@ export const filterChipStyles = cva(
       {
         variant: 'selectable',
         selected: false,
-        className: 'border-[#FDFEFF]/35 bg-[#1A1A1A] text-[#FDFEFF]/85 hover:bg-[#2A2A2A]',
+        className: 'border-[#FDFEFF]/35 bg-[#1A1A1A] text-[#FDFEFF] hover:bg-[#2A2A2A]',
       },
     ],
     defaultVariants: {

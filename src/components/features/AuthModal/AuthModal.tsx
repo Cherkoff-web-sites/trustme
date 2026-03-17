@@ -39,7 +39,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
 
   const tabLabel = 'text-[14px] font-semibold lg:text-[20px]';
   const tabActive = 'text-[#FDFEFF] border-b-2 border-[#057889] pb-2';
-  const tabInactive = 'text-[#FDFEFF]/60 hover:text-[#FDFEFF]/80';
+  const tabInactive = 'text-[#FDFEFF] hover:text-[#FDFEFF]';
 
   return (
     <ModalShell open={open} onClose={onClose} size="md">
@@ -49,7 +49,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
           <h2 className="text-[20px] font-semibold uppercase tracking-tight text-[#FDFEFF] lg:text-[24px]">
             Trust Me
           </h2>
-          <p className="mt-2 text-base text-[#FDFEFF]/70 lg:text-[18px]">
+          <p className="mt-2 text-base text-[#FDFEFF] lg:text-[18px]">
             {view === 'login'
               ? 'Войдите в сервис проверки контрагентов «Trust Me»'
               : 'Для создания аккаунта в сервисе проверки контрагентов «Trust Me» укажите свои данные:'}
@@ -78,7 +78,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
 
             <form onSubmit={handleLoginSubmit} className="flex flex-col gap-4">
               <div>
-                <label className="mb-1.5 block text-sm text-[#FDFEFF]/85 lg:text-base">
+                <label className="mb-1.5 block text-sm text-[#FDFEFF] lg:text-base">
                   Почта
                 </label>
                 <Input
@@ -89,7 +89,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm text-[#FDFEFF]/85 lg:text-base">
+                <label className="mb-1.5 block text-sm text-[#FDFEFF] lg:text-base">
                   Пароль
                 </label>
                 <div className="relative flex items-center">
@@ -102,7 +102,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 text-sm text-[#FDFEFF]/60 hover:text-[#FDFEFF]/85"
+                    className="absolute right-3 text-sm text-[#FDFEFF] hover:text-[#FDFEFF]"
                     onClick={() => setShowPassword((v) => !v)}
                     aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
                   >
@@ -111,7 +111,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                 </div>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <label className="flex cursor-pointer items-center gap-2 text-sm text-[#FDFEFF]/80 lg:text-base">
+                <label className="flex cursor-pointer items-center gap-2 text-sm text-[#FDFEFF] lg:text-base">
                   <input
                     type="checkbox"
                     checked={rememberMe}
@@ -122,7 +122,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                 </label>
                 <button
                   type="button"
-                  className="text-sm text-[#FDFEFF]/80 underline hover:text-[#FDFEFF] lg:text-base"
+                  className="text-sm text-[#FDFEFF] underline hover:text-[#FDFEFF] lg:text-base"
                 >
                   Забыли пароль?
                 </button>
@@ -132,7 +132,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
               </Button>
             </form>
 
-            <p className="text-center text-sm text-[#FDFEFF]/80 lg:text-base">
+            <p className="text-center text-sm text-[#FDFEFF] lg:text-base">
               Еще нет аккаунта?{' '}
               <button
                 type="button"
@@ -165,7 +165,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
 
             <form onSubmit={handleRegisterSubmit} className="flex flex-col gap-4">
               <div>
-                <label className="mb-1.5 block text-sm text-[#FDFEFF]/85 lg:text-base">
+                <label className="mb-1.5 block text-sm text-[#FDFEFF] lg:text-base">
                   Почта
                 </label>
                 <Input
@@ -176,7 +176,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm text-[#FDFEFF]/85 lg:text-base">
+                <label className="mb-1.5 block text-sm text-[#FDFEFF] lg:text-base">
                   Пароль
                 </label>
                 <div className="relative flex items-center">
@@ -189,14 +189,14 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 text-sm text-[#FDFEFF]/60 hover:text-[#FDFEFF]/85"
+                    className="absolute right-3 text-sm text-[#FDFEFF] hover:text-[#FDFEFF]"
                     onClick={() => setShowPassword((v) => !v)}
                     aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
                   >
                     {showPassword ? 'Скрыть' : 'Показать'}
                   </button>
                 </div>
-                <ul className="mt-2 space-y-1 pl-4 text-sm text-[#FDFEFF]/80 lg:text-base">
+                <ul className="mt-2 space-y-1 pl-4 text-sm text-[#FDFEFF] lg:text-base">
                   <li className="list-disc">Не менее 8 символов</li>
                   <li className="list-disc">Минимум одна заглавная и одна строчная буква</li>
                   <li className="list-disc">Минимум одна цифра</li>
@@ -206,7 +206,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                 Зарегистрироваться
               </Button>
               <div className="flex flex-col gap-3">
-                <label className="flex cursor-pointer items-start gap-2 text-sm text-[#FDFEFF]/80 lg:text-base">
+                <label className="flex cursor-pointer items-start gap-2 text-sm text-[#FDFEFF] lg:text-base">
                   <input
                     type="checkbox"
                     checked={consentPersonal}
@@ -218,7 +218,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                     в этой веб-форме
                   </span>
                 </label>
-                <label className="flex cursor-pointer items-start gap-2 text-sm text-[#FDFEFF]/80 lg:text-base">
+                <label className="flex cursor-pointer items-start gap-2 text-sm text-[#FDFEFF] lg:text-base">
                   <input
                     type="checkbox"
                     checked={consentPromo}
@@ -230,7 +230,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
               </div>
             </form>
 
-            <p className="text-center text-sm text-[#FDFEFF]/80 lg:text-base">
+            <p className="text-center text-sm text-[#FDFEFF] lg:text-base">
               Уже есть аккаунт?{' '}
               <button
                 type="button"

@@ -27,14 +27,14 @@ export function SettingsSidebarNav<T extends string>({
             key={item.key}
             className={cn(
               settingsSidebarNavItemStyles,
-              isActive ? 'bg-white/7 text-white' : 'text-white/85 hover:bg-white/4',
+              isActive ? 'bg-white/7 text-[#FDFEFF]' : 'text-[#FDFEFF] hover:bg-white/4',
             )}
             onClick={() => onChange(item.key)}
             type="button"
           >
-            <span className="mr-3 text-white/85">{isActive ? '◉' : '◌'}</span>
+            <span className="mr-3 text-[#FDFEFF]">{isActive ? '◉' : '◌'}</span>
             <span>{item.label}</span>
-            {isActive ? <span className="absolute bottom-3 right-0 top-3 w-1 rounded-full bg-[#0EB8D2]" /> : null}
+            {isActive ? <span className="absolute bottom-3 right-0 top-3 w-1 rounded-full bg-[#057889]" /> : null}
           </button>
         );
       })}

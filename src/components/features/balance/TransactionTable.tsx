@@ -19,7 +19,7 @@ export function TransactionTable({ operations }: TransactionTableProps) {
   return (
     <div className={transactionTableWrapStyles}>
       <table className={transactionTableStyles}>
-        <thead className="text-white/60">
+        <thead className="text-[#FDFEFF]">
           <tr>
             <th className="pr-6 font-normal">Дата операции</th>
             <th className="pr-6 font-normal">Тип операции</th>
@@ -30,7 +30,7 @@ export function TransactionTable({ operations }: TransactionTableProps) {
         <tbody>
           {operations.map((operation) => (
             <tr
-              className="border-t border-white/10 text-white/85"
+              className="border-t border-white/10 text-[#FDFEFF]"
               key={`${operation.date}-${operation.type}-${operation.source}`}
             >
               <td className="pr-6 pt-3">{operation.date}</td>

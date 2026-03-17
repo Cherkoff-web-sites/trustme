@@ -39,7 +39,7 @@ export function BalanceTopUpModal({
 
       {step === 'form' ? (
         <div className={balanceTopUpFormStyles}>
-          <p className="text-center text-[#FDFEFF]/70">
+          <p className="text-center text-[#FDFEFF]">
             Выберите нужную сумму или введите ее вручную
           </p>
           <Input

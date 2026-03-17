@@ -61,7 +61,7 @@ export function Header() {
 
           <div className="flex items-center justify-end gap-3">
             <button
-              className="relative inline-flex h-11 w-11 items-center justify-center rounded-[100px] border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]/85"
+              className="relative inline-flex h-11 w-11 items-center justify-center rounded-[100px] border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]"
               type="button"
               onClick={() => setShowNotifications(true)}
               aria-label="Уведомления"
@@ -72,7 +72,7 @@ export function Header() {
               </span>
             </button>
             <button
-              className="inline-flex h-11 w-11 items-center justify-center rounded-[100px] border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]/85"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-[100px] border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]"
               type="button"
               onClick={() => setShowAccountMenu((current) => !current)}
               aria-label="Аккаунт"
@@ -88,11 +88,11 @@ export function Header() {
             <Link to="/cabinet" className="flex shrink-0" aria-label="Trust Me — на главную">
               <img src={logoSvg} alt="" width={122} height={29} className="h-7 w-auto lg:h-8" />
             </Link>
-            <nav className="flex flex-wrap gap-x-6 gap-y-3 text-[14px] font-semibold text-[#FDFEFF]/90 lg:text-[20px]">
+            <nav className="flex flex-wrap gap-x-6 gap-y-3 text-[14px] font-semibold text-[#FDFEFF] lg:text-[20px]">
               {MAIN_NAV_ITEMS.map(([label, to]) => (
                 <NavLink
                   className={({ isActive }) =>
-                    `transition-colors hover:text-[#FDFEFF] ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]/85'}`
+                    `transition-colors hover:text-[#FDFEFF] ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
                   }
                   key={to}
                   to={to}
@@ -105,7 +105,7 @@ export function Header() {
 
           <div className="flex flex-wrap items-center gap-3 text-[14px] font-semibold lg:text-[20px]">
             <button
-              className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[100px] border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]/85 transition hover:bg-[#FDFEFF]/10"
+              className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[100px] border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF] transition hover:bg-[#FDFEFF]/10"
               type="button"
               onClick={() => setShowNotifications(true)}
               aria-label="Уведомления"
@@ -125,7 +125,7 @@ export function Header() {
                 type="button"
                 onClick={() => setShowAccountMenu((current) => !current)}
                 className={`relative z-40 inline-flex items-center gap-2 bg-transparent p-0 transition-colors ${
-                  showAccountMenu ? 'text-[#0EB8D2]' : 'text-[#FDFEFF]/90 hover:text-[#FDFEFF]'
+                  showAccountMenu ? 'text-[#FDFEFF]' : 'text-[#FDFEFF] hover:text-[#FDFEFF]'
                 }`}
                 aria-haspopup="menu"
                 aria-expanded={showAccountMenu}
@@ -158,7 +158,7 @@ export function Header() {
                           setCurrentAccount(account);
                           setShowAccountMenu(false);
                         }}
-                        className="flex w-full items-center border-b border-[#FDFEFF]/15 pb-3 text-left text-base text-[#FDFEFF]/92 transition hover:text-[#FDFEFF] lg:text-[18px]"
+                        className="flex w-full items-center border-b border-[#FDFEFF]/15 pb-3 text-left text-base text-[#FDFEFF] transition hover:text-[#FDFEFF] lg:text-[18px]"
                       >
                         {account}
                       </button>
@@ -247,7 +247,7 @@ export function Header() {
                           setCurrentAccount(account);
                           setShowAccountMenu(false);
                         }}
-                        className="block w-full border-b border-[#FDFEFF]/10 pb-3 text-left text-[16px] text-[#FDFEFF]/92"
+                        className="block w-full border-b border-[#FDFEFF]/10 pb-3 text-left text-[16px] text-[#FDFEFF]"
                       >
                         {account}
                       </button>
@@ -298,9 +298,7 @@ export function Header() {
                 {['Все', 'Финансы', 'Тариф', 'Аккаунт', 'Сервис'].map((label, index) => (
                   <button
                     key={label}
-                    className={`rounded-[100px] px-3 py-1.5 ${
-                      index === 0 ? 'bg-[#FDFEFF] text-[#1A1A1A]' : 'bg-[#FDFEFF]/5 text-[#FDFEFF]/80 hover:bg-[#FDFEFF]/10'
-                    }`}
+                    className={`rounded-[100px] px-3 py-1.5 ${index === 0 ? 'bg-[#FDFEFF] text-[#1A1A1A]' : 'bg-[#FDFEFF]/5 text-[#FDFEFF] hover:bg-[#FDFEFF]/10'}`}
                     type="button"
                   >
                     {label}
@@ -308,7 +306,7 @@ export function Header() {
                 ))}
               </nav>
               <button
-                className="text-base font-medium text-[#FDFEFF]/70 underline underline-offset-4 hover:text-[#FDFEFF] lg:text-[24px]"
+                className="text-base font-medium text-[#FDFEFF] underline underline-offset-4 hover:text-[#FDFEFF] lg:text-[24px]"
                 type="button"
               >
                 Очистить
@@ -356,17 +354,17 @@ export function Header() {
               ].map((item) => (
                 <article
                   key={item.title}
-                  className="flex items-start gap-3 rounded-[28px] bg-[#2A2A2A] px-4 py-3 text-base text-[#FDFEFF]/85 sm:px-5 lg:text-[24px]"
+                  className="flex items-start gap-3 rounded-[28px] bg-[#2A2A2A] px-4 py-3 text-base text-[#FDFEFF] sm:px-5 lg:text-[24px]"
                 >
                   <div className="mt-1 h-9 w-9 shrink-0 overflow-hidden rounded-full bg-[#1A1A1A]" />
                   <div className="flex-1">
                     <div className="mb-1 flex flex-wrap items-center gap-2">
-                      <span className="rounded-[100px] bg-[#FDFEFF]/10 px-2 py-0.5 text-xs text-[#FDFEFF]/80">
+                      <span className="rounded-[100px] bg-[#FDFEFF]/10 px-2 py-0.5 text-xs text-[#FDFEFF]">
                         {item.category}
                       </span>
                       <p className="m-0 text-[15px] leading-[1.3] text-[#FDFEFF]">{item.title}</p>
                     </div>
-                    <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-[#FDFEFF]/55">
+                    <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-[#FDFEFF]">
                       <span>{item.time}</span>
                       {item.action ? (
                         <button
@@ -378,7 +376,7 @@ export function Header() {
                       ) : null}
                     </div>
                   </div>
-                  <div className="mt-1 flex shrink-0 flex-col items-center gap-3 text-[15px] text-[#FDFEFF]/65">
+                  <div className="mt-1 flex shrink-0 flex-col items-center gap-3 text-[15px] text-[#FDFEFF]">
                     <button className="hover:text-[#FDFEFF]" type="button" aria-label="Повторить">
                       ↻
                     </button>

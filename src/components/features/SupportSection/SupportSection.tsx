@@ -1,4 +1,4 @@
-import { Button } from '../../ui';
+import { Button, Card } from '../../ui';
 import {
   supportSectionActionsStyles,
   supportSectionCardStyles,
@@ -11,7 +11,7 @@ import {
 export function SupportSection() {
   return (
     <section className={supportSectionWrapStyles}>
-      <div className={supportSectionCardStyles}>
+      <Card className={supportSectionCardStyles} divider={false}>
         <h2 className={supportSectionTitleStyles}>Остались вопросы?</h2>
         <p className={supportSectionLeadStyles}>
           Напишите в службу поддержки и мы вам поможем
@@ -20,7 +20,7 @@ export function SupportSection() {
           В рамках тестового запуска web-версии сервиса для проверки контрагентов все пользователи получают неограниченный
           бесплатный доступ
         </p>
-      </div>
+      </Card>
 
       <div className={supportSectionActionsStyles}>
         <Button className="min-w-[260px]">Написать в поддержку</Button>

@@ -9,7 +9,7 @@ import {
   type HistoryStatusFilter,
 } from '../../components/features/history';
 import { PageLayout } from '../../components/layout/PageLayout';
-import { PageStructure } from '../../components/layout/PageStructure/PageStructure';
+import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { type HistoryItem } from '../../shared/ReportContent';
 
 export function HistoryPage() {
@@ -210,7 +210,7 @@ export function HistoryPage() {
 
   return (
     <PageLayout>
-      <PageStructure
+      <PageSection
         title="История запросов"
         description="Все выполненные проверки из Telegram-бота и веб-сервиса «Trust Me»"
       >
@@ -246,7 +246,7 @@ export function HistoryPage() {
         </div>
 
         <HistoryReportModal item={openedReportItem} onClose={() => setOpenedReportItem(null)} />
-      </PageStructure>
+      </PageSection>
     </PageLayout>
   );
 }

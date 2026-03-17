@@ -100,6 +100,8 @@ export interface SpacingPaddingTokens {
   cardHorizontal: string;
   /** Вертикальные паддинги основного контента страницы (main). */
   pageMain: string;
+  /** Внутренний отступ сверху у секций внутри main (для anchor-offset). */
+  sectionStackPaddingTop: string;
 }
 
 export interface SpacingMarginTokens {
@@ -107,12 +109,12 @@ export interface SpacingMarginTokens {
   horizontal: string;
   /** Вертикальные внешние отступы между блоками. */
   vertical: string;
-  /** Крупные вертикальные расстояния между секциями (H1 + H2 и т.п.). */
-  block: string;
   /** Отступ между Title+Sub и контентом в PageStructure. */
   pageStructureHeaderToContent: string;
   /** Отступ между заголовком и описанием в PageStructure. */
   pageStructureTitleToDescription: string;
+  /** Внешний отступ снизу у секций внутри main (кроме последней). */
+  sectionStackMarginBottom: string;
 }
 
 export interface SpacingGapTokens {
@@ -211,8 +213,8 @@ export const designTokens: DesignTokens = {
   },
 
   typography: {
-    body: 'text-[16px] lg:text-[24px] font-normal', // основной текст
-    h1h2: 'text-[24px] lg:text-[48px] font-semibold uppercase', // заголовки страниц
+    body: 'text-[16px] lg:text-[24px] font-normal text-[#FDFEFF]', // основной текст (всегда белый)
+    h1h2: 'text-[24px] leading-[29px] lg:text-[48px] lg:leading-[58px] font-semibold uppercase', // заголовки страниц
     h3: 'text-[16px] lg:text-[24px] font-semibold', // заголовки карточек
     button: 'text-[14px] lg:text-[20px] font-semibold', // текст кнопок
     cardBody: 'text-[18px] lg:text-[16px] font-normal', // подписи внутри карточек
@@ -233,13 +235,14 @@ export const designTokens: DesignTokens = {
       cardVertical: 'py-[30px]', // плитки: 30px top/bottom
       cardHorizontal: 'px-[15px] lg:px-[30px]', // плитки: 30px / 15px left/right (mobile / desktop)
       pageMain: 'pt-[80px] pb-[80px] lg:pt-[180px] lg:pb-[240px]', // вертикальные отступы основного контента
+      sectionStackPaddingTop: 'pt-[20px] lg:pt-[60px]',
     },
     margin: {
       horizontal: 'mx-[32px]', // 32px — расстояние между плитками по горизонтали (при inline‑использовании)
       vertical: 'my-[30px] lg:my-[20px]', // 30px / 20px — вертикальные отступы
-      block: 'my-[240px] lg:my-[80px]', // крупные отступы между блоками
       pageStructureHeaderToContent: 'mt-[40px] lg:mt-[60px]', // отступ между Title+Sub и контентом
       pageStructureTitleToDescription: 'mb-[20px] lg:mb-[30px]', // нижний отступ заголовка перед описанием
+      sectionStackMarginBottom: 'mb-[60px] lg:mb-[180px]',
     },
     gap: {
       cardHorizontal: 'gap-x-[32px]', // gap между плитками по горизонтали

@@ -9,8 +9,8 @@ export const buttonStyles = cva(
           'min-h-14 rounded-[100px] bg-[#057889] px-6 py-4 text-[14px] lg:text-[20px] font-semibold text-[#FDFEFF] duration-200 hover:-translate-y-px hover:bg-[#068a9c] focus-visible:ring-2 focus-visible:ring-[#057889]/50',
         secondary:
           'min-h-14 rounded-[100px] border border-[#FDFEFF]/55 px-6 py-4 text-[14px] lg:text-[20px] font-semibold text-[#FDFEFF] hover:bg-[#FDFEFF]/5',
-        ghost: 'text-sm text-[#FDFEFF]/80 hover:text-[#FDFEFF]',
-        icon: 'rounded-[100px] border border-[#FDFEFF]/20 text-[#FDFEFF]/85 hover:bg-[#FDFEFF]/5',
+        ghost: 'text-sm text-[#FDFEFF] hover:text-[#FDFEFF]',
+        icon: 'rounded-[100px] border border-[#FDFEFF]/20 text-[#FDFEFF] hover:bg-[#FDFEFF]/5',
         pill: 'rounded-[100px] border px-3 py-2 text-sm transition',
       },
       size: {
@@ -36,7 +36,7 @@ export const buttonStyles = cva(
       {
         variant: 'pill',
         selected: false,
-        className: 'border-[#FDFEFF]/35 bg-[#1A1A1A] text-[#FDFEFF]/85 hover:bg-[#2A2A2A]',
+        className: 'border-[#FDFEFF]/35 bg-[#1A1A1A] text-[#FDFEFF] hover:bg-[#2A2A2A]',
       },
       {
         variant: 'icon',

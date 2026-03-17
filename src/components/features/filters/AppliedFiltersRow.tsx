@@ -30,7 +30,7 @@ export function AppliedFiltersRow({
             key={filter.id}
             variant="applied"
             onClick={filter.clear}
-            removeIcon={<span className="text-white/50">×</span>}
+            removeIcon={<span className="text-[#FDFEFF]">×</span>}
           >
             {filter.label}
           </FilterChip>

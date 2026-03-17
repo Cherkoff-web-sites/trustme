@@ -24,9 +24,9 @@ export function SingleChoicePanel<T extends string>({
   const content = (
     <>
       {title ? (
-        <p className={compact ? 'mb-2 text-base text-[#FDFEFF]/85' : filterPanelTitleStyles}>{title}</p>
+        <p className={compact ? 'mb-2 text-base text-[#FDFEFF]' : filterPanelTitleStyles}>{title}</p>
       ) : null}
-      <div className={compact ? 'flex flex-wrap gap-2 text-base text-[#FDFEFF]/85' : filterPanelGroupStyles}>
+      <div className={compact ? 'flex flex-wrap gap-2 text-base text-[#FDFEFF]' : filterPanelGroupStyles}>
         {options.map((option) => (
           <FilterChip
             key={option.value}

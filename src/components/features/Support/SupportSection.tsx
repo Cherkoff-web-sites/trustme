@@ -15,15 +15,14 @@ export function SupportSection() {
         <h2 className={supportSectionTitleStyles}>Остались вопросы?</h2>
         <p className={supportSectionLeadStyles}>Напишите в службу поддержки и мы вам поможем</p>
         <p className={supportSectionTextStyles}>
-          В рамках тестового запуска web-версии сервиса для проверки контрагентов все пользователи получают
-          неограниченный бесплатный доступ
+          В рамках тестового запуска web-версии сервиса для проверки контрагентов все пользователи получают неограниченный бесплатный доступ
         </p>
-
-        <div className={supportSectionActionsStyles}>
-          <Button className="min-w-[260px]">Написать в поддержку</Button>
-          <Button className="min-w-[260px]">Запросить тестовый доступ</Button>
-        </div>
       </Card>
+
+      <div className={supportSectionActionsStyles}>
+        <Button className="min-w-[260px]">Написать в поддержку</Button>
+        <Button className="min-w-[260px]">Запросить тестовый доступ</Button>
+      </div>
     </section>
   );
 }

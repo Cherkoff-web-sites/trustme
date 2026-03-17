@@ -60,14 +60,15 @@ export function DashboardPage() {
 
   return (
     <PageLayout>
-      <AlertBanner className="mb-4 lg:mb-0 lg:absolute lg:left-[30px] lg:right-[30px] lg:top-[180px] lg:z-20 lg:-translate-y-[calc(100%+30px)]">
-        <p className="m-0">
-          Тариф заканчивается через 3 дня. Пополните баланс или измените тариф, чтобы избежать отключения от сервиса
-          проверки контрагентов «Trust Me».
-        </p>
-      </AlertBanner>
+      <section className="relative">
+        <AlertBanner className="mb-4 lg:mb-0 lg:absolute lg:left-0 lg:right-0 lg:bottom-full lg:mb-[30px] lg:z-20">
+          <p className="m-0">
+            Тариф заканчивается через 3 дня. Пополните баланс или измените тариф, чтобы избежать отключения от сервиса
+            проверки контрагентов «Trust Me».
+          </p>
+        </AlertBanner>
 
-      <DashboardGrid
+        <DashboardGrid
         newCheck={
           <Card title="Новая проверка" className="lg:row-span-1" variant="dashboard">
               <div
@@ -96,7 +97,7 @@ export function DashboardPage() {
                 className={combineStyles(
                   'mt-4',
                   'leading-[1.45]',
-                  designTokens.colors.text.muted,
+                  designTokens.colors.text.primary,
                 )}
               >
                 Стоимость проверки будет списана с баланса вашего аккаунта согласно текущему тарифу
@@ -155,7 +156,7 @@ export function DashboardPage() {
                 <div className="mb-4">
                   <TelegramCircleIcon />
                 </div>
-                <p className="mb-5 max-w-[220px] text-sm leading-[1.45] text-white/80">
+                <p className="mb-5 max-w-[220px] text-sm leading-[1.45] text-[#FDFEFF]">
                   Привяжите Telegram-аккаунт, чтобы все отчёты отображались в одном месте.
                 </p>
                 <img src={qrSvg} alt="" className="h-auto w-[144px] max-w-full" />
@@ -175,7 +176,7 @@ export function DashboardPage() {
           >
               <div className="overflow-x-auto">
                 <table className="min-w-full border-separate border-spacing-y-3 text-left">
-                  <thead className="text-white/60">
+                  <thead className="text-[#FDFEFF]">
                     <tr>
                       <th className="pr-6 font-normal">Дата / Время</th>
                       <th className="pr-6 font-normal">Категория</th>
@@ -186,7 +187,7 @@ export function DashboardPage() {
                   </thead>
                   <tbody>
                     {lastRequests.map(([date, category, source, status]) => (
-                      <tr className="border-t border-white/10 text-white/85" key={`${date}-${category}-${source}`}>
+                      <tr className="border-t border-white/10 text-[#FDFEFF]" key={`${date}-${category}-${source}`}>
                         <td className="pr-6 pt-3">{date}</td>
                         <td className="pr-6 pt-3">{category}</td>
                         <td className="pr-6 pt-3">{source}</td>
@@ -217,7 +218,7 @@ export function DashboardPage() {
               </div>
           </Card>
         }
-        stats={
+          stats={
           <Card title="Статистика проверок" variant="dashboard">
               <div className="flex flex-col items-center">
                 <p className="mb-4">
@@ -239,7 +240,7 @@ export function DashboardPage() {
               </div>
 
 
-              <div className="space-y-2 text-[#FDFEFF]/80">
+              <div className="space-y-2 text-[#FDFEFF]">
                 <div className="flex items-center justify-between gap-4">
                   <span className="flex items-center gap-2.5">
                     <span className="h-3 w-3 rounded-full bg-white" />
@@ -256,8 +257,9 @@ export function DashboardPage() {
                 </div>
               </div>
           </Card>
-        }
-      />
+          }
+        />
+      </section>
       <CurrentTariffInfoModal open={showCurrentTariffModal} onClose={() => setShowCurrentTariffModal(false)} />
       <BalanceTopUpModal
         open={showTopUpModal}

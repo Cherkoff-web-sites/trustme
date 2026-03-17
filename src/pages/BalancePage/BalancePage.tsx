@@ -8,9 +8,9 @@ import {
   type BalanceTypeFilter,
 } from '../../components/features/balance';
 import { PageLayout } from '../../components/layout/PageLayout';
-import { PageStructure } from '../../components/layout/PageStructure/PageStructure';
+import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
-import { Button, Card, SectionHeader, designTokens } from '../../components/ui';
+import { Button, Card, designTokens } from '../../components/ui';
 import { combineStyles } from '../../lib/combineStyles';
 import walletSvg from '../../assets/icons/wallet.svg';
 
@@ -160,7 +160,7 @@ export function BalancePage() {
 
   return (
     <PageLayout>
-      <PageStructure
+      <PageSection
         title="Баланс"
         description="Управляйте балансом аккаунта и отслеживайте историю финансовых операций"
       >
@@ -198,14 +198,12 @@ export function BalancePage() {
             </Button>
           </div>
         </Card>
-      </PageStructure>
+      </PageSection>
 
-      <section className="pt-14 sm:pt-20">
-        <SectionHeader
-          title="История операций"
-          description="Вы можете отслеживать историю операций на вашем аккаунте, выбрав нужные данные"
-        />
-
+      <PageSection
+        title="История операций"
+        description="Вы можете отслеживать историю операций на вашем аккаунте, выбрав нужные данные"
+      >
         <BalanceFilters
           openPanel={balanceOpenPanel}
           onTogglePanel={toggleBalancePanel}
@@ -226,7 +224,7 @@ export function BalancePage() {
         <Card className="overflow-hidden p-4 sm:p-6" divider={false}>
           <TransactionTable operations={filteredOperations} />
         </Card>
-      </section>
+      </PageSection>
 
       <BalanceTopUpModal
         open={showTopUpModal}

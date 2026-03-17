@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { Grid } from '../../components/layout/Grid/Grid';
-import { PageStructure } from '../../components/layout/PageStructure/PageStructure';
+import { PageSection } from '../../components/layout/PageSection/PageSection';
 import {
   SettingsProfile,
   SettingsSecurity,
@@ -39,7 +39,7 @@ export function SettingsPage() {
 
   return (
     <PageLayout>
-      <PageStructure title="Настройки аккаунта" description="Управляйте настройками аккаунта">
+      <PageSection title="Настройки аккаунта" description="Управляйте настройками аккаунта">
         <Grid preset="settings" className={uiTokens.container}>
           <Card className="h-fit p-3" variant="settings" as="aside">
             <SettingsSidebarNav
@@ -78,7 +78,7 @@ export function SettingsPage() {
             ) : null}
           </div>
         </Grid>
-      </PageStructure>
+      </PageSection>
     </PageLayout>
   );
 }

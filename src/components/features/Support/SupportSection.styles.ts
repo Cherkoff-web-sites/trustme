@@ -1,32 +1,32 @@
 import { designTokens } from '../../ui';
 
-export const supportSectionWrapStyles = ['pt-10 sm:pt-16', designTokens.spacing.margin.horizontal].join(' ');
+export const supportSectionWrapStyles = '';
 
 export const supportSectionCardStyles = [
-  designTokens.presets.card.default,
-  designTokens.spacing.padding.cardVertical,
-  designTokens.spacing.padding.cardHorizontal,
+  'lg:p-[60px]',
+  'bg-[linear-gradient(117.04deg,rgba(26,26,26,0.2)0.57%,rgba(14,184,210,0.2)48.85%,rgba(28,56,73,0.2)100%),rgba(5,120,137,0.1)]',
 ].join(' ');
 
 export const supportSectionTitleStyles = [
-  'mb-5',
   designTokens.typography.h1h2,
   designTokens.colors.text.primary,
+  designTokens.spacing.margin.pageStructureTitleToDescription,
 ].join(' ');
 
 export const supportSectionLeadStyles = [
-  'mb-5',
-  designTokens.typography.cardTitle,
+  designTokens.typography.body,
   designTokens.colors.text.primary,
+  'font-semibold',
+  'mb-[15px]',
 ].join(' ');
 
 export const supportSectionTextStyles = [
-  'max-w-[980px]',
   designTokens.typography.body,
   designTokens.colors.text.primary,
 ].join(' ');
 
 export const supportSectionActionsStyles = [
-  'mt-8 flex flex-col justify-center gap-4 sm:mt-10 sm:flex-row',
+  'mt-[40px] lg:mt-[60px]',
+  'flex flex-col items-center justify-center gap-5 lg:flex-row lg:gap-[30px]',
 ].join(' ');
 

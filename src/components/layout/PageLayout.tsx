@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { uiTokens, designTokens } from '../ui';
+import { PageSectionHeadingProvider } from './PageSection';
 import { Footer } from './Footer/Footer';
 import { Header } from './Header/Header';
 import bgDecorLeft from '../../assets/bg_decor_left.webp';
@@ -144,9 +145,14 @@ export function PageLayout({ children }: { children: React.ReactNode }) {
             'relative',
             uiTokens.container,
             designTokens.spacing.padding.pageMain,
+            // global vertical spacing for all direct children (sections/blocks) inside main:
+            // - padding-top provides anchor offset
+            // - margin-bottom separates blocks; total gap = next padding-top + prev margin-bottom
+            '[&>*:not(:first-child)]:pt-[20px] lg:[&>*:not(:first-child)]:pt-[60px]',
+            '[&>*:not(:last-child)]:mb-[60px] lg:[&>*:not(:last-child)]:mb-[180px]',
           ].join(' ')}
         >
-          {children}
+          <PageSectionHeadingProvider>{children}</PageSectionHeadingProvider>
         </main>
         <Footer />
       </div>

@@ -1,22 +1,20 @@
-import { cva } from 'class-variance-authority';
 import { designTokens } from '../../ui';
 
-export const pageStructureRootStyles = cva(
-  ['pt-10 sm:pt-16 pb-10 sm:pb-14'].join(' '),
-);
+export const pageSectionRootStyles = '';
 
-export const pageStructureTitleStyles = [
+export const pageSectionTitleStyles = [
   designTokens.typography.h1h2,
   designTokens.colors.text.primary,
+  'text-center lg:text-left',
   designTokens.spacing.margin.pageStructureTitleToDescription,
 ].join(' ');
 
-export const pageStructureDescriptionStyles = [
+export const pageSectionDescriptionStyles = [
   designTokens.typography.body,
-  designTokens.colors.text.muted,
+  'text-center lg:text-left',
 ].join(' ');
 
-export const pageStructureTitlenSubStyles =
+export const pageSectionContentOffsetStyles =
   (designTokens.spacing.margin as unknown as Record<string, string>).pageStructureHeaderToContent ??
   'mt-[40px] lg:mt-[60px]';
 

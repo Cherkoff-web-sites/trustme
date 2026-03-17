@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
-import { PageStructure } from '../../components/layout/PageStructure/PageStructure';
+import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
 import { SupportSection } from '../../components/features/Support/SupportSection';
 import { TariffPlanCard, type TariffPlanCardData } from '../../components/features/TariffPlanCard';
-import { AlertBanner, Button, Card, FilterChip, OptionIndicator, SectionHeader, SelectedIcon } from '../../components/ui';
+import { AlertBanner, Button, Card, FilterChip, OptionIndicator, SelectedIcon } from '../../components/ui';
 
 export function TariffPage() {
   const plans: TariffPlanCardData[] = [
@@ -55,7 +55,8 @@ export function TariffPage() {
 
   return (
     <PageLayout>
-      <PageStructure title="Тариф" description="Управляйте тарифом аккаунта">
+      <PageSection title="Тариф" description="Управляйте тарифом аккаунта">
+
         <AlertBanner text="Тариф заканчивается через 3 дня. Пополните баланс или измените тариф, чтобы избежать отключения от сервиса проверки контрагентов «Trust Me»." />
 
         <Card title="Текущий тариф">
@@ -64,7 +65,7 @@ export function TariffPage() {
               <div className="text-[18px] leading-[0.95] font-semibold uppercase text-white sm:text-[36px]">
                 Индивидуальный
               </div>
-              <p className="mt-3 text-[#FDFEFF]/70">
+              <p className="mt-3 text-[#FDFEFF]">
                 Списания с баланса аккаунта совершаются согласно текущему тарифу
               </p>
             </div>
@@ -75,29 +76,29 @@ export function TariffPage() {
         </Card>
 
         <CurrentTariffInfoModal open={showCurrentTariffModal} onClose={() => setShowCurrentTariffModal(false)} />
-      </PageStructure>
+      </PageSection>
 
-      <section className="pt-14 sm:pt-20">
-        <SectionHeader title="Оформление подписки" description="Выберите подходящий для вас тарифный план" />
+      <PageSection
+        title="Оформление подписки"
+        description="Выберите подходящий для вас тарифный план"
+      >
         <div className="grid gap-4 xl:grid-cols-3">
           {plans.map((plan) => (
             <TariffPlanCard key={plan.title} plan={plan} />
           ))}
         </div>
-      </section>
+      </PageSection>
 
-      <section className="pt-14 sm:pt-20">
-        <SectionHeader
-          title="Индивидуальный тариф"
-          description="Настройте индивидуальный тариф под задачи вашего бизнеса и узнайте стоимость мгновенно"
-        />
-
+      <PageSection
+        title="Индивидуальный тариф"
+        description="Настройте индивидуальный тариф под задачи вашего бизнеса и узнайте стоимость мгновенно"
+      >
         <div className="grid gap-4 xl:grid-cols-[1.55fr_0.75fr]">
           <Card>
             <div className="space-y-8">
               <div>
                 <h3 className="mb-4 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Функциональные модули тарифа</h3>
-                <div className="space-y-3 text-[#FDFEFF]/85">
+                <div className="space-y-3 text-[#FDFEFF]">
                   {['Скоринг', 'Упоминания в СМИ', 'Упоминания в Telegram'].map((label) => (
                     <label className="flex items-center gap-3" key={label}>
                       <OptionIndicator type="checkbox" checked={false} />
@@ -125,13 +126,13 @@ export function TariffPage() {
               <div>
                 <h3 className="mb-4 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Учетные записи</h3>
                 <div className="inline-flex items-center overflow-hidden rounded-[8px] border border-white/20">
-                  <button className="h-9 w-9 bg-white/5 text-white/85" type="button">
+                  <button className="h-9 w-9 bg-white/5 text-[#FDFEFF]" type="button">
                     -
                   </button>
                   <span className="inline-flex h-9 min-w-10 items-center justify-center bg-transparent px-3 text-white">
                     1
                   </span>
-                  <button className="h-9 w-9 bg-white/5 text-white/85" type="button">
+                  <button className="h-9 w-9 bg-white/5 text-[#FDFEFF]" type="button">
                     +
                   </button>
                 </div>
@@ -141,7 +142,7 @@ export function TariffPage() {
 
           <Card>
             <h3 className="mb-5 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Расчет стоимости тарифа</h3>
-            <div className="space-y-4 text-[#FDFEFF]/85">
+            <div className="space-y-4 text-[#FDFEFF]">
               {['Скоринг', 'Упоминания в СМИ', 'Упоминания в Telegram', '7 дней', '2 учетные записи'].map((item) => (
                 <div className="flex items-center gap-3" key={item}>
                   <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#057889] text-[#FDFEFF]">
@@ -162,7 +163,7 @@ export function TariffPage() {
             </Button>
           </Card>
         </div>
-      </section>
+      </PageSection>
 
       <SupportSection />
     </PageLayout>
