@@ -60,7 +60,7 @@ export function DashboardPage() {
 
   return (
     <PageLayout>
-      <AlertBanner className="mb-4">
+      <AlertBanner className="mb-4 lg:mb-0 lg:absolute lg:left-[30px] lg:right-[30px] lg:top-[180px] lg:z-20 lg:-translate-y-[calc(100%+30px)]">
         <p className="m-0">
           Тариф заканчивается через 3 дня. Пополните баланс или измените тариф, чтобы избежать отключения от сервиса
           проверки контрагентов «Trust Me».
@@ -88,14 +88,13 @@ export function DashboardPage() {
 
               <Input placeholder="Введите ИНН / ОГРН / ФИО" />
 
-              <Button className="mt-4 w-full">
-                Запустить проверку
+              <Button asChild className="mt-4 w-full">
+                <Link to="/new-check">Запустить проверку</Link>
               </Button>
 
               <p
                 className={combineStyles(
                   'mt-4',
-                  designTokens.typography.body,
                   'leading-[1.45]',
                   designTokens.colors.text.muted,
                 )}

@@ -4,6 +4,7 @@ import {
   pageStructureDescriptionStyles,
   pageStructureRootStyles,
   pageStructureTitleStyles,
+  pageStructureTitlenSubStyles,
 } from './PageStructure.styles';
 
 export interface PageStructureProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
@@ -14,11 +15,11 @@ export interface PageStructureProps extends Omit<React.HTMLAttributes<HTMLElemen
 export function PageStructure({ title, description, children, className, ...props }: PageStructureProps) {
   return (
     <section className={cn(pageStructureRootStyles, className)} {...props}>
-      <header>
+      <div>
         <h1 className={pageStructureTitleStyles}>{title}</h1>
         {description ? <p className={pageStructureDescriptionStyles}>{description}</p> : null}
-      </header>
-      <div className="mt-8">{children}</div>
+      </div>
+      <div className={pageStructureTitlenSubStyles}>{children}</div>
     </section>
   );
 }

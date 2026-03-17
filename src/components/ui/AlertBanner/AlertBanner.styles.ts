@@ -1,12 +1,23 @@
 import { cva } from 'class-variance-authority';
+import { designTokens } from '../design-tokens';
 
 export const alertBannerStyles = cva(
-  'flex items-center gap-3 rounded-[28px] px-4 py-4 text-base font-normal sm:px-6 lg:text-[18px]',
+  [
+    // spacing
+    'mb-[20px] lg:mb-[60px]',
+    // card tokens (border/bg/rounded + paddings)
+    designTokens.presets.card.default,
+    designTokens.spacing.padding.cardVertical,
+    designTokens.spacing.padding.cardHorizontal,
+    // banner layout/typography
+    'flex items-center gap-3',
+    'text-base font-normal lg:text-[18px]',
+  ].join(' '),
   {
     variants: {
       tone: {
-        warning: 'border border-[#FDFEFF] bg-[#1A1A1A] text-[#FDFEFF]/90',
-        info: 'border border-[#057889]/50 bg-[#1A1A1A] text-[#FDFEFF]/90',
+        warning: 'text-[#FDFEFF]/90',
+        info: 'border border-[#057889]/50 text-[#FDFEFF]/90',
       },
     },
     defaultVariants: {
@@ -16,12 +27,12 @@ export const alertBannerStyles = cva(
 );
 
 export const alertBannerIconStyles = cva(
-  'inline-flex h-6 w-6 items-center justify-center rounded-md text-[#1A1A1A]',
+  'inline-flex h-6 w-6 items-center justify-center',
   {
     variants: {
       tone: {
-        warning: 'bg-[#EBA535]',
-        info: 'bg-[#057889]',
+        warning: '',
+        info: '',
       },
     },
     defaultVariants: {

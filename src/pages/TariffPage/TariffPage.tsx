@@ -56,12 +56,7 @@ export function TariffPage() {
   return (
     <PageLayout>
       <PageStructure title="Тариф" description="Управляйте тарифом аккаунта">
-        <AlertBanner className="mb-4">
-          <p className="m-0">
-            Тариф заканчивается через 3 дня. Пополните баланс или измените тариф, чтобы избежать отключения от сервиса
-            проверки контрагентов «Trust Me».
-          </p>
-        </AlertBanner>
+        <AlertBanner text="Тариф заканчивается через 3 дня. Пополните баланс или измените тариф, чтобы избежать отключения от сервиса проверки контрагентов «Trust Me»." />
 
         <Card title="Текущий тариф">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">

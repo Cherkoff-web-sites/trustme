@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { MAIN_NAV_ITEMS } from '../../../shared/navConfig';
 import { uiTokens } from '../../ui';
@@ -11,6 +11,7 @@ export function Header() {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [currentAccount, setCurrentAccount] = useState('user.example@gmail.com');
 
   const accounts = [
@@ -21,13 +22,68 @@ export function Header() {
 
   const handleLogout = () => {
     setShowAccountMenu(false);
+    setShowMobileMenu(false);
     navigate('/');
   };
+
+  useEffect(() => {
+    if (!showMobileMenu) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [showMobileMenu]);
 
   return (
     <>
       <header className={`${uiTokens.container} pt-6 pb-5 sm:pt-8`}>
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        {/* Mobile header (<= lg) */}
+        <div className="grid grid-cols-[44px_1fr_88px] items-center lg:hidden">
+          <button
+            type="button"
+            onClick={() => setShowMobileMenu(true)}
+            aria-label="Открыть меню"
+            className="inline-flex h-11 w-11 items-center justify-center text-[#FDFEFF]"
+          >
+            <svg width="28" height="20" viewBox="0 0 28 20" fill="none" aria-hidden>
+              <path d="M1 1H27" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M1 10H27" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M1 19H27" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+
+          <Link to="/cabinet" className="justify-self-center" aria-label="Trust Me — на главную">
+            <span className="block text-center text-[36px] font-black tracking-[0.08em] text-[#FDFEFF]">
+              TRUST&nbsp;ME
+            </span>
+          </Link>
+
+          <div className="flex items-center justify-end gap-3">
+            <button
+              className="relative inline-flex h-11 w-11 items-center justify-center rounded-[100px] border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]/85"
+              type="button"
+              onClick={() => setShowNotifications(true)}
+              aria-label="Уведомления"
+            >
+              <img src={notificationsSvg} alt="" width={19} height={20} className="h-5 w-5" />
+              <span className="absolute right-1.5 top-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#FF3B30] px-1 text-[12px] font-semibold text-white">
+                1
+              </span>
+            </button>
+            <button
+              className="inline-flex h-11 w-11 items-center justify-center rounded-[100px] border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]/85"
+              type="button"
+              onClick={() => setShowAccountMenu((current) => !current)}
+              aria-label="Аккаунт"
+            >
+              <img src={accountSvg} alt="" width={20} height={20} className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Desktop header (lg+) */}
+        <div className="hidden lg:flex lg:flex-col lg:gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:gap-10">
             <Link to="/cabinet" className="flex shrink-0" aria-label="Trust Me — на главную">
               <img src={logoSvg} alt="" width={122} height={29} className="h-7 w-auto lg:h-8" />
@@ -127,6 +183,106 @@ export function Header() {
           </div>
         </div>
       </header>
+
+      {/* Mobile full-screen menu */}
+      {showMobileMenu ? (
+        <div className="fixed inset-0 z-50 bg-[#1A1A1A] lg:hidden">
+          <div className={`${uiTokens.container} flex h-full flex-col py-8`}>
+            <div className="flex items-center justify-between">
+              <img src={logoSvg} alt="" className="h-7 w-auto" />
+              <button
+                type="button"
+                onClick={() => setShowMobileMenu(false)}
+                aria-label="Закрыть меню"
+                className="inline-flex h-11 w-11 items-center justify-center text-[#FDFEFF]"
+              >
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden>
+                  <path d="M7 7L21 21" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                  <path d="M21 7L7 21" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
+
+            <nav className="mt-14 flex flex-1 flex-col items-center justify-start gap-10 text-center text-[22px] font-semibold text-[#FDFEFF]">
+              {MAIN_NAV_ITEMS.map(([label, to]) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  onClick={() => setShowMobileMenu(false)}
+                  className={({ isActive }) =>
+                    `transition-colors ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
+                  }
+                >
+                  {label}
+                </NavLink>
+              ))}
+            </nav>
+
+            <div className="pb-2">
+              <button
+                type="button"
+                onClick={() => setShowAccountMenu((v) => !v)}
+                className="flex w-full items-center justify-between rounded-[999px] border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 px-6 py-5 text-[18px] font-semibold text-[#FDFEFF]"
+                aria-haspopup="menu"
+                aria-expanded={showAccountMenu}
+              >
+                <span className="truncate">{currentAccount}</span>
+                <img
+                  src={chevronSvg}
+                  alt=""
+                  width={20}
+                  height={20}
+                  className={`h-5 w-5 shrink-0 transition-transform ${showAccountMenu ? 'rotate-180' : ''}`}
+                />
+              </button>
+
+              {showAccountMenu ? (
+                <div className="mt-3 max-h-[180px] overflow-y-auto rounded-[24px] border border-[#FDFEFF]/15 bg-[#121212] px-6 py-4">
+                  <div className="space-y-3">
+                    {accounts.map((account) => (
+                      <button
+                        key={account}
+                        type="button"
+                        onClick={() => {
+                          setCurrentAccount(account);
+                          setShowAccountMenu(false);
+                        }}
+                        className="block w-full border-b border-[#FDFEFF]/10 pb-3 text-left text-[16px] text-[#FDFEFF]/92"
+                      >
+                        {account}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              <button
+                type="button"
+                className="mt-4 flex w-full items-center justify-center gap-3 rounded-[999px] border border-[#FDFEFF]/20 bg-transparent px-6 py-5 text-[18px] font-semibold text-[#FDFEFF]"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path d="M12 20H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M16.5 3.5A2.121 2.121 0 0 1 19.5 6.5L8 18l-4 1 1-4 11.5-11.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span>Добавить учетную запись</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="mt-5 flex w-full items-center justify-center gap-3 rounded-[999px] bg-[#F6E6E6] px-6 py-5 text-[20px] font-semibold text-[#FF3B30]"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path d="M10 17L15 12L10 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M15 12H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M20 19V5C20 4.44772 19.5523 4 19 4H12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span>Выйти</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {showNotifications && (
         <div

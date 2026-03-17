@@ -109,6 +109,10 @@ export interface SpacingMarginTokens {
   vertical: string;
   /** Крупные вертикальные расстояния между секциями (H1 + H2 и т.п.). */
   block: string;
+  /** Отступ между Title+Sub и контентом в PageStructure. */
+  pageStructureHeaderToContent: string;
+  /** Отступ между заголовком и описанием в PageStructure. */
+  pageStructureTitleToDescription: string;
 }
 
 export interface SpacingGapTokens {
@@ -208,7 +212,7 @@ export const designTokens: DesignTokens = {
 
   typography: {
     body: 'text-[16px] lg:text-[24px] font-normal', // основной текст
-    h1h2: 'text-[24px] lg:text-[48px] font-semibold', // заголовки страниц
+    h1h2: 'text-[24px] lg:text-[48px] font-semibold uppercase', // заголовки страниц
     h3: 'text-[16px] lg:text-[24px] font-semibold', // заголовки карточек
     button: 'text-[14px] lg:text-[20px] font-semibold', // текст кнопок
     cardBody: 'text-[18px] lg:text-[16px] font-normal', // подписи внутри карточек
@@ -227,13 +231,15 @@ export const designTokens: DesignTokens = {
     padding: {
       button: 'px-[20px] py-[20px] lg:px-[60px]', // кнопки: 20px, PC: 60px по горизонтали
       cardVertical: 'py-[30px]', // плитки: 30px top/bottom
-      cardHorizontal: 'px-[30px] lg:px-[15px]', // плитки: 30px / 15px left/right (mobile / desktop)
+      cardHorizontal: 'px-[15px] lg:px-[30px]', // плитки: 30px / 15px left/right (mobile / desktop)
       pageMain: 'pt-[80px] pb-[80px] lg:pt-[180px] lg:pb-[240px]', // вертикальные отступы основного контента
     },
     margin: {
       horizontal: 'mx-[32px]', // 32px — расстояние между плитками по горизонтали (при inline‑использовании)
       vertical: 'my-[30px] lg:my-[20px]', // 30px / 20px — вертикальные отступы
       block: 'my-[240px] lg:my-[80px]', // крупные отступы между блоками
+      pageStructureHeaderToContent: 'mt-[40px] lg:mt-[60px]', // отступ между Title+Sub и контентом
+      pageStructureTitleToDescription: 'mb-[20px] lg:mb-[30px]', // нижний отступ заголовка перед описанием
     },
     gap: {
       cardHorizontal: 'gap-x-[32px]', // gap между плитками по горизонтали
