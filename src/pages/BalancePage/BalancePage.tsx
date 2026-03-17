@@ -10,7 +10,7 @@ import {
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageStructure } from '../../components/layout/PageStructure/PageStructure';
 import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
-import { Button, Card, SectionHeader, uiTokens, designTokens } from '../../components/ui';
+import { Button, Card, SectionHeader, designTokens } from '../../components/ui';
 import { combineStyles } from '../../lib/combineStyles';
 import walletSvg from '../../assets/icons/wallet.svg';
 
@@ -200,7 +200,7 @@ export function BalancePage() {
         </Card>
       </PageStructure>
 
-      <section className={`${uiTokens.container} pt-14 sm:pt-20`}>
+      <section className="pt-14 sm:pt-20">
         <SectionHeader
           title="История операций"
           description="Вы можете отслеживать историю операций на вашем аккаунте, выбрав нужные данные"

@@ -4,7 +4,7 @@ import { PageStructure } from '../../components/layout/PageStructure/PageStructu
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
 import { SupportSection } from '../../components/features/Support/SupportSection';
 import { TariffPlanCard, type TariffPlanCardData } from '../../components/features/TariffPlanCard';
-import { AlertBanner, Button, Card, FilterChip, OptionIndicator, SectionHeader, SelectedIcon, uiTokens } from '../../components/ui';
+import { AlertBanner, Button, Card, FilterChip, OptionIndicator, SectionHeader, SelectedIcon } from '../../components/ui';
 
 export function TariffPage() {
   const plans: TariffPlanCardData[] = [
@@ -77,7 +77,7 @@ export function TariffPage() {
         <CurrentTariffInfoModal open={showCurrentTariffModal} onClose={() => setShowCurrentTariffModal(false)} />
       </PageStructure>
 
-      <section className={`${uiTokens.container} pt-14 sm:pt-20`}>
+      <section className="pt-14 sm:pt-20">
         <SectionHeader title="Оформление подписки" description="Выберите подходящий для вас тарифный план" />
         <div className="grid gap-4 xl:grid-cols-3">
           {plans.map((plan) => (
@@ -86,7 +86,7 @@ export function TariffPage() {
         </div>
       </section>
 
-      <section className={`${uiTokens.container} pt-14 sm:pt-20`}>
+      <section className="pt-14 sm:pt-20">
         <SectionHeader
           title="Индивидуальный тариф"
           description="Настройте индивидуальный тариф под задачи вашего бизнеса и узнайте стоимость мгновенно"
