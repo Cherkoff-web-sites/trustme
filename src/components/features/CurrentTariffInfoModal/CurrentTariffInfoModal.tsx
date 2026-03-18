@@ -36,7 +36,7 @@ export function CurrentTariffInfoModal({
             key={item.label}
             className={`${currentTariffInfoItemStyles} ${item.positive ? 'text-[#45C857]' : 'text-[#F45353]'}`}
           >
-            <OptionIndicator type="radio" checked={false} className="border-white/45" />
+            <OptionIndicator type="radio" checked={false} />
             <span>{item.label}</span>
           </li>
         ))}

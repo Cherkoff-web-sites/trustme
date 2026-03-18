@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
-import { SupportSection } from '../../components/features/Support/SupportSection';
+import { SupportSection } from '../../components/layout/SupportSection/SupportSection';
 import { TariffPlanCard, type TariffPlanCardData } from '../../components/features/TariffPlanCard';
 import { AlertBanner, Button, Card, FilterChip, OptionIndicator, SelectedIcon } from '../../components/ui';
 

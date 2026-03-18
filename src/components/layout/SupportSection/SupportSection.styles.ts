@@ -4,7 +4,7 @@ export const supportSectionWrapStyles = '';
 
 export const supportSectionCardStyles = [
   'lg:p-[60px]',
-  'bg-[linear-gradient(117.04deg,rgba(26,26,26,0.2)0.57%,rgba(14,184,210,0.2)48.85%,rgba(28,56,73,0.2)100%),rgba(5,120,137,0.1)]',
+  '[background:linear-gradient(117.04deg,rgba(26,26,26,0.2)_0.57%,rgba(14,184,210,0.2)_48.85%,rgba(28,56,73,0.2)_100%),rgba(5,120,137,0.1)]',
 ].join(' ');
 
 export const supportSectionTitleStyles = [

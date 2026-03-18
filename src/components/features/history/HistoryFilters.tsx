@@ -87,7 +87,7 @@ export function HistoryFilters({
               onClick={() => onChange(option.value)}
               className="flex w-full items-center gap-2.5 text-left text-base text-[#FDFEFF] transition hover:text-[#FDFEFF]"
             >
-              <OptionIndicator type="checkbox" checked={value === option.value} />
+              <OptionIndicator type="radio" checked={value === option.value} />
               <span>{option.label}</span>
             </button>
           ))}

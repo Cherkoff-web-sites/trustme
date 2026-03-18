@@ -14,6 +14,7 @@ export interface PersonTypeSwitcherProps<T extends string> {
   options: Array<PersonTypeOption<T>>;
   onChange: (value: T) => void;
   className?: string;
+  indicatorMode?: 'default' | 'settings';
 }
 
 export function PersonTypeSwitcher<T extends string>({
@@ -21,6 +22,7 @@ export function PersonTypeSwitcher<T extends string>({
   options,
   onChange,
   className,
+  indicatorMode = 'default',
 }: PersonTypeSwitcherProps<T>) {
   return (
     <div className={`${personTypeSwitcherWrapStyles} ${className ?? ''}`}>
@@ -31,7 +33,7 @@ export function PersonTypeSwitcher<T extends string>({
           className={personTypeSwitcherOptionStyles}
           onClick={() => onChange(option.value)}
         >
-          <OptionIndicator type="radio" checked={value === option.value} />
+          <OptionIndicator type="radio" checked={value === option.value} mode={indicatorMode} />
           {option.label}
         </button>
       ))}

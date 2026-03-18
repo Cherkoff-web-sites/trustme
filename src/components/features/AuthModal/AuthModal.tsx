@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ModalShell } from '../../ui/ModalShell/ModalShell';
-import { Button, Input } from '../../ui';
+import { Button, Input, OptionIndicator } from '../../ui';
 import { cn } from '../../../lib/cn';
 
 export interface AuthModalProps {
@@ -146,19 +146,21 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
         ) : (
           <>
             {/* Account type: Юридическое лицо | Физическое лицо */}
-            <nav className="flex gap-6 border-b border-[#FDFEFF]/15">
+            <nav className="flex flex-col gap-3 border-b border-[#FDFEFF]/15 pb-4 sm:flex-row sm:items-center sm:gap-6">
               <button
                 type="button"
-                className={cn(tabLabel, accountType === 'legal' ? tabActive : tabInactive)}
+                className={cn('inline-flex items-center gap-[10px] text-left', tabLabel, tabInactive)}
                 onClick={() => setAccountType('legal')}
               >
+                <OptionIndicator type="radio" checked={accountType === 'legal'} />
                 Юридическое лицо
               </button>
               <button
                 type="button"
-                className={cn(tabLabel, accountType === 'individual' ? tabActive : tabInactive)}
+                className={cn('inline-flex items-center gap-[10px] text-left', tabLabel, tabInactive)}
                 onClick={() => setAccountType('individual')}
               >
+                <OptionIndicator type="radio" checked={accountType === 'individual'} />
                 Физическое лицо
               </button>
             </nav>

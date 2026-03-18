@@ -37,6 +37,7 @@ export function DashboardPage() {
   const [showTopUpModal, setShowTopUpModal] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState('300');
   const [topUpStep, setTopUpStep] = useState<TopUpStep>('form');
+  const [newCheckPersonType, setNewCheckPersonType] = useState<'legal' | 'individual'>('legal');
 
   const handleOpenTopUp = () => {
     setTopUpStep('form');
@@ -77,14 +78,26 @@ export function DashboardPage() {
                   designTokens.colors.text.primary,
                 )}
               >
-                <label className="flex items-center gap-2.5">
-                  <OptionIndicator type="radio" checked={false} />
+                <button
+                  type="button"
+                  className="flex items-center gap-[10px] text-left"
+                  onClick={() => setNewCheckPersonType('legal')}
+                >
+                  <OptionIndicator type="radio" checked={newCheckPersonType === 'legal'} className="h-[22px] w-[22px]" />
                   Юридическое лицо
-                </label>
-                <label className="flex items-center gap-2.5">
-                  <OptionIndicator type="radio" checked={false} />
+                </button>
+                <button
+                  type="button"
+                  className="flex items-center gap-[10px] text-left"
+                  onClick={() => setNewCheckPersonType('individual')}
+                >
+                  <OptionIndicator
+                    type="radio"
+                    checked={newCheckPersonType === 'individual'}
+                    className="h-[22px] w-[22px]"
+                  />
                   Физическое лицо
-                </label>
+                </button>
               </div>
 
               <Input placeholder="Введите ИНН / ОГРН / ФИО" />

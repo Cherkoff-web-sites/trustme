@@ -3,7 +3,7 @@ import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { PersonTypeSwitcher } from '../../components/features/PersonTypeSwitcher';
 import { ReportActions } from '../../components/features/ReportActions';
-import { SupportSection } from '../../components/features/Support/SupportSection';
+import { SupportSection } from '../../components/layout/SupportSection/SupportSection';
 import { Button, Card, Input, MoreDetailsSection, uiTokens } from '../../components/ui';
 import { type HistoryItem, ReportContent } from '../../shared/ReportContent';
 import searchSvg from '../../assets/icons/search.svg';

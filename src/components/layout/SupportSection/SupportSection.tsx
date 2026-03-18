@@ -13,12 +13,10 @@ export function SupportSection() {
     <section className={supportSectionWrapStyles}>
       <Card className={supportSectionCardStyles} divider={false}>
         <h2 className={supportSectionTitleStyles}>Остались вопросы?</h2>
-        <p className={supportSectionLeadStyles}>
-          Напишите в службу поддержки и мы вам поможем
-        </p>
+        <p className={supportSectionLeadStyles}>Напишите в службу поддержки и мы вам поможем</p>
         <p className={supportSectionTextStyles}>
-          В рамках тестового запуска web-версии сервиса для проверки контрагентов все пользователи получают неограниченный
-          бесплатный доступ
+          В рамках тестового запуска web-версии сервиса для проверки контрагентов все пользователи получают
+          неограниченный бесплатный доступ
         </p>
       </Card>
 
@@ -29,3 +27,4 @@ export function SupportSection() {
     </section>
   );
 }
+

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { PersonTypeSwitcher } from '../PersonTypeSwitcher';
 import { Button, Input, MoreDetailsSection, OptionIndicator, SectionCard, uiTokens, designTokens } from '../../ui';
 import { combineStyles } from '../../../lib/combineStyles';
@@ -9,6 +10,8 @@ import {
 } from './SettingsProfile.styles';
 
 export function SettingsProfile() {
+  const [personType, setPersonType] = useState<'legal' | 'individual'>('individual');
+
   return (
     <SectionCard title="Основная информация">
       <div className={settingsProfileLayoutStyles}>
@@ -27,8 +30,9 @@ export function SettingsProfile() {
         <div>
           <PersonTypeSwitcher
             className="mb-5 sm:gap-8"
-            value="individual"
-            onChange={() => {}}
+            value={personType}
+            onChange={setPersonType}
+            indicatorMode="settings"
             options={[
               { value: 'legal', label: 'Юридическое лицо' },
               { value: 'individual', label: 'Физическое лицо' },
