@@ -14,6 +14,7 @@ export interface ModalShellProps extends VariantProps<typeof modalPanelStyles> {
   className?: string;
   closeButton?: boolean;
   panelClassName?: string;
+  overlayStyle?: React.CSSProperties;
 }
 
 export function ModalShell({
@@ -24,11 +25,12 @@ export function ModalShell({
   className,
   panelClassName,
   closeButton = true,
+  overlayStyle,
 }: ModalShellProps) {
   if (!open) return null;
 
   return (
-    <div className={cn(modalOverlayStyles, className)} onClick={onClose}>
+    <div className={cn(modalOverlayStyles, className)} style={overlayStyle} onClick={onClose}>
       <div className={cn(modalPanelStyles({ size }), panelClassName)} onClick={(event) => event.stopPropagation()}>
         {closeButton ? (
           <button type="button" aria-label="Закрыть" className={modalCloseButtonStyles} onClick={onClose}>

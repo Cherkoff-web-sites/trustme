@@ -69,7 +69,7 @@ export function NewCheckPage() {
       >
           <Card>
             <PersonTypeSwitcher
-              className="mb-5 sm:gap-6"
+              className="sm:gap-6"
               value={personType}
               onChange={setPersonType}
               options={[
@@ -79,11 +79,11 @@ export function NewCheckPage() {
             />
 
             {personType === 'legal' ? (
-              <div className="flex flex-col gap-4 xl:flex-row">
-                <label className="flex h-14 flex-1 items-center justify-start gap-3 rounded-xl border border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.05))] px-4 text-sm text-[#FDFEFF]">
+              <div className="flex flex-col gap-[30px] lg:gap-4 xl:flex-row">
+                <label className="flex h-12 flex-1 items-center justify-start gap-3 rounded-[10px] border border-[#FDFEFF]/50 bg-[#2A2A2A] p-4 text-base font-normal text-[#FDFEFF] sm:h-14 sm:rounded-xl sm:border-white/15 sm:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.05))] sm:text-sm">
                   <img src={searchSvg} alt="" className="h-5 w-5 shrink-0 text-[#FDFEFF]" aria-hidden />
                   <Input
-                    className="h-auto border-0 bg-transparent px-0 text-sm"
+                    className="h-auto min-w-0 flex-1 border-0 bg-transparent px-0 text-base sm:text-sm"
                     placeholder="ИНН (ЮЛ, ФЛ) / ОГРН"
                     value={legalQuery}
                     onChange={(event) => setLegalQuery(event.target.value)}
@@ -115,17 +115,24 @@ export function NewCheckPage() {
               </div>
             )}
 
-            <MoreDetailsSection className="mt-4">
-              <p className="text-sm text-[#FDFEFF]">
-                Здесь можно разместить дополнительные пояснения по работе проверки и использованию полей формы.
-              </p>
+            <MoreDetailsSection className="">
+              <div className="space-y-4 text-[#FDFEFF]">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-[16px] lg:text-[24px] text-[#FDFEFF]/80">С баланса будет списано:</span>
+                  <span className="text-[16px] lg:text-[24px] font-semibold">100 ₽</span>
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-[16px] lg:text-[24px] text-[#FDFEFF]/80">Ваш текущий тариф:</span>
+                  <span className="text-[16px] lg:text-[24px] font-semibold">Индивидуальный</span>
+                </div>
+              </div>
             </MoreDetailsSection>
           </Card>
       </PageSection>
 
       {reportState !== 'idle' ? (
         <section className={uiTokens.container}>
-          <Card className="px-4 py-6 sm:px-6 sm:py-8" divider={false}>
+          <Card className="px-4 py-6 sm:px-6 sm:py-8">
               {reportState === 'loading' ? (
                 <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
                   <h3 className="text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Формируем отчет</h3>
@@ -150,6 +157,7 @@ export function NewCheckPage() {
                     onOpen={() => setShowInlineReport(true)}
                     openLabel="Открыть отчет"
                     downloadLabel="Скачать отчет"
+                    fullWidthMobile
                   />
                 </div>
               ) : null}
@@ -177,7 +185,7 @@ export function NewCheckPage() {
 
       {reportState === 'ready' && showInlineReport ? (
         <section className={uiTokens.container}>
-          <Card className="overflow-hidden" divider={false}>
+          <Card className="overflow-hidden">
             <ReportContent item={reportItem} />
           </Card>
         </section>

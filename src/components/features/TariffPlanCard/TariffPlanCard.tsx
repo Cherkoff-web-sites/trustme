@@ -24,15 +24,17 @@ export interface TariffPlanCardProps {
 
 export function TariffPlanCard({ plan }: TariffPlanCardProps) {
   return (
-    <Card as="article" className="flex h-full flex-col p-4 sm:p-5" divider={false} variant="tariff">
-      <h3 className="mb-5 text-[24px] leading-[1.05] font-semibold text-white">{plan.title}</h3>
-      <div className={tariffPlanCardPriceRowStyles}>
-        <span className="text-[22px] font-semibold text-[#FDFEFF] line-through sm:text-[34px]">{plan.oldPrice}</span>
-        <span className="text-[28px] font-semibold text-white sm:text-[40px]">{plan.price}</span>
-        <span className="pb-1 text-lg text-[#FDFEFF]">/ {plan.per}</span>
+    <Card as="article" className="flex h-full flex-col" variant="tariff">
+      <h3 className="text-[16px] lg:text-[24px] leading-[1.05] font-semibold text-white">{plan.title}</h3>
+      <div className="">
+        <div className={tariffPlanCardPriceRowStyles}>
+          <span className="text-[22px] font-semibold text-[#FDFEFF] line-through sm:text-[34px]">{plan.oldPrice}</span>
+          <span className="text-[28px] font-semibold text-white sm:text-[40px]">{plan.price}</span>
+          <span className="pb-1 text-lg text-[#FDFEFF]">/ {plan.per}</span>
+        </div>
+        <p className="text-[16px] text-[#FDFEFF]">15% скидка новому пользователю</p>
       </div>
-      <p className="mb-4 text-sm text-[#FDFEFF]">15% скидка новому пользователю</p>
-      <div className="mb-5 h-px w-full bg-white/15" />
+      <div className="h-px w-full bg-white/15" />
 
       <div className={tariffPlanCardFeatureListStyles}>
         {plan.features.map((feature) => (
@@ -41,7 +43,7 @@ export function TariffPlanCard({ plan }: TariffPlanCardProps) {
               {feature.included ? (
                 <SelectedIcon className="h-[18px] w-[26px]" />
               ) : (
-                <img src={lockSvg} alt="" className="h-[18px] w-[18px]" aria-hidden />
+                <img src={lockSvg} alt="" className="" aria-hidden />
               )}
             </span>
             <span className="text-[#FDFEFF]">{feature.label}</span>

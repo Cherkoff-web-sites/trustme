@@ -12,6 +12,7 @@ export interface ReportActionsProps {
   showDelete?: boolean;
   openLabel?: string;
   downloadLabel?: string;
+  fullWidthMobile?: boolean;
 }
 
 export function ReportActions({
@@ -21,14 +22,17 @@ export function ReportActions({
   showDelete = false,
   openLabel = 'Открыть отчёт',
   downloadLabel = 'Скачать отчёт',
+  fullWidthMobile = false,
 }: ReportActionsProps) {
+  const buttonClassName = fullWidthMobile ? 'w-full min-w-0 sm:min-w-[196px]' : 'min-w-[196px]';
+
   return (
     <div className={reportActionsWrapStyles}>
       <div className={reportActionsPrimaryStyles}>
-        <Button className="min-w-[196px]" onClick={onOpen}>
+        <Button className={buttonClassName} onClick={onOpen}>
           {openLabel}
         </Button>
-        <Button className="min-w-[196px]" onClick={onDownload}>
+        <Button className={buttonClassName} onClick={onDownload}>
           {downloadLabel}
         </Button>
       </div>

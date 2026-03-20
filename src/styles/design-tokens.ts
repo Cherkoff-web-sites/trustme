@@ -218,7 +218,7 @@ export const designTokens: DesignTokens = {
     h3: 'text-[16px] lg:text-[24px] font-semibold', // заголовки карточек
     button: 'text-[14px] lg:text-[20px] font-semibold', // текст кнопок
     cardBody: 'text-[18px] lg:text-[16px] font-normal', // подписи внутри карточек
-    cardTitle: 'text-[16px] lg:text-[24px] font-semibold', // заголовки карточек
+    cardTitle: 'text-[18px] lg:text-[24px] font-semibold', // заголовки карточек
     statusText: 'text-[12px] font-normal', // текст статусов под полями
     input: 'text-[16px] lg:text-[14px] font-normal', // инпуты / фильтры
   },

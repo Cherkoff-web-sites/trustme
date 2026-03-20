@@ -13,6 +13,8 @@ import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { type HistoryItem } from '../../shared/ReportContent';
 
 export function HistoryPage() {
+  const [filtersOpenMobile, setFiltersOpenMobile] = useState(false);
+
   const historyItems: HistoryItem[] = [
     {
       type: 'Юридическое лицо',
@@ -214,26 +216,81 @@ export function HistoryPage() {
         title="История запросов"
         description="Все выполненные проверки из Telegram-бота и веб-сервиса «Trust Me»"
       >
-        <HistoryFilters
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          dateFrom={dateFrom}
-          dateTo={dateTo}
-          onDateFromChange={setDateFrom}
-          onDateToChange={setDateTo}
-          categoryFilter={categoryFilter}
-          onCategoryFilterChange={setCategoryFilter}
-          sourceFilter={sourceFilter}
-          onSourceFilterChange={setSourceFilter}
-          statusFilter={statusFilter}
-          onStatusFilterChange={setStatusFilter}
-          sortOrder={sortOrder}
-          onSortOrderChange={setSortOrder}
-          openPanel={openPanel}
-          onTogglePanel={togglePanel}
-          activeChips={activeChips}
-          onReset={resetFilters}
-        />
+        {/* Desktop: оставляем фильтры как есть */}
+        <div className="hidden lg:block">
+          <HistoryFilters
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            dateFrom={dateFrom}
+            dateTo={dateTo}
+            onDateFromChange={setDateFrom}
+            onDateToChange={setDateTo}
+            categoryFilter={categoryFilter}
+            onCategoryFilterChange={setCategoryFilter}
+            sourceFilter={sourceFilter}
+            onSourceFilterChange={setSourceFilter}
+            statusFilter={statusFilter}
+            onStatusFilterChange={setStatusFilter}
+            sortOrder={sortOrder}
+            onSortOrderChange={setSortOrder}
+            openPanel={openPanel}
+            onTogglePanel={togglePanel}
+            activeChips={activeChips}
+            onReset={resetFilters}
+          />
+        </div>
+
+        {/* Mobile: скрываем фильтры, показываем кнопку "Фильтры" */}
+        <div className="lg:hidden">
+          <button
+            type="button"
+            onClick={() => setFiltersOpenMobile((v) => !v)}
+            className="mb-[40px] flex w-full min-h-14 items-center justify-center gap-3 rounded-[100px] border border-[#FDFEFF]/25 bg-[#1A1A1A] px-6 py-4 text-[14px] font-semibold text-[#FDFEFF]"
+          >
+            <svg
+              width="19"
+              height="19"
+              viewBox="0 0 19 19"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden
+            >
+              <path
+                d="M2.5 1.5H16.5L11.5 8V17.5L7.5 13.5V8L2.5 1.5Z"
+                stroke="#FDFEFF"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span>Фильтры</span>
+          </button>
+
+          {filtersOpenMobile ? (
+            <div className="mt-4">
+              <HistoryFilters
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                dateFrom={dateFrom}
+                dateTo={dateTo}
+                onDateFromChange={setDateFrom}
+                onDateToChange={setDateTo}
+                categoryFilter={categoryFilter}
+                onCategoryFilterChange={setCategoryFilter}
+                sourceFilter={sourceFilter}
+                onSourceFilterChange={setSourceFilter}
+                statusFilter={statusFilter}
+                onStatusFilterChange={setStatusFilter}
+                sortOrder={sortOrder}
+                onSortOrderChange={setSortOrder}
+                openPanel={openPanel}
+                onTogglePanel={togglePanel}
+                activeChips={activeChips}
+                onReset={resetFilters}
+              />
+            </div>
+          ) : null}
+        </div>
 
         <div className="space-y-4 sm:space-y-5">
           {filteredAndSortedItems.map((item) => (

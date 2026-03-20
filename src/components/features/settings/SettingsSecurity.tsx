@@ -99,7 +99,7 @@ export function SettingsSecurity({
                 Двухфакторная аутентификация (2FA) обеспечит более надежную защиту вашего аккаунта
               </p>
             </div>
-            <ToggleSwitch checked={twoFactorEnabled} onChange={onToggleTwoFactor} />
+            <ToggleSwitch checked={twoFactorEnabled} onChange={onToggleTwoFactor} className="hidden lg:inline-flex" />
           </div>
 
           <div className="flex items-start justify-between gap-4 border-t border-white/10 pt-6">
@@ -109,7 +109,7 @@ export function SettingsSecurity({
                 Использовать электронную почту для двухфакторной аутентификации
               </p>
             </div>
-            <ToggleSwitch checked={email2faEnabled} onChange={onToggleEmail2fa} />
+            <ToggleSwitch checked={email2faEnabled} onChange={onToggleEmail2fa} className="hidden lg:inline-flex" />
           </div>
         </div>
       </SectionCard>

@@ -26,8 +26,7 @@ export const cardRootStyles = cva(
   },
 );
 
-export const cardHeaderStyles = 'mb-4 flex items-center justify-between gap-4';
+export const cardHeaderStyles = 'flex items-center justify-between gap-4';
 export const cardTitleStyles = designTokens.typography.cardTitle;
 export const cardAsideStyles = designTokens.typography.body;
-export const cardDividerStyles = 'mb-4 h-px w-full bg-[#FDFEFF]/15';
 

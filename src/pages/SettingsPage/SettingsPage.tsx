@@ -9,6 +9,9 @@ import {
 } from '../../components/features/settings';
 import { SettingsSidebarNav } from '../../components/features/SettingsSidebarNav';
 import { Card, uiTokens } from '../../components/ui';
+import profileSettingsSvg from '../../assets/icons/profile_settings.svg';
+import safetySvg from '../../assets/icons/safety.svg';
+import customSvg from '../../assets/icons/custom.svg';
 
 type SettingsTab = 'profile' | 'security' | 'tariff';
 
@@ -46,9 +49,9 @@ export function SettingsPage() {
               activeKey={activeTab}
               onChange={setActiveTab}
               items={[
-                { key: 'profile', label: 'Профиль' },
-                { key: 'security', label: 'Безопасность и вход' },
-                { key: 'tariff', label: 'Персонализация тарифа' },
+                { key: 'profile', label: 'Профиль', icon: profileSettingsSvg },
+                { key: 'security', label: 'Безопасность и вход', icon: safetySvg },
+                { key: 'tariff', label: 'Персонализация тарифа', icon: customSvg },
               ]}
             />
           </Card>

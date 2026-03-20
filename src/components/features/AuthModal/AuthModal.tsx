@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ModalShell } from '../../ui/ModalShell/ModalShell';
 import { Button, Input, OptionIndicator } from '../../ui';
 import { cn } from '../../../lib/cn';
+import fpBgModalPng from '../../../assets/fp_bg_modal.png';
 
 export interface AuthModalProps {
   open: boolean;
@@ -42,7 +43,17 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
   const tabInactive = 'text-[#FDFEFF] hover:text-[#FDFEFF]';
 
   return (
-    <ModalShell open={open} onClose={onClose} size="md">
+    <ModalShell
+      open={open}
+      onClose={onClose}
+      size="md"
+      overlayStyle={{
+        backgroundImage: `url(${fpBgModalPng})`,
+        backgroundPosition: 'center center',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'auto',
+      }}
+    >
       <div className="flex flex-col gap-6 pb-2 pt-2">
         {/* Header */}
         <header className="text-center">

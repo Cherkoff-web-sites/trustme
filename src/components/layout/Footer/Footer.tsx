@@ -28,7 +28,7 @@ export function Footer() {
     <footer
       id="footer"
       className={combineStyles(
-        'relative z-10 mx-4 py-[30px] lg:mx-0 lg:py-20 lg:rounded-none lg:border-x-0 lg:border-b-0 lg:border-t',
+        'relative z-10 mx-4 py-[30px] border lg:mx-0 lg:py-20 lg:rounded-none lg:border-x-0 lg:border-b-0 lg:border-t',
         designTokens.borderRadius.card,
         designTokens.colors.background.page,
         designTokens.colors.border.primary,

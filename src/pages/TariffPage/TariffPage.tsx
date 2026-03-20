@@ -55,7 +55,10 @@ export function TariffPage() {
 
   return (
     <PageLayout>
-      <PageSection title="Тариф" description="Управляйте тарифом аккаунта">
+      <PageSection
+        title={<span className="mx-auto block max-w-[90%] lg:mx-0 lg:max-w-none">Тариф</span>}
+        description="Управляйте тарифом аккаунта"
+      >
 
         <AlertBanner text="Тариф заканчивается через 3 дня. Пополните баланс или измените тариф, чтобы избежать отключения от сервиса проверки контрагентов «Trust Me»." />
 
@@ -65,11 +68,14 @@ export function TariffPage() {
               <div className="text-[18px] leading-[0.95] font-semibold uppercase text-white sm:text-[36px]">
                 Индивидуальный
               </div>
-              <p className="mt-3 text-[#FDFEFF]">
+              <Button className="w-full mb-[15px] mt-[30px] lg:hidden" onClick={() => setShowCurrentTariffModal(true)}>
+                Изменить
+              </Button>
+              <p className="mt-0 lg:mt-3 text-[#FDFEFF] text-[16px] lg:text-[18px]">
                 Списания с баланса аккаунта совершаются согласно текущему тарифу
               </p>
             </div>
-            <Button className="min-w-[180px]" onClick={() => setShowCurrentTariffModal(true)}>
+            <Button className="hidden min-w-[180px] lg:inline-flex" onClick={() => setShowCurrentTariffModal(true)}>
               Изменить тариф
             </Button>
           </div>
@@ -79,7 +85,7 @@ export function TariffPage() {
       </PageSection>
 
       <PageSection
-        title="Оформление подписки"
+        title={<span className="mx-auto block max-w-[90%] lg:mx-0 lg:max-w-none">Оформление подписки</span>}
         description="Выберите подходящий для вас тарифный план"
       >
         <div className="grid gap-4 xl:grid-cols-3">
@@ -90,7 +96,7 @@ export function TariffPage() {
       </PageSection>
 
       <PageSection
-        title="Индивидуальный тариф"
+        title={<span className="mx-auto block max-w-[90%] lg:mx-0 lg:max-w-none">Индивидуальный тариф</span>}
         description="Настройте индивидуальный тариф под задачи вашего бизнеса и узнайте стоимость мгновенно"
       >
         <div className="grid gap-4 xl:grid-cols-[1.55fr_0.75fr]">
@@ -110,7 +116,23 @@ export function TariffPage() {
 
               <div>
                 <h3 className="mb-4 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Длительность тарифа</h3>
-                <div className="flex flex-wrap gap-2">
+                {/* Mobile layout: вертикальный список с примыкающими кнопками */}
+                <div className="overflow-hidden rounded-[16px] border border-[#FDFEFF] bg-[#2A2A2A] lg:hidden">
+                  {durationButtons.map((label, index) => (
+                    <button
+                      key={label}
+                      type="button"
+                      className={`flex p-[15px] w-full items-center justify-center text-[16px] text-[#FDFEFF] ${
+                        index !== durationButtons.length - 1 ? 'border-b border-[#FDFEFF]' : ''
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Desktop layout: оставляем текущие chip-кнопки */}
+                <div className="hidden flex-wrap gap-2 lg:flex">
                   {durationButtons.map((label, index) => (
                     <FilterChip
                       key={label}
@@ -141,7 +163,7 @@ export function TariffPage() {
           </Card>
 
           <Card>
-            <h3 className="mb-5 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Расчет стоимости тарифа</h3>
+            <h3 className="text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Расчет стоимости тарифа</h3>
             <div className="space-y-4 text-[#FDFEFF]">
               {['Скоринг', 'Упоминания в СМИ', 'Упоминания в Telegram', '7 дней', '2 учетные записи'].map((item) => (
                 <div className="flex items-center gap-3" key={item}>
@@ -153,12 +175,12 @@ export function TariffPage() {
               ))}
             </div>
 
-            <div className="mt-8">
+            <div className="">
               <p className="mb-4 text-[22px] font-semibold text-white sm:text-[30px]">Итоговая сумма тарифа:</p>
               <div className="text-[34px] font-semibold text白 sm:text-[52px]">4900 ₽</div>
             </div>
 
-            <Button className="mt-8 w-full">
+            <Button className=" w-full">
               Продолжить
             </Button>
           </Card>

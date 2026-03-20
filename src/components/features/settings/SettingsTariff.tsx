@@ -36,7 +36,7 @@ export function SettingsTariff({
             <h3 className="mb-2 text-[24px] font-semibold text-white">Факторы проверки</h3>
             <p className="m-0 text-base text-[#FDFEFF]">Исключите или добавьте факторы проверки в отчет</p>
           </div>
-          <ToggleSwitch checked={factorsEnabled} onChange={onToggleFactors} />
+          <ToggleSwitch checked={factorsEnabled} onChange={onToggleFactors} className="hidden lg:inline-flex" />
         </div>
 
         <MoreDetailsSection>
@@ -53,12 +53,12 @@ export function SettingsTariff({
         <div className="space-y-5 border-t border-white/10 pt-6">
           <div className="flex items-center justify-between gap-4">
             <span className="text-[22px] font-semibold text-white">Упоминания в СМИ</span>
-            <ToggleSwitch checked={mentionsMediaEnabled} onChange={onToggleMentionsMedia} />
+            <ToggleSwitch checked={mentionsMediaEnabled} onChange={onToggleMentionsMedia} className="hidden lg:inline-flex" />
           </div>
 
           <div className="flex items-center justify-between gap-4">
             <span className="text-[22px] font-semibold text-white">Упоминания в Telegram</span>
-            <ToggleSwitch checked={mentionsTelegramEnabled} onChange={onToggleMentionsTelegram} />
+            <ToggleSwitch checked={mentionsTelegramEnabled} onChange={onToggleMentionsTelegram} className="hidden lg:inline-flex" />
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { settingsSidebarNavItemStyles } from './SettingsSidebarNav.styles';
 export interface SettingsSidebarNavItem<T extends string> {
   key: T;
   label: string;
+  icon?: string;
 }
 
 export interface SettingsSidebarNavProps<T extends string> {
@@ -32,7 +33,11 @@ export function SettingsSidebarNav<T extends string>({
             onClick={() => onChange(item.key)}
             type="button"
           >
-            <span className="mr-3 text-[#FDFEFF]">{isActive ? '◉' : '◌'}</span>
+            {item.icon ? (
+              <img src={item.icon} alt="" className="mr-3 h-[18px] w-[18px] shrink-0" aria-hidden />
+            ) : (
+              <span className="mr-3 text-[#FDFEFF]">{isActive ? '◉' : '◌'}</span>
+            )}
             <span>{item.label}</span>
             {isActive ? <span className="absolute bottom-3 right-0 top-3 w-1 rounded-full bg-[#057889]" /> : null}
           </button>
