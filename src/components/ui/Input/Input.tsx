@@ -1,6 +1,7 @@
 import type { VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import eyeSvg from '../../../assets/icons/eye.svg';
+import eyeOpenSvg from '../../../assets/icons/eye_open.svg';
 import { cn } from '../../../lib/cn';
 import { designTokens } from '../design-tokens';
 import { inputStyles } from './Input.styles';
@@ -34,14 +35,56 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       disabled,
       id,
       type = 'text',
+      value,
+      defaultValue,
+      onChange,
+      onInput,
+      onFocus,
+      onBlur,
       ...props
     },
     ref,
   ) => {
     const [passwordVisible, setPasswordVisible] = React.useState(false);
+    /** `lg:hover` в Tailwind v4 нельзя надёжно склеить с `:not(:focus)` в одном классе — отключаем hover-стили по фокусу через состояние. */
+    const [focused, setFocused] = React.useState(false);
+    const isControlled = value !== undefined;
+    const [uncontrolledFilled, setUncontrolledFilled] = React.useState(
+      () => defaultValue != null && String(defaultValue).length > 0,
+    );
+
+    const filled = isControlled
+      ? String(value ?? '').length > 0
+      : uncontrolledFilled;
+
     const hasError = Boolean(error?.trim());
     const reactId = React.useId();
     const errorMessageId = id ? `${id}-error` : `${reactId}-error`;
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!isControlled) {
+        setUncontrolledFilled(e.target.value.length > 0);
+      }
+      onChange?.(e);
+    };
+
+    const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
+      if (!isControlled) {
+        setUncontrolledFilled(e.currentTarget.value.length > 0);
+      }
+      /** React 19 типизирует `onInput` как `InputEvent`; `FormEvent` совместим по рантайму. */
+      onInput?.(e as unknown as Parameters<NonNullable<typeof onInput>>[0]);
+    };
+
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      setFocused(true);
+      onFocus?.(e);
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setFocused(false);
+      onBlur?.(e);
+    };
 
     const resolvedType =
       passwordToggle && type === 'password'
@@ -50,14 +93,21 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           : 'password'
         : type;
 
+    /** Иконка глаза: правый край 24×24 на отступе 21px от правого края поля; поле `pr-[45px]` = 21 + 24. */
     const passwordToggleNode = passwordToggle ? (
       <button
         type="button"
-        className="inline-flex h-9 w-9 items-center justify-center text-[#FDFEFF] hover:opacity-90"
+        className="inline-flex h-6 w-6 shrink-0 items-center justify-center leading-none text-[#FDFEFF] hover:opacity-90"
         onClick={() => setPasswordVisible((v) => !v)}
         aria-label={passwordVisible ? 'Скрыть пароль' : 'Показать пароль'}
       >
-        <img src={eyeSvg} alt="" width={24} height={24} className="h-6 w-6" />
+        <img
+          src={passwordVisible ? eyeOpenSvg : eyeSvg}
+          alt=""
+          width={24}
+          height={24}
+          className="block h-6 w-6 shrink-0"
+        />
       </button>
     ) : null;
 
@@ -66,12 +116,24 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     const inputClassName = cn(
       inputStyles({ variant }),
-      hasError &&
+      !disabled &&
+        !hasError &&
+        cn(
+          /** Акцент 2 (#0EB8D2) — как `designTokens.colors.accent.secondaryBorder` */
+          'focus:border-[#0EB8D2] focus-visible:border-[#0EB8D2]',
+          !focused &&
+            (filled
+              ? 'lg:hover:border-[#0EB8D2]'
+              : 'lg:hover:bg-[#393939] lg:hover:border-[#FDFEFF]/50'),
+        ),
+      !disabled &&
+        hasError &&
         cn(
           designTokens.colors.border.inputError,
-          'focus:border-[#EB4335]',
+          'focus:border-[#EB4335] focus-visible:border-[#EB4335]',
+          !focused && 'lg:hover:border-[#EB4335]',
         ),
-      hasRightSlot && 'pr-12',
+      hasRightSlot && 'pr-[45px]',
       className,
     );
 
@@ -85,6 +147,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         aria-invalid={hasError || undefined}
         aria-describedby={hasError ? errorMessageId : undefined}
         {...props}
+        value={value}
+        defaultValue={defaultValue}
+        onChange={handleChange}
+        onInput={handleInput}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
       />
     );
 
@@ -93,8 +161,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {hasRightSlot ? (
           <>
             {inputEl}
-            <span className="pointer-events-none absolute inset-y-0 right-0 flex w-12 items-center justify-center">
-              <span className="pointer-events-auto">{resolvedAdornment}</span>
+            <span className="pointer-events-none absolute top-1/2 right-[21px] -translate-y-1/2">
+              <span className="pointer-events-auto flex items-center justify-center">{resolvedAdornment}</span>
             </span>
           </>
         ) : (

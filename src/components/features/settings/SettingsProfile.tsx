@@ -1,6 +1,15 @@
 import { useState } from 'react';
 import { PersonTypeSwitcher } from '../PersonTypeSwitcher';
-import { Button, Input, MoreDetailsSection, OptionIndicator, SectionCard, uiTokens, designTokens } from '../../ui';
+import {
+  Button,
+  Checkbox,
+  Input,
+  Label,
+  LabelCaption,
+  MoreDetailsSection,
+  SectionCard,
+  designTokens,
+} from '../../ui';
 import { combineStyles } from '../../../lib/combineStyles';
 import userPng from '../../../assets/user.png';
 import {
@@ -11,6 +20,7 @@ import {
 
 export function SettingsProfile() {
   const [personType, setPersonType] = useState<'legal' | 'individual'>('individual');
+  const [consentPromo, setConsentPromo] = useState(false);
 
   return (
     <SectionCard title="Основная информация">
@@ -40,25 +50,26 @@ export function SettingsProfile() {
           />
 
           <div className="space-y-4">
-            <label className="flex flex-col gap-2.5">
-              <span className={uiTokens.formLabel}>Никнейм</span>
+            <Label variant="stack">
+              <LabelCaption>Никнейм</LabelCaption>
               <Input defaultValue="user.example@gmail.com" />
-            </label>
+            </Label>
 
-            <label className="flex flex-col gap-2.5">
-              <span className={uiTokens.formLabel}>Текущая почта</span>
+            <Label variant="stack">
+              <LabelCaption>Текущая почта</LabelCaption>
               <Input defaultValue="user.example@gmail.com" />
-            </label>
+            </Label>
 
-            <label
-              className={combineStyles(
-                'flex items-start gap-3',
-                designTokens.colors.text.muted,
-              )}
+            <Label
+              variant="inlineStart"
+              className={combineStyles('gap-3', designTokens.colors.text.muted)}
             >
-              <OptionIndicator type="checkbox" checked={false} className="mt-0.5" />
+              <Checkbox
+                checked={consentPromo}
+                onChange={(e) => setConsentPromo(e.target.checked)}
+              />
               <span>Я даю согласие на получение рекламных материалов на указанный адрес электронной почты</span>
-            </label>
+            </Label>
 
             <MoreDetailsSection className="mt-1">
               <p

@@ -3,6 +3,24 @@ export { Button } from './Button';
 export type { ButtonProps } from './Button';
 export { Input } from './Input';
 export type { InputProps } from './Input';
+export {
+  Checkbox,
+  checkboxBaseClassName,
+  checkboxCheckmarkClassName,
+  checkboxErrorBoxClassName,
+  checkboxErrorClassName,
+  checkboxLabelHoverClassName,
+  checkboxVisualBoxClassName,
+} from './Checkbox';
+export type { CheckboxProps } from './Checkbox';
+export {
+  Label,
+  LabelCaption,
+  labelCheckboxTextClass,
+  labelFieldTextClass,
+  labelStyles,
+} from './Label';
+export type { LabelProps } from './Label';
 export { Card } from './Card/Card';
 export type { CardProps } from './Card/Card';
 export { SectionCard } from './SectionCard';

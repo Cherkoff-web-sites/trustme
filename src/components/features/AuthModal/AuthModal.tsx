@@ -7,12 +7,15 @@ import logoSvg from "../../../assets/icons/logo.svg";
 import {
   Button,
   Card,
+  Checkbox,
   designTokens,
   Input,
+  Label,
   ModalScreenCloseButton,
-  OptionIndicator,
 } from "../../ui";
 import { cn } from "../../../lib/cn";
+import { combineStyles } from "../../../lib/combineStyles";
+import { getPasswordRuleChecks } from "../../../lib/passwordRules";
 import {
   authModalBgLayerMobStyles,
   authModalBgLayerPcImgStyles,
@@ -50,13 +53,29 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
     email?: string;
     password?: string;
   }>({});
+  const [registerFieldErrors, setRegisterFieldErrors] = useState<{
+    email?: string;
+    password?: string;
+    consentPersonal?: string;
+  }>({});
+  const [passwordResetFieldErrors, setPasswordResetFieldErrors] = useState<{
+    email?: string;
+  }>({});
 
   useEffect(() => {
     if (!open) {
       setView("login");
       setLoginFieldErrors({});
+      setRegisterFieldErrors({});
+      setPasswordResetFieldErrors({});
     }
   }, [open]);
+
+  useEffect(() => {
+    setLoginFieldErrors({});
+    setRegisterFieldErrors({});
+    setPasswordResetFieldErrors({});
+  }, [view]);
 
   useEffect(() => {
     if (view !== "emailConfirm" || countdownSec <= 0) return;
@@ -84,21 +103,85 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const next: {
+      email?: string;
+      password?: string;
+      consentPersonal?: string;
+    } = {};
+    if (!email.trim()) next.email = "Обязательное поле";
+    if (!password.trim()) next.password = "Обязательное поле";
+    if (!consentPersonal) next.consentPersonal = "Обязательное поле";
+    setRegisterFieldErrors(next);
+    if (Object.keys(next).length > 0) return;
     setView("emailConfirm");
     setCountdownSec(EMAIL_CONFIRM_COUNTDOWN_SEC);
   };
 
   const handlePasswordResetSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const next: { email?: string } = {};
+    if (!email.trim()) next.email = "Обязательное поле";
+    setPasswordResetFieldErrors(next);
+    if (Object.keys(next).length > 0) return;
     // TODO: API сброса пароля
     setView("login");
   };
 
   if (!open) return null;
 
-  const tabLabel = "text-[14px] font-semibold lg:text-[20px]";
-  const tabActive = "text-[#FDFEFF] border-b-2 border-[#057889] pb-2";
-  const tabInactive = "text-[#FDFEFF] hover:text-[#FDFEFF]";
+  const registerPasswordChecks = getPasswordRuleChecks(password);
+  const registerPasswordRulesStarted = password.length > 0;
+
+  /** Текст переключателя: без semibold */
+  const authSwitcherText =
+    "text-[14px] font-normal lg:text-[20px] text-[#FDFEFF]";
+  const authSwitcherActive = combineStyles(
+    "pb-[8px] lg:pb-[15px] border-b-2",
+    designTokens.colors.accent.secondaryBorder,
+  );
+  const authSwitcherInactive =
+    "pb-[8px] lg:pb-[15px] border-b-2 border-transparent";
+
+  const authModalLoginModeNav = (
+    <nav
+      className="flex w-full justify-center border-b border-[#FDFEFF]/15"
+      aria-label="Режим: вход"
+    >
+      <span className={cn(authSwitcherText, authSwitcherActive, "inline-block text-center")}>
+        Логин и пароль
+      </span>
+    </nav>
+  );
+
+  const authModalRegisterAccountNav = (
+    <nav
+      className="flex w-full border-b border-[#FDFEFF]/15"
+      aria-label="Тип аккаунта"
+    >
+      <button
+        type="button"
+        className={cn(
+          "w-1/2 text-center transition-opacity",
+          authSwitcherText,
+          accountType === "legal" ? authSwitcherActive : authSwitcherInactive,
+        )}
+        onClick={() => setAccountType("legal")}
+      >
+        Юридическое лицо
+      </button>
+      <button
+        type="button"
+        className={cn(
+          "w-1/2 text-center transition-opacity",
+          authSwitcherText,
+          accountType === "individual" ? authSwitcherActive : authSwitcherInactive,
+        )}
+        onClick={() => setAccountType("individual")}
+      >
+        Физическое лицо
+      </button>
+    </nav>
+  );
 
   return (
     <div
@@ -188,44 +271,31 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                 designTokens.spacing.gap.cardInternal,
               )}
             >
-              <nav
-                className={cn(
-                  "flex flex-wrap border-b border-[#FDFEFF]/15",
-                  designTokens.spacing.gap.cardInternal,
-                )}
-              >
-                <button
-                  type="button"
-                  className={cn(tabLabel, tabActive)}
-                  onClick={() => setView("login")}
-                >
-                  Логин и пароль
-                </button>
-                <button
-                  type="button"
-                  className={cn(tabLabel, tabInactive)}
-                  onClick={() => setView("register")}
-                >
-                  Регистрация
-                </button>
-              </nav>
+              {authModalLoginModeNav}
               <div>
-                <label className="mb-1.5 block text-sm text-[#FDFEFF] lg:text-base">
-                  Почта
-                </label>
+                <Label id="auth-modal-reset-email-label">Почта</Label>
                 <Input
+                  id="auth-modal-reset-email"
+                  aria-labelledby="auth-modal-reset-email-label"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="IvanIvanov1999@mail.ru"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setPasswordResetFieldErrors((prev) => ({
+                      ...prev,
+                      email: undefined,
+                    }));
+                  }}
+                  placeholder="ivanIvanov1999@mail.ru"
+                  error={passwordResetFieldErrors.email}
                 />
               </div>
               <div className={authModalEmailInfoBoxStyles}>
                 <p>
-                  Укажите почту, которую вы использовали для регистрации в сервисе «Trust Me».
+                  Укажите почту, которую вы использовали для&nbsp;регистрации в&nbsp;сервисе &laquo;Trust Me&raquo;.
                 </p>
                 <p>
-                  Мы отправим ссылку для сброса текущего пароля.
+                  Мы&nbsp;отправим ссылку для сброса текущего пароля.
                 </p>
               </div>
               <Button type="submit" className="w-full">
@@ -235,41 +305,14 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
           ) : view === "login" ? (
             <form
               onSubmit={handleLoginSubmit}
-              className={cn(
-                "flex flex-col",
-                designTokens.spacing.gap.cardInternal,
-              )}
+              className={cn("flex flex-col gap-[20px] lg:gap-[30px]")}
             >
-              <nav
-                className={cn(
-                  "flex flex-wrap border-b border-[#FDFEFF]/15",
-                  designTokens.spacing.gap.cardInternal,
-                )}
-              >
-                <button
-                  type="button"
-                  className={cn(tabLabel, tabActive)}
-                  onClick={() => setView("login")}
-                >
-                  Логин и пароль
-                </button>
-                <button
-                  type="button"
-                  className={cn(tabLabel, tabInactive)}
-                  onClick={() => setView("register")}
-                >
-                  Регистрация
-                </button>
-              </nav>
+              {authModalLoginModeNav}
               <div>
-                <label
-                  className="mb-1.5 block text-sm text-[#FDFEFF] lg:text-base"
-                  htmlFor="auth-modal-login-email"
-                >
-                  Почта
-                </label>
+                <Label id="auth-modal-login-email-label">Почта</Label>
                 <Input
                   id="auth-modal-login-email"
+                  aria-labelledby="auth-modal-login-email-label"
                   type="email"
                   value={email}
                   onChange={(e) => {
@@ -281,14 +324,10 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                 />
               </div>
               <div>
-                <label
-                  className="mb-1.5 block text-sm text-[#FDFEFF] lg:text-base"
-                  htmlFor="auth-modal-login-password"
-                >
-                  Пароль
-                </label>
+                <Label id="auth-modal-login-password-label">Пароль</Label>
                 <Input
                   id="auth-modal-login-password"
+                  aria-labelledby="auth-modal-login-password-label"
                   type="password"
                   passwordToggle
                   value={password}
@@ -300,20 +339,19 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                   error={loginFieldErrors.password}
                 />
               </div>
-              <div className="flex items-center justify-between">
-                <label className="flex cursor-pointer items-center gap-2 text-sm text-[#FDFEFF] lg:text-base">
-                  <input
-                    type="checkbox"
+              <div className="flex justify-between">
+                <Label variant="inline">
+                  <Checkbox
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 rounded border border-[#FDFEFF]/50 bg-[#2A2A2A] text-[#057889] focus:ring-[#057889]"
                   />
                   Запомнить меня
-                </label>
+                </Label>
                 <button
                   type="button"
-                  className="text-sm text-[#FDFEFF] hover:text-[#FDFEFF] lg:text-base"
+                  className="text-[14px] leading-[17px] lg:text-[16px] lg:leading-[19px]"
                   onClick={() => setView("passwordReset")}
+                  aria-label="Забыли пароль?"
                 >
                   Забыли пароль?
                 </button>
@@ -330,75 +368,97 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                 designTokens.spacing.gap.cardInternal,
               )}
             >
-              <nav
-                className={cn(
-                  "flex flex-col border-b border-[#FDFEFF]/15 pb-4 sm:flex-row sm:items-center",
-                  designTokens.spacing.gap.cardInternal,
-                )}
-              >
-                <button
-                  type="button"
-                  className={cn(
-                    "inline-flex items-center gap-[10px] text-left",
-                    tabLabel,
-                    tabInactive,
-                  )}
-                  onClick={() => setAccountType("legal")}
-                >
-                  <OptionIndicator
-                    type="radio"
-                    checked={accountType === "legal"}
-                  />
-                  Юридическое лицо
-                </button>
-                <button
-                  type="button"
-                  className={cn(
-                    "inline-flex items-center gap-[10px] text-left",
-                    tabLabel,
-                    tabInactive,
-                  )}
-                  onClick={() => setAccountType("individual")}
-                >
-                  <OptionIndicator
-                    type="radio"
-                    checked={accountType === "individual"}
-                  />
-                  Физическое лицо
-                </button>
-              </nav>
+              {authModalRegisterAccountNav}
               <div>
-                <label className="mb-1.5 block text-sm text-[#FDFEFF] lg:text-base">
-                  Почта
-                </label>
+                <Label id="auth-modal-register-email-label">Почта</Label>
                 <Input
+                  id="auth-modal-register-email"
+                  aria-labelledby="auth-modal-register-email-label"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setRegisterFieldErrors((prev) => ({
+                      ...prev,
+                      email: undefined,
+                    }));
+                  }}
                   placeholder=""
+                  error={registerFieldErrors.email}
                 />
               </div>
               <div>
-                <label
-                  className="mb-1.5 block text-sm text-[#FDFEFF] lg:text-base"
-                  htmlFor="auth-modal-register-password"
-                >
-                  Пароль
-                </label>
+                <Label id="auth-modal-register-password-label">Пароль</Label>
                 <Input
                   id="auth-modal-register-password"
+                  aria-labelledby="auth-modal-register-password-label"
                   type="password"
                   passwordToggle
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setRegisterFieldErrors((prev) => ({
+                      ...prev,
+                      password: undefined,
+                    }));
+                  }}
                   placeholder="Введите пароль"
+                  error={registerFieldErrors.password}
                 />
-                <ul className="mt-2 space-y-1 pl-4 text-sm text-[#FDFEFF] lg:text-base">
-                  <li className="list-disc">Не менее 8 символов</li>
-                  <li className="list-disc">
-                    Минимум одна заглавная и одна строчная буква
-                  </li>
-                  <li className="list-disc">Минимум одна цифра</li>
+                <ul className="mt-[15px] flex list-none flex-col gap-[10px] p-0">
+                  {(
+                    [
+                      {
+                        key: "len",
+                        label: "Не менее 8 символов",
+                        ok: registerPasswordChecks.minLength,
+                      },
+                      {
+                        key: "case",
+                        label:
+                          "Минимум одна заглавная и одна строчная буква",
+                        ok: registerPasswordChecks.upperAndLower,
+                      },
+                      {
+                        key: "digit",
+                        label: "Минимум одна цифра",
+                        ok: registerPasswordChecks.hasDigit,
+                      },
+                    ] as const
+                  ).map((rule) => {
+                    const textClass = !registerPasswordRulesStarted
+                      ? "text-[#FDFEFF]"
+                      : rule.ok
+                        ? designTokens.colors.text.statusSuccess
+                        : designTokens.colors.text.statusError;
+                    const dotClass = !registerPasswordRulesStarted
+                      ? "bg-[#FDFEFF]"
+                      : rule.ok
+                        ? designTokens.colors.status.successBg
+                        : designTokens.colors.status.errorBg;
+                    return (
+                      <li
+                        key={rule.key}
+                        className="flex items-center gap-[10px]"
+                      >
+                        <span
+                          className={cn(
+                            "h-[19px] w-[19px] shrink-0 rounded-full",
+                            dotClass,
+                          )}
+                          aria-hidden
+                        />
+                        <span
+                          className={cn(
+                            "text-[14px] leading-[17px] lg:text-[16px] lg:leading-[19px]",
+                            textClass,
+                          )}
+                        >
+                          {rule.label}
+                        </span>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
               <Button type="submit" className="w-full">
@@ -410,27 +470,40 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                   designTokens.spacing.gap.cardInternal,
                 )}
               >
-                <label className="flex cursor-pointer items-start gap-2 text-sm text-[#FDFEFF] lg:text-base">
-                  <input
-                    type="checkbox"
+                <Label variant="inlineStart" className="max-w-[411px]">
+                  <Checkbox
                     checked={consentPersonal}
-                    onChange={(e) => setConsentPersonal(e.target.checked)}
-                    className="mt-1 h-4 w-4 shrink-0 rounded border border-[#FDFEFF]/50 bg-[#2A2A2A] text-[#057889] focus:ring-[#057889]"
+                    error={Boolean(registerFieldErrors.consentPersonal)}
+                    onChange={(e) => {
+                      setConsentPersonal(e.target.checked);
+                      setRegisterFieldErrors((prev) => ({
+                        ...prev,
+                        consentPersonal: undefined,
+                      }));
+                    }}
                   />
                   <span>
                     Регистрируясь, я подтверждаю согласие на обработку
                     персональных данных, указанных в этой веб-форме
                   </span>
-                </label>
-                <label className="flex cursor-pointer items-start gap-2 text-sm text-[#FDFEFF] lg:text-base">
-                  <input
-                    type="checkbox"
+                </Label>
+                {registerFieldErrors.consentPersonal ? (
+                  <p
+                    className={cn(
+                      "mt-1 text-[12px] leading-[18px]",
+                      designTokens.colors.text.statusError,
+                    )}
+                  >
+                    {registerFieldErrors.consentPersonal}
+                  </p>
+                ) : null}
+                <Label variant="inlineStart">
+                  <Checkbox
                     checked={consentPromo}
                     onChange={(e) => setConsentPromo(e.target.checked)}
-                    className="mt-1 h-4 w-4 shrink-0 rounded border border-[#FDFEFF]/50 bg-[#2A2A2A] text-[#057889] focus:ring-[#057889]"
                   />
                   <span>Я даю согласие на получение рекламных материалов</span>
-                </label>
+                </Label>
               </div>
             </form>
           )}

@@ -71,8 +71,8 @@ export const uiTokens = {
   chip:
     'inline-flex items-center gap-2 rounded-[100px] border border-[#FDFEFF]/30 bg-[#1A1A1A] px-3 py-1 text-xs text-[#FDFEFF] hover:bg-[#2A2A2A]',
 
-  /** Лейбл формы. */
-  formLabel: 'text-[15px] leading-[1.2] text-[#FDFEFF]',
+  /** Лейбл формы (см. компонент `Label` / `labelFieldTextClass`). */
+  formLabel: 'text-[16px] text-[#FDFEFF]',
 
   /** Текст внутри карточек. */
   cardBody: designTokens.typography.cardBody,

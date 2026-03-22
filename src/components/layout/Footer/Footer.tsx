@@ -150,7 +150,11 @@ export function Footer() {
           <button
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="hidden h-[70px] w-[70px] shrink-0 items-center justify-center rounded-[100px] bg-[#057889] text-[#FDFEFF] transition hover:shadow-[0_0_20px_#0EB8D2] active:shadow-[0_0_20px_#0EB8D2] md:flex"
+            className={combineStyles(
+              'hidden h-[70px] w-[70px] shrink-0 items-center justify-center rounded-[100px] text-[#FDFEFF] transition md:flex',
+              designTokens.colors.accent.primaryBg,
+              designTokens.colors.accent.secondaryGlowShadow,
+            )}
             aria-label="Наверх"
           >
             <img src={arrowUpSvg} alt="" width={22} height={27} className="h-6 w-5" />
@@ -178,7 +182,10 @@ export function Footer() {
             </h3>
             <button
               type="button"
-              className="inline-flex items-center gap-2.5 rounded-[100px] border border-[#FDFEFF] px-[15px] py-[15px] text-base font-semibold leading-[100%] text-[#FDFEFF] transition hover:bg-gradient-to-b hover:from-[#0EB8D2] active:bg-gradient-to-b active:from-[#0EB8D2] lg:text-[24px] md:items-start md:text-left md:text-[20px] md:leading-[120%]"
+              className={combineStyles(
+                'inline-flex items-center gap-2.5 rounded-[100px] border border-[#FDFEFF] px-[15px] py-[15px] text-base font-semibold leading-[100%] text-[#FDFEFF] transition lg:text-[24px] md:items-start md:text-left md:text-[20px] md:leading-[120%]',
+                designTokens.colors.accent.secondaryGradientFromHover,
+              )}
             >
               <img src={supportSvg} alt="" width={29} height={29} className="h-5 w-5 lg:h-[29px] lg:w-[29px]" />
               Служба поддержки с&nbsp;10:00&nbsp;до&nbsp;22:00

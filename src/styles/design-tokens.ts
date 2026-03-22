@@ -46,6 +46,15 @@ export interface ColorAccentTokens {
   primaryBg: string;
   /** Ховер состояния primary‑фон. */
   primaryBgHover: string;
+  /** Второй акцент (#0EB8D2): рамки, подсветка, градиенты. */
+  secondaryBg: string;
+  secondaryBorder: string;
+  /** Glow для кнопок (напр. «наверх» в футере). */
+  secondaryGlowShadow: string;
+  /** Градиент hover/active (кнопка поддержки в футере). */
+  secondaryGradientFromHover: string;
+  /** Подсветка чекбокса при hover по `Label` / `group`, пока не выбран. */
+  secondaryCheckboxHoverUnchecked: string;
 }
 
 export interface StatusTokens {
@@ -207,6 +216,13 @@ export const designTokens: DesignTokens = {
     accent: {
       primaryBg: 'bg-[#057889]', // основной акцентный фон (кнопки)
       primaryBgHover: 'hover:bg-[#068a9c]', // hover для primary‑кнопок
+      secondaryBg: 'bg-[#0EB8D2]', // акцент 2
+      secondaryBorder: 'border-[#0EB8D2]',
+      secondaryGlowShadow: 'hover:shadow-[0_0_20px_#0EB8D2] active:shadow-[0_0_20px_#0EB8D2]',
+      secondaryGradientFromHover:
+        'hover:bg-gradient-to-b hover:from-[#0EB8D2] active:bg-gradient-to-b active:from-[#0EB8D2]',
+      secondaryCheckboxHoverUnchecked:
+        'group-hover:peer-[:not(:checked)]:border-[#0EB8D2] group-hover:peer-[:not(:checked)]:bg-[#0EB8D2]',
     },
     status: {
       successBg: 'bg-[#34A853]', // фон «успех»

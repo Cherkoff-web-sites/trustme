@@ -1,3 +1,6 @@
+import { combineStyles } from '../../../lib/combineStyles';
+import { designTokens } from '../../../styles/design-tokens';
+
 /**
  * Самостоятельная оболочка окна входа/регистрации (не использует ModalShell).
  */
@@ -8,9 +11,9 @@
 export const authModalOverlayOuterStyles =
   'fixed inset-0 z-[100] overflow-y-auto overflow-x-hidden bg-transparent';
 
-/** Внутренний блок: горизонтально по центру, сверху отступ — моб 136px, ПК 150px (вровень с крестом по top). */
+/** Внутренний блок: моб — отступ сверху 136px; ПК — карточка по центру экрана (вертикально и горизонтально). */
 export const authModalOverlayInnerStyles =
-  'flex min-h-full w-full items-start justify-center px-4 pt-[136px] pb-6 sm:px-6 sm:pb-10 lg:pt-[150px]';
+  'flex min-h-full w-full items-start justify-center px-4 pt-[136px] pb-6 sm:px-6 sm:pb-10 lg:items-center lg:justify-center lg:pt-0 lg:py-10';
 
 /**
  * Слой с декоративными webp: `fixed` к нижнему краю viewport — не уезжает при прокрутке модалки.
@@ -38,6 +41,9 @@ export const authModalCardClassName =
  */
 export const authModalStackGapStyles = 'gap-[40px] lg:gap-[60px]';
 
-/** Информационный блок (письмо отправлено, смена пароля) — рамка teal/cyan. */
-export const authModalEmailInfoBoxStyles =
-  'rounded-[10px] border border-[#0EB8D2] px-4 py-4 text-[#FDFEFF]';
+/** Информационный блок (письмо отправлено, смена пароля) — рамка акцент 2, фон как у `Input`. */
+export const authModalEmailInfoBoxStyles = combineStyles(
+  'flex flex-col gap-[15px] p-[15px] rounded-[10px] border',
+  designTokens.colors.accent.secondaryBorder,
+  designTokens.colors.background.input,
+);

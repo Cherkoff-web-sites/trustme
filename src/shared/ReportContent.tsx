@@ -1,3 +1,6 @@
+import { designTokens } from '../components/ui';
+import { combineStyles } from '../lib/combineStyles';
+
 export type HistoryItem = {
   type: string;
   name: string;
@@ -54,7 +57,12 @@ export function ReportContent({ item }: { item: HistoryItem }) {
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-[#FDFEFF]">Финансовый отчёт</h3>
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.3fr)]">
             <div className="flex items-center justify-center">
-              <div className="flex h-40 w-40 items-center justify-center rounded-full border-[10px] border-[#0EB8D2] border-r-[#2A2A2A] border-t-[#2A2A2A]">
+              <div
+                className={combineStyles(
+                  'flex h-40 w-40 items-center justify-center rounded-full border-[10px] border-r-[#2A2A2A] border-t-[#2A2A2A]',
+                  designTokens.colors.accent.secondaryBorder,
+                )}
+              >
                 <span className="text-[#FDFEFF]">2022 год</span>
               </div>
             </div>

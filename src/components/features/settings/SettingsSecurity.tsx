@@ -1,4 +1,4 @@
-import { Button, Input, SectionCard, SourceBadge, ToggleSwitch, uiTokens } from '../../ui';
+import { Button, Input, Label, LabelCaption, SectionCard, SourceBadge, ToggleSwitch } from '../../ui';
 import {
   settingsSecurityInfoCardStyles,
   settingsSecurityListStyles,
@@ -22,15 +22,15 @@ export function SettingsSecurity({
     <>
       <SectionCard title="Смена пароля">
         <div className={settingsSecurityListStyles}>
-          <label className="flex flex-col gap-2.5">
-            <span className={uiTokens.formLabel}>Текущий пароль</span>
+          <Label variant="stack">
+            <LabelCaption>Текущий пароль</LabelCaption>
             <Input placeholder="Введите пароль" type="password" passwordToggle />
-          </label>
+          </Label>
 
-          <label className="flex flex-col gap-2.5">
-            <span className={uiTokens.formLabel}>Новый пароль</span>
+          <Label variant="stack">
+            <LabelCaption>Новый пароль</LabelCaption>
             <Input placeholder="Введите пароль" type="password" passwordToggle />
-          </label>
+          </Label>
 
           <div className={settingsSecurityRulesStyles}>
             <div className="flex items-center gap-2.5">
@@ -47,10 +47,10 @@ export function SettingsSecurity({
             </div>
           </div>
 
-          <label className="flex flex-col gap-2.5">
-            <span className={uiTokens.formLabel}>Подтверждение нового пароля</span>
+          <Label variant="stack">
+            <LabelCaption>Подтверждение нового пароля</LabelCaption>
             <Input placeholder="Подтвердите новый пароль" type="password" passwordToggle />
-          </label>
+          </Label>
 
           <div className={settingsSecurityInfoCardStyles}>
             <p className="m-0">Если вы не помните текущий пароль, то воспользуйтесь сбросом пароля.</p>
@@ -65,10 +65,10 @@ export function SettingsSecurity({
 
       <SectionCard title="Электронная почта">
         <div className="space-y-5">
-          <label className="flex flex-col gap-2.5">
-            <span className={uiTokens.formLabel}>Текущая почта</span>
+          <Label variant="stack">
+            <LabelCaption>Текущая почта</LabelCaption>
             <Input defaultValue="user.example@gmail.com" />
-          </label>
+          </Label>
 
           <div className="flex flex-col gap-4 sm:flex-row">
             <Button className="min-w-[250px]">Добавить почту</Button>
@@ -79,10 +79,10 @@ export function SettingsSecurity({
 
       <SectionCard title="Номер телефона">
         <div className="space-y-5">
-          <label className="flex flex-col gap-2.5">
-            <span className={uiTokens.formLabel}>Привязанный номер телефона</span>
+          <Label variant="stack">
+            <LabelCaption>Привязанный номер телефона</LabelCaption>
             <Input defaultValue="+7 (800) 555 35 35" />
-          </label>
+          </Label>
 
           <div className="flex flex-col gap-4 sm:flex-row">
             <Button className="min-w-[290px]">Добавить номер телефона</Button>

@@ -108,7 +108,7 @@ export function HistoryFilters({
           >
             <img src={searchSvg} alt="" className="h-5 w-5 shrink-0 text-[#FDFEFF]" aria-hidden />
             <Input
-              className="h-auto min-w-0 flex-1 border-0 bg-transparent px-0 text-base"
+              className="h-auto min-w-0 flex-1 border-0 bg-transparent px-0"
               placeholder="Поиск"
               value={searchQuery}
               onChange={(event) => onSearchChange(event.target.value)}
@@ -152,7 +152,6 @@ export function HistoryFilters({
                     variant="date"
                     value={dateFrom}
                     onChange={(e) => onDateFromChange(e.target.value)}
-                    className="text-base"
                   />
                   <span className="text-[#FDFEFF]">–</span>
                   <Input
@@ -160,7 +159,6 @@ export function HistoryFilters({
                     variant="date"
                     value={dateTo}
                     onChange={(e) => onDateToChange(e.target.value)}
-                    className="text-base"
                   />
                 </div>
                 <div className="border-t border-[#FDFEFF]/15 pt-3">

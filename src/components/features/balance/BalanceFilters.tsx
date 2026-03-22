@@ -1,5 +1,6 @@
 import { AppliedFiltersRow, type AppliedFilterItem } from '../filters';
-import { FilterTrigger, Input, OptionIndicator } from '../../ui';
+import { Checkbox, FilterTrigger, Input, labelCheckboxTextClass } from '../../ui';
+import { combineStyles } from '../../../lib/combineStyles';
 import chevronSvg from '../../../assets/icons/chevron.svg';
 import {
   historyFiltersDropdownPanelStyles,
@@ -68,9 +69,18 @@ export function BalanceFilters({
               key={option.value}
               type="button"
               onClick={() => onChange(option.value)}
-              className="flex w-full items-center gap-2.5 text-left text-base text-[#FDFEFF] transition hover:text-[#FDFEFF]"
+              className={combineStyles(
+                'group flex w-full items-start gap-2.5 text-left text-[#FDFEFF] transition hover:text-[#FDFEFF]',
+                labelCheckboxTextClass,
+              )}
             >
-              <OptionIndicator type="checkbox" checked={value === option.value} />
+              <Checkbox
+                checked={value === option.value}
+                onChange={() => {}}
+                className="pointer-events-none shrink-0"
+                tabIndex={-1}
+                aria-hidden
+              />
               <span>{option.label}</span>
             </button>
           ))}
@@ -99,7 +109,6 @@ export function BalanceFilters({
                     variant="date"
                     value={dateFrom}
                     onChange={(e) => onDateFromChange(e.target.value)}
-                    className="text-base"
                   />
                   <span className="text-[#FDFEFF]">–</span>
                   <Input
@@ -107,7 +116,6 @@ export function BalanceFilters({
                     variant="date"
                     value={dateTo}
                     onChange={(e) => onDateToChange(e.target.value)}
-                    className="text-base"
                   />
                 </div>
                 <div className="border-t border-[#FDFEFF]/15 pt-3">

@@ -1,4 +1,4 @@
-import { Input, SectionCard } from '../../ui';
+import { Input, Label, LabelCaption, SectionCard } from '../../ui';
 import { filterPanelTitleStyles } from './FilterPanels.styles';
 
 export interface DateRangePanelProps {
@@ -24,14 +24,14 @@ export function DateRangePanel({
     <SectionCard variant="compact" className="mb-5">
       <p className={filterPanelTitleStyles}>{title}</p>
       <div className="grid gap-3 sm:grid-cols-2">
-        <label className="space-y-2 text-xs text-[#FDFEFF]">
-          <span className="text-[#FDFEFF]">{fromLabel}</span>
+        <Label variant="stack">
+          <LabelCaption>{fromLabel}</LabelCaption>
           <Input type="date" variant="date" value={fromValue} onChange={(event) => onFromChange(event.target.value)} />
-        </label>
-        <label className="space-y-2 text-xs text-[#FDFEFF]">
-          <span className="text-[#FDFEFF]">{toLabel}</span>
+        </Label>
+        <Label variant="stack">
+          <LabelCaption>{toLabel}</LabelCaption>
           <Input type="date" variant="date" value={toValue} onChange={(event) => onToChange(event.target.value)} />
-        </label>
+        </Label>
       </div>
     </SectionCard>
   );

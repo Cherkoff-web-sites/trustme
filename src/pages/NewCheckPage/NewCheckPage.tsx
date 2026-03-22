@@ -4,7 +4,7 @@ import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { PersonTypeSwitcher } from '../../components/features/PersonTypeSwitcher';
 import { ReportActions } from '../../components/features/ReportActions';
 import { SupportSection } from '../../components/layout/SupportSection/SupportSection';
-import { Button, Card, Input, MoreDetailsSection, uiTokens } from '../../components/ui';
+import { Button, Card, Input, Label, LabelCaption, MoreDetailsSection, uiTokens } from '../../components/ui';
 import { type HistoryItem, ReportContent } from '../../shared/ReportContent';
 import searchSvg from '../../assets/icons/search.svg';
 import loadSvg from '../../assets/icons/load.svg';
@@ -83,7 +83,7 @@ export function NewCheckPage() {
                 <label className="flex h-12 flex-1 items-center justify-start gap-3 rounded-[10px] border border-[#FDFEFF]/50 bg-[#2A2A2A] p-4 text-base font-normal text-[#FDFEFF] sm:h-14 sm:rounded-xl sm:border-white/15 sm:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.05))] sm:text-sm">
                   <img src={searchSvg} alt="" className="h-5 w-5 shrink-0 text-[#FDFEFF]" aria-hidden />
                   <Input
-                    className="h-auto min-w-0 flex-1 border-0 bg-transparent px-0 text-base sm:text-sm"
+                    className="h-auto min-w-0 flex-1 border-0 bg-transparent px-0"
                     placeholder="ИНН (ЮЛ, ФЛ) / ОГРН"
                     value={legalQuery}
                     onChange={(event) => setLegalQuery(event.target.value)}
@@ -96,18 +96,18 @@ export function NewCheckPage() {
               </div>
             ) : (
               <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_188px]">
-                <label className="space-y-2">
-                  <span className="text-xs uppercase tracking-[0.12em] text-[#FDFEFF]">ФИО</span>
+                <Label variant="stack">
+                  <LabelCaption className="text-xs uppercase tracking-[0.12em]">ФИО</LabelCaption>
                   <Input placeholder="Введите ФИО" value={fio} onChange={(e) => setFio(e.target.value)} />
-                </label>
-                <label className="space-y-2">
-                  <span className="text-xs uppercase tracking-[0.12em] text-[#FDFEFF]">Дата рождения</span>
+                </Label>
+                <Label variant="stack">
+                  <LabelCaption className="text-xs uppercase tracking-[0.12em]">Дата рождения</LabelCaption>
                   <Input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
-                </label>
-                <label className="space-y-2">
-                  <span className="text-xs uppercase tracking-[0.12em] text-[#FDFEFF]">ИНН</span>
+                </Label>
+                <Label variant="stack">
+                  <LabelCaption className="text-xs uppercase tracking-[0.12em]">ИНН</LabelCaption>
                   <Input placeholder="Введите ИНН" value={individualInn} onChange={(e) => setIndividualInn(e.target.value)} />
-                </label>
+                </Label>
 
                 <Button className="h-12 self-end" onClick={handleCheck}>
                   Проверить

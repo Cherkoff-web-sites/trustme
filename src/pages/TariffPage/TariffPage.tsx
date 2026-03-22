@@ -4,7 +4,15 @@ import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
 import { SupportSection } from '../../components/layout/SupportSection/SupportSection';
 import { TariffPlanCard, type TariffPlanCardData } from '../../components/features/TariffPlanCard';
-import { AlertBanner, Button, Card, FilterChip, OptionIndicator, SelectedIcon } from '../../components/ui';
+import {
+  AlertBanner,
+  Button,
+  Card,
+  Checkbox,
+  FilterChip,
+  Label,
+  SelectedIcon,
+} from '../../components/ui';
 
 export function TariffPage() {
   const plans: TariffPlanCardData[] = [
@@ -106,10 +114,16 @@ export function TariffPage() {
                 <h3 className="mb-4 text-[16px] font-semibold text-[#FDFEFF] lg:text-[24px]">Функциональные модули тарифа</h3>
                 <div className="space-y-3 text-[#FDFEFF]">
                   {['Скоринг', 'Упоминания в СМИ', 'Упоминания в Telegram'].map((label) => (
-                    <label className="flex items-center gap-3" key={label}>
-                      <OptionIndicator type="checkbox" checked={false} />
+                    <Label variant="inline" className="gap-3" key={label}>
+                      <Checkbox
+                        checked={false}
+                        onChange={() => {}}
+                        className="pointer-events-none"
+                        tabIndex={-1}
+                        aria-hidden
+                      />
                       {label}
-                    </label>
+                    </Label>
                   ))}
                 </div>
               </div>

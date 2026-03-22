@@ -1,4 +1,4 @@
-import { MoreDetailsSection, OptionIndicator, SectionCard, ToggleSwitch } from '../../ui';
+import { Checkbox, Label, MoreDetailsSection, SectionCard, ToggleSwitch } from '../../ui';
 import {
   settingsTariffFactorsGridStyles,
   settingsTariffWrapStyles,
@@ -42,10 +42,16 @@ export function SettingsTariff({
         <MoreDetailsSection>
           <div className={settingsTariffFactorsGridStyles}>
             {personalizationFactors.map((factor) => (
-              <label className="flex items-center gap-3" key={factor}>
-                <OptionIndicator type="checkbox" checked={false} />
+              <Label variant="inline" className="gap-3" key={factor}>
+                <Checkbox
+                  checked={false}
+                  onChange={() => {}}
+                  className="pointer-events-none"
+                  tabIndex={-1}
+                  aria-hidden
+                />
                 <span>{factor}</span>
-              </label>
+              </Label>
             ))}
           </div>
         </MoreDetailsSection>
