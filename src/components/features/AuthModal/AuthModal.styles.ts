@@ -13,7 +13,7 @@ export const authModalOverlayOuterStyles =
 
 /** Внутренний блок: моб — отступ сверху 136px; ПК — карточка по центру экрана (вертикально и горизонтально). */
 export const authModalOverlayInnerStyles =
-  'flex min-h-full w-full items-start justify-center px-4 pt-[136px] pb-6 sm:px-6 sm:pb-10 lg:items-center lg:justify-center lg:pt-0 lg:py-10';
+  'flex min-h-full w-full items-start justify-center px-4 pt-[56px] pb-6 sm:px-6 sm:pb-10 lg:items-center lg:justify-center lg:pt-0 lg:py-10';
 
 /**
  * Слой с декоративными webp: `fixed` к нижнему краю viewport — не уезжает при прокрутке модалки.

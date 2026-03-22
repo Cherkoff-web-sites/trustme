@@ -6,7 +6,11 @@ export const buttonStyles = cva(
     variants: {
       variant: {
         primary:
-          'min-h-14 rounded-[100px] bg-[#057889] px-6 py-4 text-[14px] lg:text-[20px] font-semibold text-[#FDFEFF] duration-200 hover:-translate-y-px hover:bg-[#068a9c] focus-visible:ring-2 focus-visible:ring-[#057889]/50',
+          'min-h-14 rounded-[100px] bg-[#057889] px-6 py-4 text-[14px] lg:text-[20px] font-semibold text-[#FDFEFF] ' +
+          'duration-200 transition-[box-shadow,background-color] ' +
+          'hover:shadow-[0_8px_20px_#0EB8D2] ' +
+          'active:bg-[#1C3849] active:shadow-[0_8px_20px_#0EB8D2] ' +
+          'focus-visible:ring-2 focus-visible:ring-[#057889]/50',
         secondary:
           'min-h-14 rounded-[100px] border border-[#FDFEFF]/55 px-6 py-4 text-[14px] lg:text-[20px] font-semibold text-[#FDFEFF] hover:bg-[#FDFEFF]/5',
         ghost: 'text-sm text-[#FDFEFF] hover:text-[#FDFEFF]',

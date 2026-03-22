@@ -38,10 +38,10 @@ export const uiTokens = {
   /** Акцент для заголовков (использует основной акцентный фон). */
   titleAccent: designTokens.colors.accent.primaryBg,
 
-  /** Основная кнопка. */
+  /** Основная кнопка (см. также `Button` variant primary — hover-тень, active-фон). */
   primaryButton: combineStyles(
     designTokens.presets.button.primary,
-    'outline-none transition duration-200 hover:-translate-y-px focus-visible:ring-2 focus-visible:ring-[#057889]/50',
+    'outline-none transition-[box-shadow,background-color] duration-200 hover:shadow-[0_8px_20px_#0EB8D2] active:bg-[#1C3849] active:shadow-[0_8px_20px_#0EB8D2] focus-visible:ring-2 focus-visible:ring-[#057889]/50',
   ),
 
   /** Вторичная кнопка. */

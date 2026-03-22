@@ -215,7 +215,8 @@ export const designTokens: DesignTokens = {
     },
     accent: {
       primaryBg: 'bg-[#057889]', // основной акцентный фон (кнопки)
-      primaryBgHover: 'hover:bg-[#068a9c]', // hover для primary‑кнопок
+      /** Старый hover-фон; для primary-кнопок см. `Button` (тень / active). */
+      primaryBgHover: 'hover:bg-[#068a9c]',
       secondaryBg: 'bg-[#0EB8D2]', // акцент 2
       secondaryBorder: 'border-[#0EB8D2]',
       secondaryGlowShadow: 'hover:shadow-[0_0_20px_#0EB8D2] active:shadow-[0_0_20px_#0EB8D2]',

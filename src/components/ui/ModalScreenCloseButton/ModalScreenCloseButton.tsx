@@ -1,10 +1,18 @@
 import * as React from 'react';
 import { cn } from '../../../lib/cn';
-import { modalScreenCloseButtonStyles } from './ModalScreenCloseButton.styles';
+import {
+  modalScreenCloseButtonScrollWithModalStyles,
+  modalScreenCloseButtonStyles,
+} from './ModalScreenCloseButton.styles';
 
 export interface ModalScreenCloseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** Алиас для onClick (удобно передавать onClose из модалки) */
   onClose?: () => void;
+  /**
+   * `viewport` — `fixed` к экрану (по умолчанию).
+   * `scrollWithModal` — в потоке на мобилке (скролл вместе с контентом), с `lg` как viewport.
+   */
+  variant?: 'viewport' | 'scrollWithModal';
 }
 
 export function ModalScreenCloseButton({
@@ -12,6 +20,7 @@ export function ModalScreenCloseButton({
   onClick,
   onClose,
   type = 'button',
+  variant = 'viewport',
   ...props
 }: ModalScreenCloseButtonProps) {
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -24,7 +33,10 @@ export function ModalScreenCloseButton({
     <button
       type={type}
       aria-label="Закрыть"
-      className={cn(modalScreenCloseButtonStyles, className)}
+      className={cn(
+        variant === 'scrollWithModal' ? modalScreenCloseButtonScrollWithModalStyles : modalScreenCloseButtonStyles,
+        className,
+      )}
       onClick={handleClick}
       {...props}
     >

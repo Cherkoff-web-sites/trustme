@@ -45,7 +45,10 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  /** По умолчанию — физическое лицо. */
   const [accountType, setAccountType] = useState<AccountType>("individual");
+  /** ИНН — только для юр. лица. */
+  const [registerInn, setRegisterInn] = useState("");
   const [consentPersonal, setConsentPersonal] = useState(false);
   const [consentPromo, setConsentPromo] = useState(false);
   const [countdownSec, setCountdownSec] = useState(EMAIL_CONFIRM_COUNTDOWN_SEC);
@@ -54,6 +57,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
     password?: string;
   }>({});
   const [registerFieldErrors, setRegisterFieldErrors] = useState<{
+    inn?: string;
     email?: string;
     password?: string;
     consentPersonal?: string;
@@ -68,6 +72,8 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
       setLoginFieldErrors({});
       setRegisterFieldErrors({});
       setPasswordResetFieldErrors({});
+      setAccountType("individual");
+      setRegisterInn("");
     }
   }, [open]);
 
@@ -104,10 +110,12 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const next: {
+      inn?: string;
       email?: string;
       password?: string;
       consentPersonal?: string;
     } = {};
+    if (accountType === "legal" && !registerInn.trim()) next.inn = "Обязательное поле";
     if (!email.trim()) next.email = "Обязательное поле";
     if (!password.trim()) next.password = "Обязательное поле";
     if (!consentPersonal) next.consentPersonal = "Обязательное поле";
@@ -132,9 +140,12 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
   const registerPasswordChecks = getPasswordRuleChecks(password);
   const registerPasswordRulesStarted = password.length > 0;
 
-  /** Текст переключателя: без semibold */
+  /**
+   * Шрифт переключателей: «Логин и пароль», «Юридическое / Физическое лицо».
+   * См. `authModalLoginModeNav`, `authModalRegisterAccountNav`.
+   */
   const authSwitcherText =
-    "text-[14px] font-normal lg:text-[20px] text-[#FDFEFF]";
+    "text-[16px] font-normal lg:text-[18px] text-[#FDFEFF]";
   const authSwitcherActive = combineStyles(
     "pb-[8px] lg:pb-[15px] border-b-2",
     designTokens.colors.accent.secondaryBorder,
@@ -176,7 +187,11 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
           authSwitcherText,
           accountType === "individual" ? authSwitcherActive : authSwitcherInactive,
         )}
-        onClick={() => setAccountType("individual")}
+        onClick={() => {
+          setAccountType("individual");
+          setRegisterInn("");
+          setRegisterFieldErrors((prev) => ({ ...prev, inn: undefined }));
+        }}
       >
         Физическое лицо
       </button>
@@ -189,7 +204,6 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
       onClick={onClose}
       role="presentation"
     >
-      <ModalScreenCloseButton onClose={onClose} />
       <div className={authModalBgLayerStyles} aria-hidden>
         <img
           src={bgModalMob}
@@ -209,16 +223,18 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
         </div>
       </div>
       <div className={authModalOverlayInnerStyles}>
-        <Card
-          as="div"
-          headerVariant={6}
-          className={cn(authModalCardClassName, view === "emailConfirm" && "max-w-[537px]")}
-          contentClassName={authModalStackGapStyles}
-          onClick={(e) => e.stopPropagation()}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="auth-modal-title"
-        >
+        <div className="flex w-full max-w-[624px] flex-col items-stretch">
+          <ModalScreenCloseButton variant="scrollWithModal" onClose={onClose} />
+          <Card
+            as="div"
+            headerVariant={6}
+            className={cn(authModalCardClassName, view === "emailConfirm" && "max-w-[537px]")}
+            contentClassName={authModalStackGapStyles}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="auth-modal-title"
+          >
           <div
             className={cn(
               "flex flex-col text-center",
@@ -238,7 +254,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                 className="w-[122px] h-auto"
               />
             </div>
-            <p>
+            <p className="mx-auto w-full max-w-[328px] lg:max-w-none">
               {(view === "login" || view === "passwordReset") &&
                 "Войдите в\u00A0сервис проверки контрагентов «Trust Me»"}
               {view === "register" &&
@@ -363,12 +379,31 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
           ) : (
             <form
               onSubmit={handleRegisterSubmit}
-              className={cn(
-                "flex flex-col",
-                designTokens.spacing.gap.cardInternal,
-              )}
+              className={cn("flex flex-col gap-[20px] lg:gap-[30px]")}
             >
               {authModalRegisterAccountNav}
+              {accountType === "legal" ? (
+                <div>
+                  <Label id="auth-modal-register-inn-label">ИНН</Label>
+                  <Input
+                    id="auth-modal-register-inn"
+                    aria-labelledby="auth-modal-register-inn-label"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    value={registerInn}
+                    onChange={(e) => {
+                      setRegisterInn(e.target.value);
+                      setRegisterFieldErrors((prev) => ({
+                        ...prev,
+                        inn: undefined,
+                      }));
+                    }}
+                    placeholder="Введите ИНН"
+                    error={registerFieldErrors.inn}
+                  />
+                </div>
+              ) : null}
               <div>
                 <Label id="auth-modal-register-email-label">Почта</Label>
                 <Input
@@ -383,7 +418,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                       email: undefined,
                     }));
                   }}
-                  placeholder=""
+                  placeholder="ivanivanov1999@mail.ru"
                   error={registerFieldErrors.email}
                 />
               </div>
@@ -467,7 +502,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
               <div
                 className={cn(
                   "flex flex-col",
-                  designTokens.spacing.gap.cardInternal,
+                  designTokens.spacing.gap.buttonAdjacent,
                 )}
               >
                 <Label variant="inlineStart" className="max-w-[411px]">
@@ -537,6 +572,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
             </p>
           )}
         </Card>
+        </div>
       </div>
     </div>
   );
