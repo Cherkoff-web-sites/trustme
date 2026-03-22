@@ -1,9 +1,6 @@
-import { ModalShell } from '../../ui';
+import { ModalScreenCloseButton, ModalShell } from '../../ui';
 import { ReportContent, type HistoryItem } from '../../../shared/ReportContent';
-import {
-  historyReportModalCloseButtonStyles,
-  historyReportModalPanelStyles,
-} from './HistoryReportModal.styles';
+import { historyReportModalPanelStyles } from './HistoryReportModal.styles';
 
 export interface HistoryReportModalProps {
   item: HistoryItem | null;
@@ -19,16 +16,10 @@ export function HistoryReportModal({
       open={!!item}
       onClose={onClose}
       size="xl"
+      closeButton={false}
       panelClassName={historyReportModalPanelStyles}
     >
-      <button
-        type="button"
-        aria-label="Закрыть"
-        className={historyReportModalCloseButtonStyles}
-        onClick={onClose}
-      >
-        ×
-      </button>
+      <ModalScreenCloseButton onClose={onClose} />
       {item ? (
         <div className="flex-1 overflow-y-auto">
           <ReportContent item={item} />

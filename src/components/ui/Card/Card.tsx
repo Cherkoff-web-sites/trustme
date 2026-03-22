@@ -24,6 +24,8 @@ export interface CardProps
   headerVariant?: CardHeaderVariant;
   status?: CardHeaderStatus;
   as?: React.ElementType;
+  /** Доп. классы для внутренней колонки (flex + gap по умолчанию из токенов). */
+  contentClassName?: string;
 }
 
 export function Card({
@@ -32,6 +34,7 @@ export function Card({
   headerVariant = 6,
   status,
   className,
+  contentClassName,
   children,
   variant,
   as: Comp = 'section',
@@ -128,7 +131,7 @@ export function Card({
 
   return (
     <Comp className={cn(cardRootStyles({ variant }), className)} {...props}>
-      <div className={cn('flex flex-col', designTokens.spacing.gap.cardInternal)}>
+      <div className={cn('flex flex-col', designTokens.spacing.gap.cardInternal, contentClassName)}>
         {renderHeader()}
         {children}
       </div>

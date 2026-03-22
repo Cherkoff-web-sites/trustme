@@ -24,12 +24,12 @@ export function SettingsSecurity({
         <div className={settingsSecurityListStyles}>
           <label className="flex flex-col gap-2.5">
             <span className={uiTokens.formLabel}>Текущий пароль</span>
-            <Input placeholder="Введите пароль" type="password" />
+            <Input placeholder="Введите пароль" type="password" passwordToggle />
           </label>
 
           <label className="flex flex-col gap-2.5">
             <span className={uiTokens.formLabel}>Новый пароль</span>
-            <Input placeholder="Введите пароль" type="password" />
+            <Input placeholder="Введите пароль" type="password" passwordToggle />
           </label>
 
           <div className={settingsSecurityRulesStyles}>
@@ -49,7 +49,7 @@ export function SettingsSecurity({
 
           <label className="flex flex-col gap-2.5">
             <span className={uiTokens.formLabel}>Подтверждение нового пароля</span>
-            <Input placeholder="Подтвердите новый пароль" type="password" />
+            <Input placeholder="Подтвердите новый пароль" type="password" passwordToggle />
           </label>
 
           <div className={settingsSecurityInfoCardStyles}>

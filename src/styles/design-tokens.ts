@@ -37,6 +37,8 @@ export interface ColorBorderTokens {
   primary: string;
   /** Граница инпутов / контролов. */
   input: string;
+  /** Граница инпута при ошибке валидации. */
+  inputError: string;
 }
 
 export interface ColorAccentTokens {
@@ -200,6 +202,7 @@ export const designTokens: DesignTokens = {
     border: {
       primary: 'border-[#FDFEFF]', // границы карточек
       input: 'border-[#FDFEFF]/50', // границы инпутов / фильтров
+      inputError: 'border-[#EB4335]', // инпут с ошибкой
     },
     accent: {
       primaryBg: 'bg-[#057889]', // основной акцентный фон (кнопки)
@@ -217,10 +220,10 @@ export const designTokens: DesignTokens = {
     h1h2: 'text-[24px] leading-[29px] lg:text-[48px] lg:leading-[58px] font-semibold uppercase', // заголовки страниц
     h3: 'text-[16px] lg:text-[24px] font-semibold', // заголовки карточек
     button: 'text-[14px] lg:text-[20px] font-semibold', // текст кнопок
-    cardBody: 'text-[18px] lg:text-[16px] font-normal', // подписи внутри карточек
+    cardBody: 'text-[16px] lg:text-[18px] font-normal', // подписи внутри карточек
     cardTitle: 'text-[18px] lg:text-[24px] font-semibold', // заголовки карточек
     statusText: 'text-[12px] font-normal', // текст статусов под полями
-    input: 'text-[16px] lg:text-[14px] font-normal', // инпуты / фильтры
+    input: 'text-[14px] lg:text-[16px] font-normal', // инпуты / фильтры
   },
 
   borderRadius: {

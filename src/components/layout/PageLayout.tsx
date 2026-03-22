@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { useAuthModalUi } from '../../context/AuthModalUiContext';
+import { AuthModal } from '../features/AuthModal';
 import { uiTokens, designTokens } from '../ui';
 import { PageSectionHeadingProvider } from './PageSection';
 import { Footer } from './Footer/Footer';
@@ -55,7 +58,8 @@ function blurBlockCountMobile(pageHeight: number, viewportWidth: number): number
   return Math.max(1, Math.ceil((pageHeight - firstBottomPx) / stepPx) + 1);
 }
 
-function BackgroundDecor({ pageHeight, viewportWidth }: { pageHeight: number; viewportWidth: number }) {
+/** Декоративные webp-картинки (скрываются при открытии модалки авторизации). */
+function BackgroundDecorImages({ pageHeight, viewportWidth }: { pageHeight: number; viewportWidth: number }) {
   const isMobile = viewportWidth > 0 && viewportWidth < DESKTOP_MIN_WIDTH_PX;
 
   const desktopCount = blurBlockCountDesktop(pageHeight, viewportWidth);
@@ -69,29 +73,29 @@ function BackgroundDecor({ pageHeight, viewportWidth }: { pageHeight: number; vi
   const mobilePositions = Array.from({ length: mobileCount }, (_, i) => mobileFirstTopPx + i * mobileStepPx);
 
   return (
-    <>
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {!isMobile && desktopPositions.map((topVw, i) => {
-          const isRight = i % 2 === 0;
-          const src = isRight ? bgDecorRight : bgDecorLeft;
-          return (
-            <div
-              key={`d-${i}`}
-              className="absolute bg-no-repeat"
-              style={{
-                height: `${BLUR_IMAGE_HEIGHT_VW}vw`,
-                width: `${BLUR_WIDTH_VW}vw`,
-                top: `${topVw}vw`,
-                backgroundSize: '100% 100%',
-                ...(isRight
-                  ? { right: 0, backgroundImage: `url(${src})`, backgroundPosition: 'right top' }
-                  : { left: 0, backgroundImage: `url(${src})`, backgroundPosition: 'left top' }),
-              }}
-            />
-          );
-        })}
+    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+      {!isMobile && desktopPositions.map((topVw, i) => {
+        const isRight = i % 2 === 0;
+        const src = isRight ? bgDecorRight : bgDecorLeft;
+        return (
+          <div
+            key={`d-${i}`}
+            className="absolute bg-no-repeat"
+            style={{
+              height: `${BLUR_IMAGE_HEIGHT_VW}vw`,
+              width: `${BLUR_WIDTH_VW}vw`,
+              top: `${topVw}vw`,
+              backgroundSize: '100% 100%',
+              ...(isRight
+                ? { right: 0, backgroundImage: `url(${src})`, backgroundPosition: 'right top' }
+                : { left: 0, backgroundImage: `url(${src})`, backgroundPosition: 'left top' }),
+            }}
+          />
+        );
+      })}
 
-        {isMobile && mobilePositions.map((topPx, i) => (
+      {isMobile &&
+        mobilePositions.map((topPx, i) => (
           <div
             key={`m-${i}`}
             className="absolute left-1/2 -translate-x-1/2 bg-no-repeat"
@@ -105,15 +109,25 @@ function BackgroundDecor({ pageHeight, viewportWidth }: { pageHeight: number; vi
             }}
           />
         ))}
-      </div>
-      <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(253,254,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(253,254,255,0.03)_1px,transparent_1px)] bg-[size:45px_45px]"
-      />
-    </>
+    </div>
   );
 }
 
-export function PageLayout({ children }: { children: React.ReactNode }) {
+/** Сетка на фоне страницы — остаётся видимой при модалке авторизации. */
+function PageGridPattern() {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(rgba(253,254,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(253,254,255,0.03)_1px,transparent_1px)] bg-[size:45px_45px]"
+      aria-hidden
+    />
+  );
+}
+
+export function PageLayout({ children }: { children?: React.ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  const { authModalOpen, closeAuthModal } = useAuthModalUi();
+  const hideChromeForAuthModal = authModalOpen && !isAuthenticated;
+
   const contentRef = useRef<HTMLDivElement>(null);
   const [pageHeight, setPageHeight] = useState(0);
   const [viewportWidth, setViewportWidth] = useState(0);
@@ -135,27 +149,43 @@ export function PageLayout({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('resize', update);
   }, []);
 
+  useEffect(() => {
+    if (!hideChromeForAuthModal) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [hideChromeForAuthModal]);
+
   return (
     <div className={uiTokens.page}>
-      <BackgroundDecor pageHeight={pageHeight} viewportWidth={viewportWidth} />
-      <div ref={contentRef} className="relative z-10 flex min-h-screen flex-col">
-        <Header />
-        <main
-          className={[
-            'relative',
-            uiTokens.container,
-            designTokens.spacing.padding.pageMain,
-            // global vertical spacing for all direct children (sections/blocks) inside main:
-            // - padding-top provides anchor offset
-            // - margin-bottom separates blocks; total gap = next padding-top + prev margin-bottom
-            '[&>*:not(:first-child)]:pt-[20px] lg:[&>*:not(:first-child)]:pt-[60px]',
-            '[&>*:not(:last-child)]:mb-[60px] lg:[&>*:not(:last-child)]:mb-[180px]',
-          ].join(' ')}
-        >
-          <PageSectionHeadingProvider>{children}</PageSectionHeadingProvider>
-        </main>
-        <Footer />
-      </div>
+      {!hideChromeForAuthModal ? (
+        <BackgroundDecorImages pageHeight={pageHeight} viewportWidth={viewportWidth} />
+      ) : null}
+      <PageGridPattern />
+      {!hideChromeForAuthModal ? (
+        <div ref={contentRef} className="relative z-10 flex min-h-screen flex-col">
+          <Header />
+          <main
+            className={[
+              'relative',
+              uiTokens.container,
+              designTokens.spacing.padding.pageMain,
+              '[&>*:not(:first-child)]:pt-[20px] lg:[&>*:not(:first-child)]:pt-[60px]',
+              '[&>*:not(:last-child)]:mb-[60px] lg:[&>*:not(:last-child)]:mb-[180px]',
+            ].join(' ')}
+          >
+            <PageSectionHeadingProvider>{children}</PageSectionHeadingProvider>
+          </main>
+          <Footer />
+        </div>
+      ) : (
+        <div ref={contentRef} className="relative z-10 min-h-0 min-w-0 flex-1" aria-hidden />
+      )}
+      {!isAuthenticated ? (
+        <AuthModal open={authModalOpen} onClose={closeAuthModal} />
+      ) : null}
     </div>
   );
 }

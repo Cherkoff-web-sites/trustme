@@ -9,6 +9,8 @@ export { SectionCard } from './SectionCard';
 export type { SectionCardProps } from './SectionCard';
 export { ModalShell } from './ModalShell';
 export type { ModalShellProps } from './ModalShell';
+export { ModalScreenCloseButton } from './ModalScreenCloseButton';
+export type { ModalScreenCloseButtonProps } from './ModalScreenCloseButton';
 export { AlertBanner } from './AlertBanner';
 export type { AlertBannerProps } from './AlertBanner';
 export { FilterTrigger } from './FilterTrigger';

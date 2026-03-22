@@ -19,6 +19,20 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* cursor: pointer для интерактивных элементов */
+  button,
+  a,
+  [role="button"],
+  input[type="submit"],
+  input[type="button"],
+  input[type="reset"],
+  input[type="checkbox"],
+  input[type="radio"],
+  select,
+  label {
+    cursor: pointer;
+  }
+
   @media (min-width: 1024px) {
     body {
       font-size: 24px;

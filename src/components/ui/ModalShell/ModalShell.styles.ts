@@ -1,7 +1,11 @@
 import { cva } from 'class-variance-authority';
 
-export const modalOverlayStyles =
-  'fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4 py-6 sm:px-6 sm:py-10';
+/** Скролл на оверлее — длинная модалка остаётся доступной сверху. */
+export const modalOverlayOuterStyles =
+  'fixed inset-0 z-40 overflow-y-auto overflow-x-hidden bg-black/40';
+
+export const modalOverlayInnerStyles =
+  'flex min-h-full w-full items-center justify-center px-4 py-6 sm:px-6 sm:py-10';
 
 export const modalPanelStyles = cva(
   'relative w-full rounded-[28px] border border-[#FDFEFF] bg-[#1A1A1A] text-base font-normal text-[#FDFEFF] shadow-[0_0_0_1px_rgba(253,254,255,0.15)] lg:text-[18px]',

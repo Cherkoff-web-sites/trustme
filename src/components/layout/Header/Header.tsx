@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
+import { useAuthModalUi } from '../../../context/AuthModalUiContext';
 import { MAIN_NAV_ITEMS } from '../../../shared/navConfig';
-import { uiTokens } from '../../ui';
+import { uiTokens, Button } from '../../ui';
 import logoSvg from '../../../assets/icons/logo.svg';
 import notificationsSvg from '../../../assets/icons/notifications.svg';
 import accountSvg from '../../../assets/icons/account.svg';
 import chevronSvg from '../../../assets/icons/chevron.svg';
 
 export function Header() {
+  const { isAuthenticated, logout } = useAuth();
+  const { openAuthModal } = useAuthModalUi();
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
@@ -21,6 +25,7 @@ export function Header() {
   ] as const;
 
   const handleLogout = () => {
+    logout();
     setShowAccountMenu(false);
     setShowMobileMenu(false);
     navigate('/');
@@ -34,6 +39,28 @@ export function Header() {
       document.body.style.overflow = previousOverflow;
     };
   }, [showMobileMenu]);
+
+  if (!isAuthenticated) {
+    return (
+      <>
+        <header className={`${uiTokens.container} pt-6 pb-5 sm:pt-8`}>
+          <div className="flex w-full items-center justify-between gap-4">
+            <Link to="/" className="flex shrink-0" aria-label="Trust Me — на главную">
+              <img src={logoSvg} alt="" width={122} height={29} className="w-[122px] h-auto" />
+            </Link>
+            <Button
+              type="button"
+              variant="primary"
+              className="min-h-0 text-[14px] leading-[17px] lg:text-[18px] lg:leading-[22px] px-[30px] py-[10px]"
+              onClick={openAuthModal}
+            >
+              Войти
+            </Button>
+          </div>
+        </header>
+      </>
+    );
+  }
 
   return (
     <>
@@ -58,7 +85,7 @@ export function Header() {
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
             aria-label="Trust Me — на главную"
           >
-            <img src={logoSvg} alt="" width={122} height={29} className="h-7 w-auto" />
+            <img src={logoSvg} alt="" width={122} height={29} className="w-[122px] h-auto" />
           </Link>
 
           <div className="flex items-center justify-end gap-3">
@@ -88,7 +115,7 @@ export function Header() {
         <div className="hidden lg:flex lg:flex-col lg:gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:gap-10">
             <Link to="/cabinet" className="flex shrink-0" aria-label="Trust Me — на главную">
-              <img src={logoSvg} alt="" width={122} height={29} className="h-7 w-auto lg:h-8" />
+              <img src={logoSvg} alt="" width={122} height={29} className="w-[122px] h-auto" />
             </Link>
             <nav className="flex flex-wrap gap-x-6 gap-y-3 text-[14px] font-semibold text-[#FDFEFF] lg:text-[20px]">
               {MAIN_NAV_ITEMS.map(([label, to]) => (
@@ -191,7 +218,7 @@ export function Header() {
         <div className="fixed inset-0 z-50 bg-[#1A1A1A] lg:hidden">
           <div className={`${uiTokens.container} flex h-full flex-col py-8`}>
             <div className="flex items-center justify-between">
-              <img src={logoSvg} alt="" className="h-7 w-auto" />
+              <img src={logoSvg} alt="" width={122} height={29} className="w-[122px] h-auto" />
               <button
                 type="button"
                 onClick={() => setShowMobileMenu(false)}
