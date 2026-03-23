@@ -92,7 +92,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
   const countdownFormatted = (() => {
     const m = Math.floor(countdownSec / 60);
     const s = countdownSec % 60;
-    return `${m}:${s.toString().padStart(2, "0")}`;
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   })();
 
   const handleLoginSubmit = (e: React.FormEvent) => {
@@ -109,6 +109,9 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const pwdChecks = getPasswordRuleChecks(password);
+    const passwordRulesOk =
+      pwdChecks.minLength && pwdChecks.upperAndLower && pwdChecks.hasDigit;
     const next: {
       inn?: string;
       email?: string;
@@ -118,6 +121,9 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
     if (accountType === "legal" && !registerInn.trim()) next.inn = "Обязательное поле";
     if (!email.trim()) next.email = "Обязательное поле";
     if (!password.trim()) next.password = "Обязательное поле";
+    else if (!passwordRulesOk) {
+      next.password = "Пароль не соответствует требованиям";
+    }
     if (!consentPersonal) next.consentPersonal = "Обязательное поле";
     setRegisterFieldErrors(next);
     if (Object.keys(next).length > 0) return;
@@ -198,12 +204,9 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
     </nav>
   );
 
+  // Закрытие модалки только по крестику; клик по подложке не вызывает onClose (все экраны: вход, регистрация, сброс пароля, письмо).
   return (
-    <div
-      className={authModalOverlayOuterStyles}
-      onClick={onClose}
-      role="presentation"
-    >
+    <div className={authModalOverlayOuterStyles} role="presentation">
       <div className={authModalBgLayerStyles} aria-hidden>
         <img
           src={bgModalMob}
@@ -223,12 +226,17 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
         </div>
       </div>
       <div className={authModalOverlayInnerStyles}>
-        <div className="flex w-full max-w-[624px] flex-col items-stretch">
+        <div
+          className={cn(
+            "flex w-full flex-col items-stretch",
+            view === "emailConfirm" ? "max-w-[537px]" : "max-w-[624px]",
+          )}
+        >
           <ModalScreenCloseButton variant="scrollWithModal" onClose={onClose} />
           <Card
             as="div"
             headerVariant={6}
-            className={cn(authModalCardClassName, view === "emailConfirm" && "max-w-[537px]")}
+            className={authModalCardClassName}
             contentClassName={authModalStackGapStyles}
             onClick={(e) => e.stopPropagation()}
             role="dialog"
@@ -276,7 +284,10 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                 <p>Если письма нет, проверьте папку «Спам».</p>
               </div>
               <p className="text-center text-sm text-[#FDFEFF] lg:text-base">
-                Выслать письмо повторно через {countdownFormatted}
+                Выслать письмо повторно через{" "}
+                <span className="inline-block w-[42px] lg:w-[50px] shrink-0 text-center tabular-nums">
+                  {countdownFormatted}
+                </span>
               </p>
             </div>
           ) : view === "passwordReset" ? (
@@ -440,7 +451,12 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                   placeholder="Введите пароль"
                   error={registerFieldErrors.password}
                 />
-                <ul className="mt-[15px] flex list-none flex-col gap-[10px] p-0">
+                <ul
+                  className={cn(
+                    "flex list-none flex-col gap-[10px] p-0",
+                    registerFieldErrors.password ? "mt-[28px]" : "mt-[15px]",
+                  )}
+                >
                   {(
                     [
                       {
@@ -505,33 +521,36 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                   designTokens.spacing.gap.buttonAdjacent,
                 )}
               >
-                <Label variant="inlineStart" className="max-w-[411px]">
-                  <Checkbox
-                    checked={consentPersonal}
-                    error={Boolean(registerFieldErrors.consentPersonal)}
-                    onChange={(e) => {
-                      setConsentPersonal(e.target.checked);
-                      setRegisterFieldErrors((prev) => ({
-                        ...prev,
-                        consentPersonal: undefined,
-                      }));
-                    }}
-                  />
-                  <span>
-                    Регистрируясь, я подтверждаю согласие на обработку
-                    персональных данных, указанных в этой веб-форме
-                  </span>
-                </Label>
-                {registerFieldErrors.consentPersonal ? (
-                  <p
-                    className={cn(
-                      "mt-1 text-[12px] leading-[18px]",
-                      designTokens.colors.text.statusError,
-                    )}
-                  >
-                    {registerFieldErrors.consentPersonal}
-                  </p>
-                ) : null}
+                <div className="relative max-w-[411px]">
+                  <Label variant="inlineStart" className="w-full">
+                    <Checkbox
+                      checked={consentPersonal}
+                      error={Boolean(registerFieldErrors.consentPersonal)}
+                      onChange={(e) => {
+                        setConsentPersonal(e.target.checked);
+                        setRegisterFieldErrors((prev) => ({
+                          ...prev,
+                          consentPersonal: undefined,
+                        }));
+                      }}
+                    />
+                    <span>
+                      Регистрируясь, я подтверждаю согласие на обработку
+                      персональных данных, указанных в этой веб-форме
+                    </span>
+                  </Label>
+                  {registerFieldErrors.consentPersonal ? (
+                    <p
+                      className={cn(
+                        "mt-1 text-left text-[12px] leading-[18px]",
+                        designTokens.colors.text.statusError,
+                      )}
+                      role="alert"
+                    >
+                      {registerFieldErrors.consentPersonal}
+                    </p>
+                  ) : null}
+                </div>
                 <Label variant="inlineStart">
                   <Checkbox
                     checked={consentPromo}
