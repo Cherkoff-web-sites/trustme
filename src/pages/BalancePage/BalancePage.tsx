@@ -3,6 +3,7 @@ import {
   BalanceFilters,
   TransactionTable,
   type BalanceFilterPanel,
+  type BalanceFiltersProps,
   type BalanceSortOrder,
   type BalanceSourceFilter,
   type BalanceTypeFilter,
@@ -24,8 +25,6 @@ type BalanceOperation = {
 };
 
 export function BalancePage() {
-  const [filtersOpenMobile, setFiltersOpenMobile] = useState(false);
-
   const operations: BalanceOperation[] = [
     { date: '23.12.2025', type: 'Поступление', source: 'telegram', amount: '1000 ₽' },
     { date: '23.10.2025', type: 'Поступление', source: 'web', amount: '2000 ₽' },
@@ -162,6 +161,23 @@ export function BalancePage() {
     });
   }
 
+  const balanceFiltersProps: BalanceFiltersProps = {
+    openPanel: balanceOpenPanel,
+    onTogglePanel: toggleBalancePanel,
+    dateFrom: balanceDateFrom,
+    dateTo: balanceDateTo,
+    onDateFromChange: setBalanceDateFrom,
+    onDateToChange: setBalanceDateTo,
+    sortOrder: balanceSortOrder,
+    onSortOrderChange: setBalanceSortOrder,
+    typeFilter: balanceTypeFilter,
+    onTypeFilterChange: setBalanceTypeFilter,
+    sourceFilter: balanceSourceFilter,
+    onSourceFilterChange: setBalanceSourceFilter,
+    activeChips,
+    onReset: resetBalanceFilters,
+  };
+
   return (
     <PageLayout>
       <PageSection
@@ -216,32 +232,16 @@ export function BalancePage() {
         title="История операций"
         description="Вы можете отслеживать историю операций на вашем аккаунте, выбрав нужные данные"
       >
-        {/* Desktop: фильтры как были */}
-        <div className="hidden lg:block">
-          <BalanceFilters
-            openPanel={balanceOpenPanel}
-            onTogglePanel={toggleBalancePanel}
-            dateFrom={balanceDateFrom}
-            dateTo={balanceDateTo}
-            onDateFromChange={setBalanceDateFrom}
-            onDateToChange={setBalanceDateTo}
-            sortOrder={balanceSortOrder}
-            onSortOrderChange={setBalanceSortOrder}
-            typeFilter={balanceTypeFilter}
-            onTypeFilterChange={setBalanceTypeFilter}
-            sourceFilter={balanceSourceFilter}
-            onSourceFilterChange={setBalanceSourceFilter}
-            activeChips={activeChips}
-            onReset={resetBalanceFilters}
-          />
+        {/* Desktop: фильтры + отступ до таблицы / списка */}
+        <div className="hidden lg:mb-[60px] lg:block">
+          <BalanceFilters {...balanceFiltersProps} />
         </div>
 
-        {/* Mobile: кнопка "Фильтры" + раскрытие текущих фильтров */}
         <div className="lg:hidden">
           <button
             type="button"
-            onClick={() => setFiltersOpenMobile((v) => !v)}
             className="mb-[40px] flex w-full min-h-14 items-center justify-center gap-3 rounded-[100px] border border-[#FDFEFF]/25 bg-[#1A1A1A] px-6 py-4 text-[14px] font-semibold text-[#FDFEFF]"
+            aria-label="Фильтры"
           >
             <svg
               width="19"
@@ -261,27 +261,6 @@ export function BalancePage() {
             </svg>
             <span>Фильтры</span>
           </button>
-
-          {filtersOpenMobile ? (
-            <div className="mt-4">
-              <BalanceFilters
-                openPanel={balanceOpenPanel}
-                onTogglePanel={toggleBalancePanel}
-                dateFrom={balanceDateFrom}
-                dateTo={balanceDateTo}
-                onDateFromChange={setBalanceDateFrom}
-                onDateToChange={setBalanceDateTo}
-                sortOrder={balanceSortOrder}
-                onSortOrderChange={setBalanceSortOrder}
-                typeFilter={balanceTypeFilter}
-                onTypeFilterChange={setBalanceTypeFilter}
-                sourceFilter={balanceSourceFilter}
-                onSourceFilterChange={setBalanceSourceFilter}
-                activeChips={activeChips}
-                onReset={resetBalanceFilters}
-              />
-            </div>
-          ) : null}
         </div>
 
         <Card className="hidden overflow-hidden p-4 sm:p-6 lg:block">

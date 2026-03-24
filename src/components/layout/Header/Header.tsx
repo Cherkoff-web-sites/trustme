@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useAuthModalUi } from '../../../context/AuthModalUiContext';
+import { uiFlags } from '../../../config/uiFlags';
 import { MAIN_NAV_ITEMS } from '../../../shared/navConfig';
 import { uiTokens, Button } from '../../ui';
 import logoSvg from '../../../assets/icons/logo.svg';
@@ -89,17 +90,16 @@ export function Header() {
           </Link>
 
           <div className="flex items-center justify-end gap-3">
-            <button
-              className="relative inline-flex h-[35px] w-[35px] items-center justify-center rounded-full border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]"
-              type="button"
-              onClick={() => setShowNotifications(true)}
-              aria-label="Уведомления"
-            >
-              <img src={notificationsSvg} alt="" className="h-auto w-[18px]" width={19} height={20} />
-              {/* <span className="absolute right-1.5 top-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#FF3B30] px-1 text-[12px] font-semibold text-white">
-                1
-              </span> */}
-            </button>
+            {uiFlags.notificationsPanelEnabled ? (
+              <button
+                className="relative inline-flex h-[35px] w-[35px] items-center justify-center rounded-full border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]"
+                type="button"
+                onClick={() => setShowNotifications(true)}
+                aria-label="Уведомления"
+              >
+                <img src={notificationsSvg} alt="" className="h-auto w-[18px]" width={19} height={20} />
+              </button>
+            ) : null}
             <button
               className="inline-flex h-[35px] w-[35px] items-center justify-center rounded-full border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]"
               type="button"
@@ -321,7 +321,7 @@ export function Header() {
         </div>
       ) : null}
 
-      {showNotifications && (
+      {uiFlags.notificationsPanelEnabled && showNotifications && (
         <div
           className="fixed inset-0 z-40 flex items-start justify-center bg-black/40 px-4 py-8 sm:px-6 sm:py-12"
           onClick={() => setShowNotifications(false)}

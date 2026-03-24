@@ -1,3 +1,4 @@
+import { uiFlags } from '../../../config/uiFlags';
 import { ModalScreenCloseButton, ModalShell } from '../../ui';
 import { ReportContent, type HistoryItem } from '../../../shared/ReportContent';
 import { historyReportModalPanelStyles } from './HistoryReportModal.styles';
@@ -11,6 +12,10 @@ export function HistoryReportModal({
   item,
   onClose,
 }: HistoryReportModalProps) {
+  if (!uiFlags.reportViewsEnabled) {
+    return null;
+  }
+
   return (
     <ModalShell
       open={!!item}

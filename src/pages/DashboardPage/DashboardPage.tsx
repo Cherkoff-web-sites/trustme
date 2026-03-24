@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { uiFlags } from '../../config/uiFlags';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { DashboardGrid } from '../../components/layout/DashboardGrid/DashboardGrid';
-import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
+import { DashboardNewCheckSteps } from '../../components/features/DashboardNewCheckModal';
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
 import { HistoryReportModal } from '../../components/features/history';
-import { AlertBanner, Button, Card, Input, OptionIndicator, designTokens } from '../../components/ui';
+import { AlertBanner, Button, Card, designTokens } from '../../components/ui';
 import { combineStyles } from '../../lib/combineStyles';
 import { TelegramCircleIcon, TelegramSmallIcon } from '../../shared/icons';
 import { type HistoryItem } from '../../shared/ReportContent';
@@ -36,31 +37,6 @@ export function DashboardPage() {
 
   const [showCurrentTariffModal, setShowCurrentTariffModal] = useState(false);
   const [openedReportItem, setOpenedReportItem] = useState<HistoryItem | null>(null);
-  const [showTopUpModal, setShowTopUpModal] = useState(false);
-  const [topUpAmount, setTopUpAmount] = useState('300');
-  const [topUpStep, setTopUpStep] = useState<TopUpStep>('form');
-  const [newCheckPersonType, setNewCheckPersonType] = useState<'legal' | 'individual'>('legal');
-
-  const handleOpenTopUp = () => {
-    setTopUpStep('form');
-    setShowTopUpModal(true);
-  };
-
-  const handleCloseTopUp = () => {
-    setShowTopUpModal(false);
-  };
-
-  const handleTopUpContinue = () => {
-    const numericAmount = Number(topUpAmount.replace(/\s/g, ''));
-    if (!numericAmount || numericAmount < 100 || numericAmount > 100000) {
-      return;
-    }
-    setTopUpStep('waiting');
-    window.setTimeout(() => {
-      setTopUpStep('processing');
-    }, 1200);
-  };
-
   return (
     <PageLayout>
       <section className="relative">
@@ -78,51 +54,11 @@ export function DashboardPage() {
             className="lg:row-span-1"
             variant="dashboard"
           >
-              <div
-                className={combineStyles(
-                  'flex flex-col gap-[15px]',
-                  designTokens.colors.text.primary,
-                )}
-              >
-                <button
-                  type="button"
-                  className="flex items-center gap-[10px] text-left"
-                  onClick={() => setNewCheckPersonType('legal')}
-                >
-                  <OptionIndicator type="radio" checked={newCheckPersonType === 'legal'} className="h-[22px] w-[22px]" />
-                  Юридическое лицо
-                </button>
-                <button
-                  type="button"
-                  className="flex items-center gap-[10px] text-left"
-                  onClick={() => setNewCheckPersonType('individual')}
-                >
-                  <OptionIndicator
-                    type="radio"
-                    checked={newCheckPersonType === 'individual'}
-                    className="h-[22px] w-[22px]"
-                  />
-                  Физическое лицо
-                </button>
-              </div>
-
-              <Input placeholder="Введите ИНН / ОГРН / ФИО" />
-
-              <div>
-                <Button asChild className="w-full">
-                  <Link to="/new-check">Запустить проверку</Link>
-                </Button>
-                <p
-                  className={combineStyles(
-                    'mt-[15px]',
-                    'leading-[1.2]',
-                    designTokens.colors.text.primary,
-                  )}
-                >
-                  Стоимость проверки будет списана с баланса вашего аккаунта согласно текущему тарифу
-                </p>
-              </div>
-
+            <DashboardNewCheckSteps
+              onReportOpen={
+                uiFlags.reportViewsEnabled ? () => setOpenedReportItem(sampleReportItem) : undefined
+              }
+            />
           </Card>
         }
         balance={
@@ -143,13 +79,13 @@ export function DashboardPage() {
             className="flex flex-1 flex-col"
             variant="dashboard"
           >
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="inline-flex min-h-12 min-w-[160px] items-center justify-start gap-3 rounded-full border border-white/15 bg-white/10 px-5 text-[16px] lg:text-[24px] font-semibold sm:justify-center">
-                    <img src={walletSvg} alt="" className="h-auto w-[18px] sm:h-6 sm:w-6" />
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-4">
+                  <div className="flex min-h-12 w-full min-w-0 flex-1 items-center justify-center gap-3 rounded-full border border-white/15 bg-white/10 px-4 text-[16px] font-semibold lg:text-[24px]">
+                    <img src={walletSvg} alt="" className="h-auto w-[18px] shrink-0 lg:h-6 lg:w-6" />
                     <span>4 550 ₽</span>
                   </div>
-                  <Button className="min-w-[160px]" onClick={handleOpenTopUp}>
-                    Пополнить
+                  <Button asChild className="w-full min-w-0 flex-1 lg:min-h-12">
+                    <Link to="/balance">Пополнить</Link>
                   </Button>
                 </div>
           </Card>
@@ -161,11 +97,11 @@ export function DashboardPage() {
             className="flex flex-1 flex-col"
             variant="dashboard"
           >
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="inline-flex min-h-12 min-w-[180px] items-center justify-start rounded-full border border-white/15 bg-white/10 px-5 text-lg font-medium sm:justify-center">
-                    Индивидуальный
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-4">
+                  <div className="flex min-h-12 w-full min-w-0 flex-1 items-center justify-center rounded-full border border-white/15 bg-white/10 px-4 text-lg font-medium">
+                    <span className="min-w-0 truncate">Индивидуальный</span>
                   </div>
-                  <Button className="min-w-[160px]" onClick={() => setShowCurrentTariffModal(true)}>
+                  <Button className="w-full min-w-0 flex-1 lg:min-h-12" onClick={() => setShowCurrentTariffModal(true)}>
                     Изменить
                   </Button>
                 </div>
@@ -213,7 +149,7 @@ export function DashboardPage() {
                       <th className="pr-6 font-normal">Категория</th>
                       <th className="pr-6 font-normal">Источник проверки</th>
                       <th className="pr-6 font-normal">Статус</th>
-                      <th className="font-normal">Отчёт</th>
+                      {uiFlags.reportViewsEnabled ? <th className="font-normal">Отчёт</th> : null}
                     </tr>
                   </thead>
                   <tbody>
@@ -232,16 +168,18 @@ export function DashboardPage() {
                         >
                           {status}
                         </td>
-                        <td className="pt-3">
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            className="min-h-10 min-w-[112px] border-white/40 px-4 text-sm font-normal"
-                            onClick={() => setOpenedReportItem(sampleReportItem)}
-                          >
-                            Открыть
-                          </Button>
-                        </td>
+                        {uiFlags.reportViewsEnabled ? (
+                          <td className="pt-3">
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              className="min-h-10 min-w-[112px] border-white/40 px-4 text-sm font-normal"
+                              onClick={() => setOpenedReportItem(sampleReportItem)}
+                            >
+                              Открыть
+                            </Button>
+                          </td>
+                        ) : null}
                       </tr>
                     ))}
                   </tbody>
@@ -283,13 +221,15 @@ export function DashboardPage() {
                           </div>
                         </div>
 
-                        <Button
-                          variant="secondary"
-                          className="w-full border-white/40 px-4 text-sm font-normal"
-                          onClick={() => setOpenedReportItem(sampleReportItem)}
-                        >
-                          Открыть отчет
-                        </Button>
+                        {uiFlags.reportViewsEnabled ? (
+                          <Button
+                            variant="secondary"
+                            className="w-full border-white/40 px-4 text-sm font-normal"
+                            onClick={() => setOpenedReportItem(sampleReportItem)}
+                          >
+                            Открыть отчет
+                          </Button>
+                        ) : null}
                       </div>
                     </Card>
                   );
@@ -312,6 +252,7 @@ export function DashboardPage() {
             title={<span className="uppercase lg:normal-case">Статистика проверок</span>}
             headerVariant={3}
             className="h-full flex flex-col"
+            contentClassName="gap-[15px]"
             variant="dashboard"
           >
               <p className="text-center">
@@ -360,15 +301,6 @@ export function DashboardPage() {
         />
       </section>
       <CurrentTariffInfoModal open={showCurrentTariffModal} onClose={() => setShowCurrentTariffModal(false)} />
-      <BalanceTopUpModal
-        open={showTopUpModal}
-        step={topUpStep}
-        amount={topUpAmount}
-        onAmountChange={setTopUpAmount}
-        onChipSelect={(value) => setTopUpAmount(String(value))}
-        onContinue={handleTopUpContinue}
-        onClose={handleCloseTopUp}
-      />
       <HistoryReportModal item={openedReportItem} onClose={() => setOpenedReportItem(null)} />
     </PageLayout>
   );

@@ -1,4 +1,5 @@
 import { designTokens } from '../components/ui';
+import { uiFlags } from '../config/uiFlags';
 import { combineStyles } from '../lib/combineStyles';
 
 export type HistoryItem = {
@@ -14,6 +15,9 @@ export type HistoryItem = {
 };
 
 export function ReportContent({ item }: { item: HistoryItem }) {
+  if (!uiFlags.reportViewsEnabled) {
+    return null;
+  }
   return (
     <div className="text-base font-normal lg:text-[18px]">
       <header className="border-b border-white/15 bg-[#101010] px-5 pb-4 pt-5 sm:px-7">

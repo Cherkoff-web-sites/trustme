@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { uiFlags } from '../../config/uiFlags';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { PersonTypeSwitcher } from '../../components/features/PersonTypeSwitcher';
@@ -183,7 +184,7 @@ export function NewCheckPage() {
         </section>
       ) : null}
 
-      {reportState === 'ready' && showInlineReport ? (
+      {reportState === 'ready' && showInlineReport && uiFlags.reportViewsEnabled ? (
         <section className={uiTokens.container}>
           <Card className="overflow-hidden">
             <ReportContent item={reportItem} />

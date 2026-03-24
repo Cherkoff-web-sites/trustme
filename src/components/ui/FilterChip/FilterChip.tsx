@@ -19,7 +19,7 @@ export function FilterChip({
 }: FilterChipProps) {
   return (
     <button className={cn(filterChipStyles({ variant, selected }), className)} type="button" {...props}>
-      <span>{children}</span>
+      <span className="min-w-0 max-w-full text-center leading-tight">{children}</span>
       {removeIcon}
     </button>
   );

@@ -5,6 +5,7 @@ import {
   HistoryRequestCard,
   type HistoryCategoryFilter,
   type HistoryFilterPanel,
+  type HistoryFiltersProps,
   type HistorySourceFilter,
   type HistoryStatusFilter,
 } from '../../components/features/history';
@@ -13,8 +14,6 @@ import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { type HistoryItem } from '../../shared/ReportContent';
 
 export function HistoryPage() {
-  const [filtersOpenMobile, setFiltersOpenMobile] = useState(false);
-
   const historyItems: HistoryItem[] = [
     {
       type: 'Юридическое лицо',
@@ -210,42 +209,44 @@ export function HistoryPage() {
     });
   }
 
+  const historyFiltersProps: HistoryFiltersProps = {
+    searchQuery,
+    onSearchChange: setSearchQuery,
+    dateFrom,
+    dateTo,
+    onDateFromChange: setDateFrom,
+    onDateToChange: setDateTo,
+    categoryFilter,
+    onCategoryFilterChange: setCategoryFilter,
+    sourceFilter,
+    onSourceFilterChange: setSourceFilter,
+    statusFilter,
+    onStatusFilterChange: setStatusFilter,
+    sortOrder,
+    onSortOrderChange: setSortOrder,
+    openPanel,
+    onTogglePanel: togglePanel,
+    activeChips,
+    onReset: resetFilters,
+  };
+
   return (
     <PageLayout>
       <PageSection
         title="История запросов"
         description="Все выполненные проверки из Telegram-бота и веб-сервиса «Trust Me»"
       >
-        {/* Desktop: оставляем фильтры как есть */}
-        <div className="hidden lg:block">
-          <HistoryFilters
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            dateFrom={dateFrom}
-            dateTo={dateTo}
-            onDateFromChange={setDateFrom}
-            onDateToChange={setDateTo}
-            categoryFilter={categoryFilter}
-            onCategoryFilterChange={setCategoryFilter}
-            sourceFilter={sourceFilter}
-            onSourceFilterChange={setSourceFilter}
-            statusFilter={statusFilter}
-            onStatusFilterChange={setStatusFilter}
-            sortOrder={sortOrder}
-            onSortOrderChange={setSortOrder}
-            openPanel={openPanel}
-            onTogglePanel={togglePanel}
-            activeChips={activeChips}
-            onReset={resetFilters}
-          />
+        {/* Desktop: фильтры + отступ до списка */}
+        <div className="hidden lg:mb-[60px] lg:block">
+          <HistoryFilters {...historyFiltersProps} />
         </div>
 
-        {/* Mobile: скрываем фильтры, показываем кнопку "Фильтры" */}
+        {/* Мобилка: кнопка «Фильтры» без раскрытия панели */}
         <div className="lg:hidden">
           <button
             type="button"
-            onClick={() => setFiltersOpenMobile((v) => !v)}
             className="mb-[40px] flex w-full min-h-14 items-center justify-center gap-3 rounded-[100px] border border-[#FDFEFF]/25 bg-[#1A1A1A] px-6 py-4 text-[14px] font-semibold text-[#FDFEFF]"
+            aria-label="Фильтры"
           >
             <svg
               width="19"
@@ -265,31 +266,6 @@ export function HistoryPage() {
             </svg>
             <span>Фильтры</span>
           </button>
-
-          {filtersOpenMobile ? (
-            <div className="mt-4">
-              <HistoryFilters
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                dateFrom={dateFrom}
-                dateTo={dateTo}
-                onDateFromChange={setDateFrom}
-                onDateToChange={setDateTo}
-                categoryFilter={categoryFilter}
-                onCategoryFilterChange={setCategoryFilter}
-                sourceFilter={sourceFilter}
-                onSourceFilterChange={setSourceFilter}
-                statusFilter={statusFilter}
-                onStatusFilterChange={setStatusFilter}
-                sortOrder={sortOrder}
-                onSortOrderChange={setSortOrder}
-                openPanel={openPanel}
-                onTogglePanel={togglePanel}
-                activeChips={activeChips}
-                onReset={resetFilters}
-              />
-            </div>
-          ) : null}
         </div>
 
         <div className="space-y-4 sm:space-y-5">

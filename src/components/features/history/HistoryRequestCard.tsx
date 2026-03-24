@@ -1,3 +1,4 @@
+import { uiFlags } from '../../../config/uiFlags';
 import { ReportActions } from '../ReportActions';
 import { Card, SourceBadge } from '../../ui';
 import { SuccessStatusIcon, ErrorStatusIcon } from '../../../shared/icons';
@@ -73,7 +74,7 @@ export function HistoryRequestCard({
         </div>
       </div>
 
-      <ReportActions onOpen={onOpenReport} showDelete />
+      {uiFlags.reportViewsEnabled ? <ReportActions onOpen={onOpenReport} showDelete /> : null}
     </Card>
   );
 }

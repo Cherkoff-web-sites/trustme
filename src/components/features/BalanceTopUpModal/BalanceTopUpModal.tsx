@@ -53,7 +53,10 @@ export function BalanceTopUpModal({
               <FilterChip
                 key={value}
                 selected={numericAmount === value}
-                className="h-9 rounded-[999px] px-2 text-xs"
+                className={
+                  'flex h-auto min-h-9 w-full min-w-0 max-w-full shrink-0 items-center justify-center rounded-[999px] ' +
+                  'px-1 py-2 text-center !text-[11px] !font-semibold !leading-tight sm:min-h-10 sm:px-2 sm:!text-xs'
+                }
                 onClick={() => onChipSelect(value)}
               >
                 {value.toLocaleString('ru-RU')} ₽
