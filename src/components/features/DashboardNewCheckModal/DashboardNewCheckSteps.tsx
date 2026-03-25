@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Input, OptionIndicator } from '../../ui';
 import { ReportActions } from '../ReportActions';
 import { combineStyles } from '../../../lib/combineStyles';
@@ -21,13 +21,15 @@ type PersonType = 'legal' | 'individual';
 export interface DashboardNewCheckStepsProps {
   /** После «Открыть отчёт» в шаге успеха — например открыть превью отчёта в истории. */
   onReportOpen?: () => void;
+  /** Сообщить текущий шаг наверх (чтобы менять заголовок карточки). */
+  onStepChange?: (step: DashboardNewCheckFlowStep) => void;
 }
 
 /**
  * Многошаговая проверка для карточки дашборда (без модалки и без /new-check).
  * Демо ошибки: в поле введите `!fail`.
  */
-export function DashboardNewCheckSteps({ onReportOpen }: DashboardNewCheckStepsProps) {
+export function DashboardNewCheckSteps({ onReportOpen, onStepChange }: DashboardNewCheckStepsProps) {
   const [flowStep, setFlowStep] = useState<DashboardNewCheckFlowStep>('form');
   const [personType, setPersonType] = useState<PersonType | null>(null);
   const [query, setQuery] = useState('');
@@ -71,47 +73,52 @@ export function DashboardNewCheckSteps({ onReportOpen }: DashboardNewCheckStepsP
   };
 
   const handleReportOpen = () => {
-    setFlowStep('form');
-    resetFormFields();
     onReportOpen?.();
   };
 
+  useEffect(() => {
+    onStepChange?.(flowStep);
+  }, [flowStep, onStepChange]);
+
   return (
-    <div className="flex min-h-0 flex-col">
+    <div className="flex min-h-0 flex-col gap-[30px]">
       {flowStep === 'form' ? (
         <>
-          <div className={combineStyles(dashboardNewCheckFormStackStyles, designTokens.colors.text.primary)}>
-            <button
-              type="button"
-              className="flex items-center gap-[10px] text-left"
-              onClick={() => {
-                setPersonType('legal');
-                if (submitted) setPersonTypeError(false);
-              }}
-            >
-              <OptionIndicator type="radio" checked={personType === 'legal'} className="h-[22px] w-[22px]" />
-              Юридическое лицо
-            </button>
-            <button
-              type="button"
-              className="flex items-center gap-[10px] text-left"
-              onClick={() => {
-                setPersonType('individual');
-                if (submitted) setPersonTypeError(false);
-              }}
-            >
-              <OptionIndicator type="radio" checked={personType === 'individual'} className="h-[22px] w-[22px]" />
-              Физическое лицо
-            </button>
+          <div className="relative">
+            <div className={combineStyles(dashboardNewCheckFormStackStyles, designTokens.colors.text.primary)}>
+              <button
+                type="button"
+                className="flex items-center gap-[10px] text-left"
+                onClick={() => {
+                  setPersonType('legal');
+                  if (submitted) setPersonTypeError(false);
+                }}
+              >
+                <OptionIndicator type="radio" checked={personType === 'legal'} className="h-[22px] w-[22px]" />
+                Юридическое лицо
+              </button>
+              <button
+                type="button"
+                className="flex items-center gap-[10px] text-left"
+                onClick={() => {
+                  setPersonType('individual');
+                  if (submitted) setPersonTypeError(false);
+                }}
+              >
+                <OptionIndicator type="radio" checked={personType === 'individual'} className="h-[22px] w-[22px]" />
+                Физическое лицо
+              </button>
+            </div>
+
+            {personTypeError ? (
+              <p className={`absolute left-0 right-0 top-full mt-[5px] ${dashboardNewCheckRadioErrorStyles}`} role="alert">
+                Выберите тип проверяемого лица
+              </p>
+            ) : null}
           </div>
 
-          {personTypeError ? (
-            <p className={dashboardNewCheckRadioErrorStyles} role="alert">
-              Выберите тип проверяемого лица
-            </p>
-          ) : null}
 
-          <div className={personTypeError ? 'mt-2' : 'mt-4'}>
+          <div>
             <Input
               placeholder="Введите ИНН / ОГРН / ФИО"
               value={query}
@@ -124,7 +131,7 @@ export function DashboardNewCheckSteps({ onReportOpen }: DashboardNewCheckStepsP
             />
           </div>
 
-          <div className="pt-2">
+          <div>
             <Button type="button" className="w-full" onClick={handleLaunch}>
               Запустить проверку
             </Button>
@@ -138,8 +145,7 @@ export function DashboardNewCheckSteps({ onReportOpen }: DashboardNewCheckStepsP
       {flowStep === 'loading' ? (
         <div className="flex min-h-[200px] flex-col">
           <div>
-            <h3 className={dashboardNewCheckResultTitleStyles}>Формируем отчет</h3>
-            <p className={combineStyles(dashboardNewCheckResultDescStyles, 'mt-2')}>
+            <p className="text-[16px] lg:text-[18px]">
               Ожидайте, формирование отчета может занять до 10 минут
             </p>
           </div>
@@ -182,14 +188,13 @@ export function DashboardNewCheckSteps({ onReportOpen }: DashboardNewCheckStepsP
       ) : null}
 
       {flowStep === 'success' ? (
-        <div className={dashboardNewCheckResultStackStyles}>
-          <div>
-            <h3 className={dashboardNewCheckResultTitleStyles}>Отчет готов</h3>
-            <p className={combineStyles(dashboardNewCheckResultDescStyles, 'mt-2')}>
-              Отчет успешно сформирован. Вы можете посмотреть или скачать его
-            </p>
-          </div>
-          <div className="inline-flex min-h-10 w-full items-center justify-center rounded-[10px] border border-[#2C6B3B] bg-[#1E2D21] px-4 text-xs font-medium text-[#FDFEFF]">
+        <div className="flex flex-col gap-[30px] text-left">
+          <p className="text-[16px] lg:text-[18px]">
+            Отчет успешно сформирован.
+            <br />
+            Вы можете посмотреть или скачать его
+          </p>
+          <div className="inline-flex w-full items-center justify-center rounded-[10px] border border-[#34A853] bg-[#2A2A2A] p-[15px] text-[16px] lg:text-[18px]">
             Успешно
           </div>
           <ReportActions

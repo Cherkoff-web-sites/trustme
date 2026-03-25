@@ -1,18 +1,12 @@
-/** Оверлей «текущий тариф»: скролл + внутреннее центрирование (см. AuthModal / ModalShell). */
+/** Оверлей-карточка «текущий тариф»: моб — сверху на всю ширину, ПК — справа сверху. */
 export const currentTariffInfoOverlayOuterStyles =
-  'fixed inset-0 z-40 overflow-y-auto overflow-x-hidden bg-black/40';
+  'absolute inset-0 z-40 bg-transparent';
 
 export const currentTariffInfoOverlayInnerStyles =
-  'flex min-h-full w-full items-center justify-center px-4 py-6 sm:px-6 sm:py-10';
+  'flex h-full w-full items-start justify-start p-0 lg:justify-end';
 
 export const currentTariffInfoPanelStyles =
-  'relative w-full max-w-[430px] rounded-[28px] border border-[#FDFEFF] bg-[#1A1A1A] px-5 py-5 text-base font-normal text-[#FDFEFF] shadow-[0_0_0_1px_rgba(253,254,255,0.15)] sm:px-6 sm:py-6 lg:text-[18px]';
-
-export const currentTariffInfoCloseButtonStyles =
-  'absolute right-4 top-4 text-lg text-[#FDFEFF] transition hover:text-[#FDFEFF]';
-
-export const currentTariffInfoTitleStyles =
-  'mb-3 text-xs uppercase tracking-[0.12em] text-[#FDFEFF]';
+  'relative w-full max-w-none rounded-[28px] border border-[#FDFEFF] bg-[#1A1A1A] px-5 py-5 text-base font-normal text-[#FDFEFF] shadow-[0_0_0_1px_rgba(253,254,255,0.15)] sm:px-6 sm:py-6 lg:mt-0 lg:max-w-[430px] lg:rounded-[28px] lg:text-[18px]';
 
 export const currentTariffInfoTextStyles = 'mb-4 text-[15px] leading-snug text-[#FDFEFF]';
 

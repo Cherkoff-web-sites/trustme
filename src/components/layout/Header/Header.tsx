@@ -216,7 +216,9 @@ export function Header() {
       {/* Mobile full-screen menu */}
       {showMobileMenu ? (
         <div className="fixed inset-0 z-50 bg-[#1A1A1A] lg:hidden">
-          <div className={`${uiTokens.container} flex h-full flex-col py-8`}>
+          <div
+            className={`${uiTokens.container} flex h-full flex-col overflow-y-auto overscroll-contain py-8 [-webkit-overflow-scrolling:touch]`}
+          >
             <div className="flex items-center justify-between">
               <img src={logoSvg} alt="" width={122} height={29} className="w-[122px] h-auto" />
               <button

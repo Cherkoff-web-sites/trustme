@@ -1,6 +1,6 @@
 import { useId } from 'react';
 
-export function TelegramCircleIcon({ className = 'h-[60px] w-[60px]' }: { className?: string }) {
+export function TelegramCircleIcon({ className = 'w-[40px] h-[40px] lg:w-[60px] lg:h-[60px]' }: { className?: string }) {
   const gradientId = useId();
   const clipId = useId();
 

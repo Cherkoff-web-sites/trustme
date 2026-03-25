@@ -13,6 +13,11 @@ export interface CardProps
   title?: React.ReactNode;
   aside?: React.ReactNode;
   /**
+   * Декор под заголовком карточки (рендерится в одной обёртке с header, чтобы не ломать `gap` контента).
+   * Например: декоративная линия / разделитель.
+   */
+  headerDecor?: React.ReactNode;
+  /**
    * Виды заголовка внутри `Card`.
    * 1) flex (title слева, aside справа) + after-линия
    * 2) как 1, но только title (без aside)
@@ -31,6 +36,7 @@ export interface CardProps
 export function Card({
   title,
   aside,
+  headerDecor,
   headerVariant = 6,
   status,
   className,
@@ -63,7 +69,7 @@ export function Card({
     ) : null;
   };
 
-  const renderHeader = () => {
+  const renderHeaderContent = () => {
     if (headerVariant === 6) return renderLegacyHeader();
 
     // 1) left title + optional right aside + after-line
@@ -127,6 +133,17 @@ export function Card({
     }
 
     return renderLegacyHeader();
+  };
+
+  const renderHeader = () => {
+    const headerContent = renderHeaderContent();
+    if (!headerContent && !headerDecor) return null;
+    return (
+      <div className="w-full">
+        {headerContent}
+        {headerDecor ? <div className="mt-[15px]">{headerDecor}</div> : null}
+      </div>
+    );
   };
 
   return (

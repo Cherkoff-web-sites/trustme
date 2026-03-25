@@ -1,7 +1,9 @@
+import { designTokens } from '../../ui/design-tokens';
+
 export const dashboardNewCheckFormStackStyles = 'flex flex-col gap-[15px]';
 
 export const dashboardNewCheckRadioErrorStyles =
-  'text-left text-[12px] leading-[18px] text-[#FF7A7A]';
+  `text-left text-[12px] leading-[18px] ${designTokens.colors.text.statusError}`;
 
 export const dashboardNewCheckFootnoteStyles =
   'mt-[15px] m-0 leading-[1.2] text-sm text-[#FDFEFF]';

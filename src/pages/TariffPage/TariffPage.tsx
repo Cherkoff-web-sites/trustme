@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
-import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
 import { SupportSection } from '../../components/layout/SupportSection/SupportSection';
 import { TariffPlanCard, type TariffPlanCardData } from '../../components/features/TariffPlanCard';
 import {
@@ -59,7 +57,9 @@ export function TariffPage() {
 
   const durationButtons = ['24 часа', '7 дней', '1 месяц', '3 месяца', '6 месяцев', '12 месяцев'];
 
-  const [showCurrentTariffModal, setShowCurrentTariffModal] = useState(false);
+  const scrollToPlans = () => {
+    document.getElementById('tariff-plans')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
     <PageLayout>
@@ -76,23 +76,22 @@ export function TariffPage() {
               <div className="text-[18px] leading-[0.95] font-semibold uppercase text-white sm:text-[36px]">
                 Индивидуальный
               </div>
-              <Button className="w-full mb-[15px] mt-[30px] lg:hidden" onClick={() => setShowCurrentTariffModal(true)}>
+              <Button className="w-full mb-[15px] mt-[30px] lg:hidden" onClick={scrollToPlans}>
                 Изменить
               </Button>
               <p className="mt-0 lg:mt-3 text-[#FDFEFF] text-[16px] lg:text-[18px]">
                 Списания с баланса аккаунта совершаются согласно текущему тарифу
               </p>
             </div>
-            <Button className="hidden min-w-[180px] lg:inline-flex" onClick={() => setShowCurrentTariffModal(true)}>
+            <Button className="hidden min-w-[180px] lg:inline-flex" onClick={scrollToPlans}>
               Изменить тариф
             </Button>
           </div>
         </Card>
-
-        <CurrentTariffInfoModal open={showCurrentTariffModal} onClose={() => setShowCurrentTariffModal(false)} />
       </PageSection>
 
       <PageSection
+        id="tariff-plans"
         title={<span className="mx-auto block max-w-[90%] lg:mx-0 lg:max-w-none">Оформление подписки</span>}
         description="Выберите подходящий для вас тарифный план"
       >
