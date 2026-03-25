@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import bgModalMob from "../../../assets/bg_modal_mob.webp";
 import bgModalPc from "../../../assets/bg_modal_pc.webp";
@@ -15,6 +15,7 @@ import {
 } from "../../ui";
 import { cn } from "../../../lib/cn";
 import { combineStyles } from "../../../lib/combineStyles";
+import { getSafeNextPath } from "../../../lib/getSafeNextPath";
 import { getPasswordRuleChecks } from "../../../lib/passwordRules";
 import {
   authModalBgLayerMobStyles,
@@ -41,6 +42,7 @@ const EMAIL_CONFIRM_COUNTDOWN_SEC = 600; // 10 минут
 export function AuthModal({ open, onClose }: AuthModalProps) {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [view, setView] = useState<AuthView>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -104,7 +106,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
     if (Object.keys(next).length > 0) return;
     login();
     onClose();
-    navigate("/cabinet");
+    navigate(getSafeNextPath(searchParams.get("next")));
   };
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
