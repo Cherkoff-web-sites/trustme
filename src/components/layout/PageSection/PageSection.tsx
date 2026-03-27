@@ -1,11 +1,14 @@
 import type * as React from 'react';
 import { useId } from 'react';
+import titleDecorMob from '../../../assets/title_decor_mob.svg';
+import titleDecorPc from '../../../assets/title_decor_pc.svg';
 import { cn } from '../../../lib/cn';
 import {
   pageSectionContentOffsetStyles,
   pageSectionDescriptionStyles,
   pageSectionRootStyles,
   pageSectionTitleStyles,
+  pageSectionTitleWrapStyles,
 } from './PageSection.styles';
 import { useAutoHeading } from './heading-context';
 
@@ -31,7 +34,27 @@ export function PageSection({
 
   return (
     <section className={cn(pageSectionRootStyles, className)} {...props}>
-      <HeadingTag className={pageSectionTitleStyles}>{title}</HeadingTag>
+      <div className={pageSectionTitleWrapStyles}>
+        <HeadingTag className={pageSectionTitleStyles}>{title}</HeadingTag>
+        <img
+          src={titleDecorMob}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute right-[calc(100%+20px)] top-1/2 h-auto w-[76px] -translate-y-1/2 lg:hidden"
+        />
+        <img
+          src={titleDecorMob}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute left-[calc(100%+20px)] top-1/2 h-auto w-[76px] -translate-y-1/2 scale-x-[-1] lg:hidden"
+        />
+        <img
+          src={titleDecorPc}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute left-[calc(100%+30px)] top-1/2 hidden h-auto w-[267px] -translate-y-1/2 shrink-0 lg:block"
+        />
+      </div>
       {description ? <p className={pageSectionDescriptionStyles}>{description}</p> : null}
       {children ? <div className={pageSectionContentOffsetStyles}>{children}</div> : null}
     </section>

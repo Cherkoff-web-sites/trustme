@@ -3,12 +3,12 @@ import { designTokens } from '../design-tokens';
 
 export const filterTriggerStyles = cva(
   [
-    'flex h-12 items-center justify-between gap-2',
+    'flex h-[59px] items-center justify-between gap-2',
     designTokens.borderRadius.input,
     `border ${designTokens.colors.border.input}`,
     designTokens.colors.background.control,
-    'px-4',
-    designTokens.typography.input,
+    'px-[20px]',
+    'text-[16px]',
     'font-normal',
     'transition',
   ].join(' '),

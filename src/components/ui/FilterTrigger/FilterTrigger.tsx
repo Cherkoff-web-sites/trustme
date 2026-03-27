@@ -13,7 +13,7 @@ export interface FilterTriggerProps
 
 export function FilterTrigger({
   label,
-  icon = <img src={chevronSvg} alt="" className="h-[10px] w-[17px]" />,
+  icon = <img src={chevronSvg} alt="" className="h-auto w-[12px]" aria-hidden />,
   active,
   minWidth,
   className,

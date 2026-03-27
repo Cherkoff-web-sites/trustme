@@ -3,7 +3,7 @@
  */
 export const uiFlags = {
   /** Модалка уведомлений по иконке колокольчика в шапке */
-  notificationsPanelEnabled: false,
+  notificationsPanelEnabled: true,
   /** Модалка отчёта, встроенный `ReportContent`, кнопки «Открыть отчёт» / «Открыть» */
   reportViewsEnabled: true,
 } as const;

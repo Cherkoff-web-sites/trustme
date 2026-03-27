@@ -1,6 +1,7 @@
 import { TelegramSmallIcon } from '../../../shared/icons';
 import { cn } from '../../../lib/cn';
 import { sourceBadgeFallbackStyles, sourceBadgeStyles } from './SourceBadge.styles';
+import websiteOnHistorySvg from '../../../assets/icons/website_on_history.svg';
 
 export interface SourceBadgeProps {
   source: 'telegram' | 'web';
@@ -20,7 +21,12 @@ export function SourceBadge({
       {source === 'telegram' ? (
         <TelegramSmallIcon className={size === 'sm' ? 'h-5 w-5' : 'h-10 w-10'} />
       ) : (
-        <span className={sourceBadgeFallbackStyles({ size })}>web</span>
+        <img
+          src={websiteOnHistorySvg}
+          alt=""
+          aria-hidden
+          className={cn('shrink-0', size === 'sm' ? 'h-5 w-5' : 'h-10 w-10')}
+        />
       )}
       {label ? <span>{source === 'telegram' ? 'Telegram-бот' : 'Веб-сервис'}</span> : null}
     </span>

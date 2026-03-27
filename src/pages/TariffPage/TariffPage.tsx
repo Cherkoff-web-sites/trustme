@@ -1,7 +1,9 @@
+import { useEffect, useRef, useState } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { SupportSection } from '../../components/layout/SupportSection/SupportSection';
 import { TariffPlanCard, type TariffPlanCardData } from '../../components/features/TariffPlanCard';
+import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
 import {
   AlertBanner,
   Button,
@@ -13,6 +15,11 @@ import {
 } from '../../components/ui';
 
 export function TariffPage() {
+  const [showTopUpModal, setShowTopUpModal] = useState(false);
+  const [topUpAmount, setTopUpAmount] = useState('');
+  const [topUpStep, setTopUpStep] = useState<TopUpStep>('processing');
+  const waitingTimerRef = useRef<number | null>(null);
+
   const plans: TariffPlanCardData[] = [
     {
       title: 'Базовый тариф',
@@ -61,10 +68,49 @@ export function TariffPage() {
     document.getElementById('tariff-plans')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const extractAmount = (priceLabel: string) => {
+    const digits = priceLabel.replace(/[^\d]/g, '');
+    return digits || '0';
+  };
+
+  const handlePlanSelect = (plan: TariffPlanCardData) => {
+    setTopUpAmount(extractAmount(plan.price));
+    setTopUpStep('processing');
+    setShowTopUpModal(true);
+  };
+
+  const handleTopUpClose = () => {
+    setShowTopUpModal(false);
+    setTopUpStep('processing');
+    if (waitingTimerRef.current) {
+      window.clearTimeout(waitingTimerRef.current);
+      waitingTimerRef.current = null;
+    }
+  };
+
+  const handleTopUpPay = () => {
+    setTopUpStep('waiting');
+    if (waitingTimerRef.current) window.clearTimeout(waitingTimerRef.current);
+    waitingTimerRef.current = window.setTimeout(() => {
+      setTopUpStep('success');
+      waitingTimerRef.current = null;
+    }, 3000);
+  };
+
+  const handleTopUpBack = () => {
+    handleTopUpClose();
+  };
+
+  useEffect(() => {
+    return () => {
+      if (waitingTimerRef.current) window.clearTimeout(waitingTimerRef.current);
+    };
+  }, []);
+
   return (
     <PageLayout>
       <PageSection
-        title={<span className="mx-auto block max-w-[90%] lg:mx-0 lg:max-w-none">Тариф</span>}
+        title="Тариф"
         description="Управляйте тарифом аккаунта"
       >
 
@@ -92,18 +138,18 @@ export function TariffPage() {
 
       <PageSection
         id="tariff-plans"
-        title={<span className="mx-auto block max-w-[90%] lg:mx-0 lg:max-w-none">Оформление подписки</span>}
+        title="Оформление подписки"
         description="Выберите подходящий для вас тарифный план"
       >
         <div className="grid gap-4 xl:grid-cols-3">
           {plans.map((plan) => (
-            <TariffPlanCard key={plan.title} plan={plan} />
+            <TariffPlanCard key={plan.title} plan={plan} onSelect={handlePlanSelect} />
           ))}
         </div>
       </PageSection>
 
       <PageSection
-        title={<span className="mx-auto block max-w-[90%] lg:mx-0 lg:max-w-none">Индивидуальный тариф</span>}
+        title="Индивидуальный тариф"
         description="Настройте индивидуальный тариф под задачи вашего бизнеса и узнайте стоимость мгновенно"
       >
         <div className="grid gap-4 xl:grid-cols-[1.55fr_0.75fr]">
@@ -201,6 +247,18 @@ export function TariffPage() {
       </PageSection>
 
       <SupportSection />
+
+      <BalanceTopUpModal
+        open={showTopUpModal}
+        step={topUpStep}
+        amount={topUpAmount}
+        onAmountChange={setTopUpAmount}
+        onChipSelect={(value) => setTopUpAmount(String(value))}
+        onContinue={() => {}}
+        onPay={handleTopUpPay}
+        onBack={handleTopUpBack}
+        onClose={handleTopUpClose}
+      />
     </PageLayout>
   );
 }

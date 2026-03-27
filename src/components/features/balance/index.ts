@@ -1,6 +1,7 @@
 export { BalanceFilters } from './BalanceFilters';
 export type {
   BalanceFilterPanel,
+  BalanceFilterPanelKey,
   BalanceFiltersProps,
   BalanceSortOrder,
   BalanceSourceFilter,

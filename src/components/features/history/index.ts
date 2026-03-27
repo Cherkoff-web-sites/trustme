@@ -6,6 +6,7 @@ export { HistoryFilters } from './HistoryFilters';
 export type {
   HistoryCategoryFilter,
   HistoryFilterPanel,
+  HistoryFilterPanelKey,
   HistoryFiltersProps,
   HistorySortOrder,
   HistorySourceFilter,

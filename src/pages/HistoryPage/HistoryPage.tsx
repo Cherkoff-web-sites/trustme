@@ -6,11 +6,13 @@ import {
   type HistoryCategoryFilter,
   type HistoryFilterPanel,
   type HistoryFiltersProps,
+  type HistoryFilterPanelKey,
   type HistorySourceFilter,
   type HistoryStatusFilter,
 } from '../../components/features/history';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
+import { Card, FilterChip } from '../../components/ui';
 import { type HistoryItem } from '../../shared/ReportContent';
 
 export function HistoryPage() {
@@ -68,6 +70,8 @@ export function HistoryPage() {
   const [sortOrder, setSortOrder] = useState<'new' | 'old'>('new');
   const [openPanel, setOpenPanel] = useState<HistoryFilterPanel>(null);
   const [openedReportItem, setOpenedReportItem] = useState<HistoryItem | null>(null);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [mobileOpenPanels, setMobileOpenPanels] = useState<Partial<Record<HistoryFilterPanelKey, boolean>>>({});
 
   const resetFilters = () => {
     setSearchQuery('');
@@ -78,6 +82,8 @@ export function HistoryPage() {
     setStatusFilter('all');
     setSortOrder('new');
     setOpenPanel(null);
+    setMobileFiltersOpen(false);
+    setMobileOpenPanels({});
   };
 
   const togglePanel = (panel: HistoryFilterPanel) => {
@@ -158,7 +164,7 @@ export function HistoryPage() {
   if (searchQuery.trim()) {
     activeChips.push({
       id: 'search',
-      label: `Поиск: «${searchQuery.trim()}»`,
+      label: `«${searchQuery.trim()}»`,
       clear: () => setSearchQuery(''),
     });
   }
@@ -166,7 +172,7 @@ export function HistoryPage() {
   if (dateFrom || dateTo) {
     activeChips.push({
       id: 'period',
-      label: `Период: ${dateFrom || '—'} — ${dateTo || '—'}`,
+      label: `${dateFrom || '—'} — ${dateTo || '—'}`,
       clear: () => {
         setDateFrom('');
         setDateTo('');
@@ -179,8 +185,8 @@ export function HistoryPage() {
       id: 'category',
       label:
         categoryFilter === 'legal'
-          ? 'Категория: юридическое лицо'
-          : 'Категория: физическое лицо',
+          ? 'Юридическое лицо'
+          : 'Физическое лицо',
       clear: () => setCategoryFilter('all'),
     });
   }
@@ -188,7 +194,7 @@ export function HistoryPage() {
   if (sourceFilter !== 'all') {
     activeChips.push({
       id: 'source',
-      label: sourceFilter === 'telegram' ? 'Источник: Telegram-бот' : 'Источник: веб-сервис',
+      label: sourceFilter === 'telegram' ? 'Telegram-бот' : 'Веб-сервис',
       clear: () => setSourceFilter('all'),
     });
   }
@@ -196,7 +202,7 @@ export function HistoryPage() {
   if (statusFilter !== 'all') {
     activeChips.push({
       id: 'status',
-      label: statusFilter === 'success' ? 'Статус: успешно' : 'Статус: ошибка',
+      label: statusFilter === 'success' ? 'Успешно' : 'Ошибка',
       clear: () => setStatusFilter('all'),
     });
   }
@@ -204,7 +210,7 @@ export function HistoryPage() {
   if (sortOrder !== 'new') {
     activeChips.push({
       id: 'sort',
-      label: 'Сортировка: сначала старые',
+      label: 'Сначала старые',
       clear: () => setSortOrder('new'),
     });
   }
@@ -226,6 +232,7 @@ export function HistoryPage() {
     onSortOrderChange: setSortOrder,
     openPanel,
     onTogglePanel: togglePanel,
+    onClosePanels: () => setOpenPanel(null),
     activeChips,
     onReset: resetFilters,
   };
@@ -247,6 +254,16 @@ export function HistoryPage() {
             type="button"
             className="mb-[40px] flex w-full min-h-14 items-center justify-center gap-3 rounded-[100px] border border-[#FDFEFF]/25 bg-[#1A1A1A] px-6 py-4 text-[14px] font-semibold text-[#FDFEFF]"
             aria-label="Фильтры"
+            onClick={() => {
+              setMobileFiltersOpen((v) => {
+                const next = !v;
+                if (!next) {
+                  setOpenPanel(null);
+                  setMobileOpenPanels({});
+                }
+                return next;
+              });
+            }}
           >
             <svg
               width="19"
@@ -267,6 +284,63 @@ export function HistoryPage() {
             <span>Фильтры</span>
           </button>
         </div>
+
+        {/* Mobile: встроенные фильтры (между кнопкой и списком) */}
+        {mobileFiltersOpen ? (
+          <div className="mb-[40px] lg:hidden">
+            <Card variant="history" className="rounded-[24px] bg-[#1A1A1A]">
+              <div className="mb-6 grid grid-cols-[40px_1fr_auto] items-center gap-3">
+                <button
+                  type="button"
+                  aria-label="Закрыть"
+                  className="inline-flex h-10 w-10 items-center justify-center text-[#FDFEFF]"
+                  onClick={() => {
+                    setMobileFiltersOpen(false);
+                    setOpenPanel(null);
+                  }}
+                >
+                  ×
+                </button>
+                <div className="text-center text-[20px] font-semibold text-[#0EB8D2]">Фильтры</div>
+                <button
+                  type="button"
+                  className="text-[16px] font-medium text-[#FDFEFF]"
+                  onClick={resetFilters}
+                >
+                  Сбросить
+                </button>
+              </div>
+
+              {/* Выбранные параметры (чипы) */}
+              {activeChips.length ? (
+                <div className="mb-6 flex flex-wrap gap-3">
+                  {activeChips.map((chip) => (
+                    <FilterChip
+                      key={chip.id}
+                      variant="applied"
+                      onClick={chip.clear}
+                      removeIcon={<span className="text-[#FDFEFF]">×</span>}
+                      className="px-[20px] py-[10px] text-[14px]"
+                    >
+                      {chip.label}
+                    </FilterChip>
+                  ))}
+                </div>
+              ) : null}
+
+              <HistoryFilters
+                {...historyFiltersProps}
+                showAppliedRow={false}
+                panelLayout="static"
+                onClosePanels={undefined}
+                openPanels={mobileOpenPanels}
+                onTogglePanelMulti={(panel) =>
+                  setMobileOpenPanels((prev) => ({ ...prev, [panel]: !prev?.[panel] }))
+                }
+              />
+            </Card>
+          </div>
+        ) : null}
 
         <div className="space-y-4 sm:space-y-5">
           {filteredAndSortedItems.map((item) => (

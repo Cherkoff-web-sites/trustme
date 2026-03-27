@@ -10,6 +10,14 @@ export const supportSectionCardStyles = [
 export const supportSectionTitleStyles = [
   designTokens.typography.h1h2,
   designTokens.colors.text.primary,
+  // Mobile: centered + fit-content; also force-reset horizontal spacing in passed ReactNode children.
+  'inline text-center px-0',
+  '[&_*]:mx-0 [&_*]:px-0',
+  'lg:text-left',
+].join(' ');
+
+export const supportSectionTitleWrapStyles = [
+  'relative mx-auto w-fit max-w-[265px] text-center lg:mx-0 lg:max-w-none lg:text-left',
   designTokens.spacing.margin.pageStructureTitleToDescription,
 ].join(' ');
 

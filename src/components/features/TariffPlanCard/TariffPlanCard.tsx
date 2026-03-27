@@ -20,9 +20,10 @@ export interface TariffPlanCardData {
 
 export interface TariffPlanCardProps {
   plan: TariffPlanCardData;
+  onSelect?: (plan: TariffPlanCardData) => void;
 }
 
-export function TariffPlanCard({ plan }: TariffPlanCardProps) {
+export function TariffPlanCard({ plan, onSelect }: TariffPlanCardProps) {
   return (
     <Card as="article" className="flex h-full flex-col" variant="tariff">
       <h3 className="text-[16px] lg:text-[24px] leading-[1.05] font-semibold text-white">{plan.title}</h3>
@@ -51,7 +52,7 @@ export function TariffPlanCard({ plan }: TariffPlanCardProps) {
         ))}
       </div>
 
-      <Button className="mt-auto w-full">Выбрать</Button>
+      <Button className="mt-auto w-full" onClick={() => onSelect?.(plan)}>Выбрать</Button>
     </Card>
   );
 }

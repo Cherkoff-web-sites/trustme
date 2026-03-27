@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   BalanceFilters,
   TransactionTable,
   type BalanceFilterPanel,
+  type BalanceFilterPanelKey,
   type BalanceFiltersProps,
   type BalanceSortOrder,
   type BalanceSourceFilter,
@@ -11,7 +12,7 @@ import {
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
-import { Button, Card, designTokens } from '../../components/ui';
+import { Button, Card, FilterChip, designTokens } from '../../components/ui';
 import { combineStyles } from '../../lib/combineStyles';
 import { TelegramSmallIcon } from '../../shared/icons';
 import walletSvg from '../../assets/icons/wallet.svg';
@@ -25,6 +26,36 @@ type BalanceOperation = {
 };
 
 export function BalancePage() {
+  const renderHeaderDecorLine = (gradientId: string) => (
+    <svg
+      className="h-auto w-full"
+      width="591"
+      height="6"
+      viewBox="0 0 591 6"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
+      <path
+        d="M0.001302 2.66699C0.00130213 4.13975 1.19521 5.33366 2.66797 5.33366C4.14073 5.33366 5.33464 4.13975 5.33464 2.66699C5.33464 1.19423 4.14073 0.000325313 2.66797 0.000325441C1.19521 0.00032557 0.00130188 1.19423 0.001302 2.66699ZM2.66797 2.66699L2.66797 3.16699L590.668 3.16694L590.668 2.66694L590.668 2.16694L2.66797 2.66699L2.66797 2.66699Z"
+        fill={`url(#${gradientId})`}
+      />
+      <defs>
+        <linearGradient
+          id={gradientId}
+          x1="2.66797"
+          y1="3.16699"
+          x2="590.668"
+          y2="3.16694"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="white" />
+          <stop offset="1" stopColor="#1A1A1A" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+
   const operations: BalanceOperation[] = [
     { date: '23.12.2025', type: 'Поступление', source: 'telegram', amount: '1000 ₽' },
     { date: '23.10.2025', type: 'Поступление', source: 'web', amount: '2000 ₽' },
@@ -33,8 +64,9 @@ export function BalancePage() {
   ];
 
   const [showTopUpModal, setShowTopUpModal] = useState(false);
-  const [topUpAmount, setTopUpAmount] = useState('300');
+  const [topUpAmount, setTopUpAmount] = useState('');
   const [topUpStep, setTopUpStep] = useState<TopUpStep>('form');
+  const waitingTimerRef = useRef<number | null>(null);
 
   const [balanceDateFrom, setBalanceDateFrom] = useState('');
   const [balanceDateTo, setBalanceDateTo] = useState('');
@@ -42,14 +74,22 @@ export function BalancePage() {
   const [balanceTypeFilter, setBalanceTypeFilter] = useState<BalanceTypeFilter>('all');
   const [balanceSourceFilter, setBalanceSourceFilter] = useState<BalanceSourceFilter>('all');
   const [balanceOpenPanel, setBalanceOpenPanel] = useState<BalanceFilterPanel>(null);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [mobileOpenPanels, setMobileOpenPanels] = useState<Partial<Record<BalanceFilterPanelKey, boolean>>>({});
 
   const handleOpenTopUp = () => {
     setTopUpStep('form');
+    setTopUpAmount('');
     setShowTopUpModal(true);
   };
 
   const handleCloseTopUp = () => {
     setShowTopUpModal(false);
+    setTopUpStep('form');
+    if (waitingTimerRef.current) {
+      window.clearTimeout(waitingTimerRef.current);
+      waitingTimerRef.current = null;
+    }
   };
 
   const handleTopUpContinue = () => {
@@ -57,11 +97,29 @@ export function BalancePage() {
     if (!numericAmount || numericAmount < 100 || numericAmount > 100000) {
       return;
     }
-    setTopUpStep('waiting');
-    window.setTimeout(() => {
-      setTopUpStep('processing');
-    }, 1200);
+    setTopUpStep('processing');
   };
+
+  const handleTopUpPay = () => {
+    setTopUpStep('waiting');
+    if (waitingTimerRef.current) window.clearTimeout(waitingTimerRef.current);
+    waitingTimerRef.current = window.setTimeout(() => {
+      setTopUpStep('success');
+      waitingTimerRef.current = null;
+    }, 3000);
+  };
+
+  const handleTopUpBack = () => {
+    setTopUpStep('form');
+  };
+
+  useEffect(() => {
+    return () => {
+      if (waitingTimerRef.current) {
+        window.clearTimeout(waitingTimerRef.current);
+      }
+    };
+  }, []);
 
   const toggleBalancePanel = (panel: BalanceFilterPanel) => {
     setBalanceOpenPanel((current) => (current === panel ? null : panel));
@@ -74,6 +132,8 @@ export function BalancePage() {
     setBalanceTypeFilter('all');
     setBalanceSourceFilter('all');
     setBalanceOpenPanel(null);
+    setMobileFiltersOpen(false);
+    setMobileOpenPanels({});
   };
 
   const parseBalanceDate = (value: string) => {
@@ -126,7 +186,7 @@ export function BalancePage() {
   if (balanceDateFrom || balanceDateTo) {
     activeChips.push({
       id: 'period',
-      label: `Период: ${balanceDateFrom || '—'} — ${balanceDateTo || '—'}`,
+      label: `${balanceDateFrom || '—'} — ${balanceDateTo || '—'}`,
       clear: () => {
         setBalanceDateFrom('');
         setBalanceDateTo('');
@@ -137,7 +197,7 @@ export function BalancePage() {
   if (balanceSortOrder !== 'new') {
     activeChips.push({
       id: 'sort',
-      label: 'Сортировка: сначала старые',
+      label: 'Сначала старые',
       clear: () => setBalanceSortOrder('new'),
     });
   }
@@ -147,8 +207,8 @@ export function BalancePage() {
       id: 'type',
       label:
         balanceTypeFilter === 'income'
-          ? 'Тип: поступления'
-          : 'Тип: списания',
+          ? 'Поступления'
+          : 'Списания',
       clear: () => setBalanceTypeFilter('all'),
     });
   }
@@ -156,7 +216,7 @@ export function BalancePage() {
   if (balanceSourceFilter !== 'all') {
     activeChips.push({
       id: 'source',
-      label: balanceSourceFilter === 'telegram' ? 'Источник: Telegram-бот' : 'Источник: веб-сервис',
+      label: balanceSourceFilter === 'telegram' ? 'Telegram-бот' : 'Веб-сервис',
       clear: () => setBalanceSourceFilter('all'),
     });
   }
@@ -174,6 +234,7 @@ export function BalancePage() {
     onTypeFilterChange: setBalanceTypeFilter,
     sourceFilter: balanceSourceFilter,
     onSourceFilterChange: setBalanceSourceFilter,
+    onClosePanels: () => setBalanceOpenPanel(null),
     activeChips,
     onReset: resetBalanceFilters,
   };
@@ -184,20 +245,11 @@ export function BalancePage() {
         title="Баланс"
         description="Управляйте балансом аккаунта и отслеживайте историю финансовых операций"
       >
-        <Card>
-          <h3
-            className={combineStyles(
-              designTokens.typography.h3,
-              designTokens.colors.text.primary,
-            )}
-          >
-            Текущий баланс
-          </h3>
-
+        <Card title="Текущий баланс" headerDecor={renderHeaderDecorLine('balance_hdr_current')}>
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <div className="flex items-center gap-3 text-[18px] lg:text-[36px] font-semibold text-white sm:text-[56px]">
-                <img src={walletSvg} alt="" className="h-auto w-[20px] sm:h-12 sm:w-12" />
+              <div className="flex items-center gap-[10px] lg:gap-[15px] text-[18px] lg:text-[36px] font-semibold text-white">
+                <img src={walletSvg} alt="" className="h-auto w-[20px] lg:w-[30px]" />
                 <span>100 ₽</span>
               </div>
               <p
@@ -211,7 +263,7 @@ export function BalancePage() {
               </p>
             </div>
 
-            <Button className="min-w-[180px]" onClick={handleOpenTopUp}>
+            <Button className="min-w-[180px] lg:px-[60px]" onClick={handleOpenTopUp}>
               Пополнить
             </Button>
 
@@ -242,6 +294,16 @@ export function BalancePage() {
             type="button"
             className="mb-[40px] flex w-full min-h-14 items-center justify-center gap-3 rounded-[100px] border border-[#FDFEFF]/25 bg-[#1A1A1A] px-6 py-4 text-[14px] font-semibold text-[#FDFEFF]"
             aria-label="Фильтры"
+            onClick={() => {
+              setMobileFiltersOpen((v) => {
+                const next = !v;
+                if (!next) {
+                  setBalanceOpenPanel(null);
+                  setMobileOpenPanels({});
+                }
+                return next;
+              });
+            }}
           >
             <svg
               width="19"
@@ -262,6 +324,58 @@ export function BalancePage() {
             <span>Фильтры</span>
           </button>
         </div>
+
+        {mobileFiltersOpen ? (
+          <div className="mb-[40px] lg:hidden">
+            <Card variant="history" className="rounded-[24px] bg-[#1A1A1A]">
+              <div className="mb-6 grid grid-cols-[40px_1fr_auto] items-center gap-3">
+                <button
+                  type="button"
+                  aria-label="Закрыть"
+                  className="inline-flex h-10 w-10 items-center justify-center text-[#FDFEFF]"
+                  onClick={() => {
+                    setMobileFiltersOpen(false);
+                    setBalanceOpenPanel(null);
+                    setMobileOpenPanels({});
+                  }}
+                >
+                  ×
+                </button>
+                <div className="text-center text-[20px] font-semibold text-[#0EB8D2]">Фильтры</div>
+                <button type="button" className="text-[16px] font-medium text-[#FDFEFF]" onClick={resetBalanceFilters}>
+                  Сбросить
+                </button>
+              </div>
+
+              {activeChips.length ? (
+                <div className="mb-6 flex flex-wrap gap-3">
+                  {activeChips.map((chip) => (
+                    <FilterChip
+                      key={chip.id}
+                      variant="applied"
+                      onClick={chip.clear}
+                      removeIcon={<span className="text-[#FDFEFF]">×</span>}
+                      className="px-[20px] py-[10px] text-[14px]"
+                    >
+                      {chip.label}
+                    </FilterChip>
+                  ))}
+                </div>
+              ) : null}
+
+              <BalanceFilters
+                {...balanceFiltersProps}
+                showAppliedRow={false}
+                panelLayout="static"
+                onClosePanels={undefined}
+                openPanels={mobileOpenPanels}
+                onTogglePanelMulti={(panel) =>
+                  setMobileOpenPanels((prev) => ({ ...prev, [panel]: !prev?.[panel] }))
+                }
+              />
+            </Card>
+          </div>
+        ) : null}
 
         <Card className="hidden overflow-hidden p-4 sm:p-6 lg:block">
           <TransactionTable operations={filteredOperations} />
@@ -315,6 +429,8 @@ export function BalancePage() {
         onAmountChange={setTopUpAmount}
         onChipSelect={(value) => setTopUpAmount(String(value))}
         onContinue={handleTopUpContinue}
+        onPay={handleTopUpPay}
+        onBack={handleTopUpBack}
         onClose={handleCloseTopUp}
       />
     </PageLayout>

@@ -1,12 +1,21 @@
 import { cva } from 'class-variance-authority';
+import { designTokens } from '../design-tokens';
 
 export const filterChipStyles = cva(
-  'inline-flex items-center gap-2 border text-[14px] lg:text-[20px] font-semibold transition',
+  'inline-flex items-center gap-3 border transition',
   {
     variants: {
       variant: {
         selectable: 'rounded-[10px] px-3 py-2',
-        applied: 'rounded-[100px] border-[#FDFEFF]/30 bg-[#1A1A1A] px-3 py-1 text-xs text-[#FDFEFF] hover:bg-[#2A2A2A]',
+        applied: [
+          'rounded-[100px]',
+          designTokens.colors.border.input,
+          designTokens.colors.background.input,
+          designTokens.typography.input,
+          // text color like input border token (same 50% white)
+          designTokens.colors.text.muted,
+          'p-[15px] hover:bg-[#393939]',
+        ].join(' '),
       },
       selected: {
         true: '',
