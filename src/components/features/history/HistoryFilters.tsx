@@ -180,7 +180,7 @@ export function HistoryFilters({
                   : `mt-[15px] h-[152px] w-full overflow-y-auto rounded-[10px] border border-[#FDFEFF]/50 bg-[#2A2A2A] p-0 [scrollbar-width:none] [&::-webkit-scrollbar]:w-0`
               }
             >
-              {searchSuggestions.map((item, index) => (
+              {searchSuggestions.map((item) => (
                 <button
                   key={item.id}
                   type="button"

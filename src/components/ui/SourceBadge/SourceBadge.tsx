@@ -1,6 +1,6 @@
 import { TelegramSmallIcon } from '../../../shared/icons';
 import { cn } from '../../../lib/cn';
-import { sourceBadgeFallbackStyles, sourceBadgeStyles } from './SourceBadge.styles';
+import { sourceBadgeStyles } from './SourceBadge.styles';
 import websiteOnHistorySvg from '../../../assets/icons/website_on_history.svg';
 
 export interface SourceBadgeProps {
