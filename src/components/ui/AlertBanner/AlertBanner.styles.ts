@@ -7,6 +7,7 @@ export const alertBannerStyles = cva(
     'mb-[20px] lg:mb-[30px]',
     // card tokens (border/bg/rounded + paddings)
     designTokens.presets.card.default,
+    'rounded-[14px]',
     designTokens.spacing.padding.cardVertical,
     designTokens.spacing.padding.cardHorizontal,
     // banner layout/typography
