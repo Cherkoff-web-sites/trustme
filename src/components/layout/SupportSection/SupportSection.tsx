@@ -1,13 +1,10 @@
 import { Button, Card } from '../../ui';
-import titleDecorMob from '../../../assets/title_decor_mob.svg';
-import titleDecorPc from '../../../assets/title_decor_pc.svg';
 import {
   supportSectionActionsStyles,
   supportSectionCardStyles,
   supportSectionLeadStyles,
   supportSectionTextStyles,
   supportSectionTitleStyles,
-  supportSectionTitleWrapStyles,
   supportSectionWrapStyles,
 } from './SupportSection.styles';
 
