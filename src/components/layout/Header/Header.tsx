@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useAuthModalUi } from '../../../context/AuthModalUiContext';
-import { uiFlags } from '../../../config/uiFlags';
 import { MAIN_NAV_ITEMS } from '../../../shared/navConfig';
 import { uiTokens, Button } from '../../ui';
 import logoSvg from '../../../assets/icons/logo.svg';
@@ -90,16 +89,14 @@ export function Header() {
           </Link>
 
           <div className="flex items-center justify-end gap-3">
-            {uiFlags.notificationsPanelEnabled ? (
-              <button
-                className="relative inline-flex h-[35px] w-[35px] items-center justify-center rounded-full border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]"
-                type="button"
-                onClick={() => setShowNotifications(true)}
-                aria-label="Уведомления"
-              >
-                <img src={notificationsSvg} alt="" className="h-auto w-[18px]" width={19} height={20} />
-              </button>
-            ) : null}
+            <button
+              className="relative inline-flex h-[35px] w-[35px] items-center justify-center rounded-full border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]"
+              type="button"
+              onClick={() => setShowNotifications(true)}
+              aria-label="Уведомления"
+            >
+              <img src={notificationsSvg} alt="" className="h-auto w-[18px]" width={19} height={20} />
+            </button>
             <button
               className="inline-flex h-[35px] w-[35px] items-center justify-center rounded-full border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]"
               type="button"
@@ -323,19 +320,109 @@ export function Header() {
         </div>
       ) : null}
 
-      {uiFlags.notificationsPanelEnabled && showNotifications && (
+      {showNotifications && (
         <div
           className="fixed inset-0 z-40 flex items-start justify-center bg-black/40 px-4 py-8 sm:px-6 sm:py-12"
           onClick={() => setShowNotifications(false)}
         >
           <div
-            className="mt-12 w-full max-w-[720px] rounded-[28px] border border-[#FDFEFF] bg-[#1A1A1A] p-4 sm:p-5"
+            className="hidden        mt-12 w-full max-w-[720px] rounded-[28px] border border-[#FDFEFF] bg-[#1A1A1A] p-4 sm:p-5"
             onClick={(event) => event.stopPropagation()}
           >
-            {/* уведомления */}
-            {/* <header className="mb-4 flex items-center justify-between gap-4 border-b border-[#FDFEFF]/15 pb-3">...</header>
-            <div className="flex max-h-[70vh] flex-col gap-3 overflow-y-auto pr-1">...</div> */}
-            <div className="text-[16px] text-[#FDFEFF]">уведомления...</div>
+            <header className="mb-4 flex items-center justify-between gap-4 border-b border-[#FDFEFF]/15 pb-3">
+              <nav className="flex flex-wrap gap-2 text-base lg:text-[24px]">
+                {['Все', 'Финансы', 'Тариф', 'Аккаунт', 'Сервис'].map((label, index) => (
+                  <button
+                    key={label}
+                    className={`rounded-[100px] px-3 py-1.5 ${index === 0 ? 'bg-[#FDFEFF] text-[#1A1A1A]' : 'bg-[#FDFEFF]/5 text-[#FDFEFF] hover:bg-[#FDFEFF]/10'}`}
+                    type="button"
+                  >
+                    {label}
+                  </button>
+                ))}
+              </nav>
+              <button
+                className="text-base font-medium text-[#FDFEFF] underline underline-offset-4 hover:text-[#FDFEFF] lg:text-[24px]"
+                type="button"
+              >
+                Очистить
+              </button>
+            </header>
+
+            <div className="flex max-h-[70vh] flex-col gap-3 overflow-y-auto pr-1">
+              {[
+                {
+                  title: 'Добавлен новый сотрудник: Иванов Иван',
+                  category: 'Аккаунт',
+                  time: '11 февраля 2026 в 02:49',
+                },
+                {
+                  title: 'Аккаунт user@company.ru заблокирован. Превышен лимит доступных проверок',
+                  category: 'Аккаунт',
+                  time: '11 февраля 2026 в 02:49',
+                },
+                {
+                  title: 'Тарифный план учетной записи user@company.ru истекает через 3 дня',
+                  category: 'Тариф',
+                  time: '11 февраля 2026 в 02:49',
+                  action: 'Продлить',
+                },
+                {
+                  title: 'Списано 490 ₽ за проверку юр.лица «ООО УМНЫЙ РИТЕЙЛ»',
+                  category: 'Финансы',
+                  time: '11 февраля 2026 в 02:49',
+                },
+                {
+                  title: 'Баланс успешно пополнен на 10 000 ₽',
+                  category: 'Финансы',
+                  time: '11 февраля 2026 в 02:49',
+                },
+                {
+                  title: 'Тариф «Индивидуальный» активирован',
+                  category: 'Тариф',
+                  time: '11 февраля 2026 в 02:49',
+                },
+                {
+                  title: 'Тариф «Индивидуальный» изменен',
+                  category: 'Тариф',
+                  time: '11 февраля 2026 в 02:49',
+                },
+              ].map((item) => (
+                <article
+                  key={item.title}
+                  className="flex items-start gap-3 rounded-[28px] bg-[#2A2A2A] px-4 py-3 text-base text-[#FDFEFF] sm:px-5 lg:text-[24px]"
+                >
+                  <div className="mt-1 h-9 w-9 shrink-0 overflow-hidden rounded-full bg-[#1A1A1A]" />
+                  <div className="flex-1">
+                    <div className="mb-1 flex flex-wrap items-center gap-2">
+                      <span className="rounded-[100px] bg-[#FDFEFF]/10 px-2 py-0.5 text-xs text-[#FDFEFF]">
+                        {item.category}
+                      </span>
+                      <p className="m-0 text-[15px] leading-[1.3] text-[#FDFEFF]">{item.title}</p>
+                    </div>
+                    <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-[#FDFEFF]">
+                      <span>{item.time}</span>
+                      {item.action ? (
+                        <button
+                          className="rounded-[100px] bg-[#FDFEFF]/10 px-3 py-1 text-xs font-medium text-[#FDFEFF] hover:bg-[#FDFEFF]/20"
+                          type="button"
+                        >
+                          {item.action}
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div className="mt-1 flex shrink-0 flex-col items-center gap-3 text-[15px] text-[#FDFEFF]">
+                    <button className="hover:text-[#FDFEFF]" type="button" aria-label="Повторить">
+                      ↻
+                    </button>
+                    <button className="hover:text-[#FDFEFF]" type="button" aria-label="Удалить">
+                      🗑
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       )}

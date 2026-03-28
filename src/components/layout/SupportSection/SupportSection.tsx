@@ -15,27 +15,7 @@ export function SupportSection() {
   return (
     <section className={supportSectionWrapStyles}>
       <Card className={supportSectionCardStyles}>
-        <div className={supportSectionTitleWrapStyles}>
-          <h2 className={supportSectionTitleStyles}>Остались вопросы?</h2>
-          <img
-            src={titleDecorMob}
-            alt=""
-            aria-hidden
-            className="pointer-events-none absolute right-[calc(100%+20px)] top-1/2 h-auto w-[76px] -translate-y-1/2 lg:hidden"
-          />
-          <img
-            src={titleDecorMob}
-            alt=""
-            aria-hidden
-            className="pointer-events-none absolute left-[calc(100%+20px)] top-1/2 h-auto w-[76px] -translate-y-1/2 scale-x-[-1] lg:hidden"
-          />
-          <img
-            src={titleDecorPc}
-            alt=""
-            aria-hidden
-            className="pointer-events-none absolute left-[calc(100%+30px)] top-1/2 hidden h-auto w-[267px] -translate-y-1/2 shrink-0 lg:block"
-          />
-        </div>
+        <h2 className={supportSectionTitleStyles}>Остались вопросы?</h2>
         <div className="">
           <p className={supportSectionLeadStyles}>Напишите в службу поддержки и мы вам поможем</p>
           <p className={supportSectionTextStyles}>
@@ -46,8 +26,8 @@ export function SupportSection() {
       </Card>
 
       <div className={supportSectionActionsStyles}>
-        <Button className="min-w-[260px] w-full lg:w-auto">Написать в поддержку</Button>
-        <Button className="min-w-[260px] w-full lg:w-auto">Запросить тестовый доступ</Button>
+        <Button className="min-w-[260px] w-full lg:w-auto lg:px-[60px]">Написать в поддержку</Button>
+        <Button className="min-w-[260px] w-full lg:w-auto lg:px-[60px]">Запросить тестовый доступ</Button>
       </div>
     </section>
   );
