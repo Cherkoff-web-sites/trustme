@@ -41,7 +41,9 @@ export function SettingsProfile() {
           <PersonTypeSwitcher
             className="mb-5 sm:gap-8"
             value={personType}
-            onChange={setPersonType}
+            onChange={(v) => {
+              if (v !== null) setPersonType(v);
+            }}
             indicatorMode="settings"
             options={[
               { value: 'legal', label: 'Юридическое лицо' },
@@ -72,12 +74,7 @@ export function SettingsProfile() {
             </Label>
 
             <MoreDetailsSection className="mt-1">
-              <p
-                className={combineStyles(
-                  'text-sm',
-                  designTokens.colors.text.muted,
-                )}
-              >
+              <p className="m-0 text-[16px] font-normal leading-normal text-[#FDFEFF] lg:text-[20px]">
                 Здесь можно вывести дополнительную информацию или подсказки по настройкам профиля.
               </p>
             </MoreDetailsSection>

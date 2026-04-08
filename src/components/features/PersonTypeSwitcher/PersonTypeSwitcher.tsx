@@ -10,9 +10,11 @@ export interface PersonTypeOption<T extends string> {
 }
 
 export interface PersonTypeSwitcherProps<T extends string> {
-  value: T;
+  value: T | null;
   options: Array<PersonTypeOption<T>>;
-  onChange: (value: T) => void;
+  onChange: (value: T | null) => void;
+  /** Повторный клик по выбранному варианту снимает выбор (`null`). */
+  allowClear?: boolean;
   className?: string;
   indicatorMode?: 'default' | 'settings';
 }
@@ -21,6 +23,7 @@ export function PersonTypeSwitcher<T extends string>({
   value,
   options,
   onChange,
+  allowClear = false,
   className,
   indicatorMode = 'default',
 }: PersonTypeSwitcherProps<T>) {
@@ -31,9 +34,15 @@ export function PersonTypeSwitcher<T extends string>({
           key={option.value}
           type="button"
           className={personTypeSwitcherOptionStyles}
-          onClick={() => onChange(option.value)}
+          onClick={() => {
+            if (allowClear && value === option.value) {
+              onChange(null);
+              return;
+            }
+            onChange(option.value);
+          }}
         >
-          <OptionIndicator type="radio" checked={value === option.value} mode={indicatorMode} />
+          <OptionIndicator type="radio" checked={value !== null && value === option.value} mode={indicatorMode} />
           {option.label}
         </button>
       ))}

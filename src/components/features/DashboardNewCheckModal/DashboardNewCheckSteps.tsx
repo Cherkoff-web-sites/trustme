@@ -90,7 +90,7 @@ export function DashboardNewCheckSteps({ onReportOpen, onStepChange }: Dashboard
                 type="button"
                 className="flex items-center gap-[10px] text-left"
                 onClick={() => {
-                  setPersonType('legal');
+                  setPersonType((prev) => (prev === 'legal' ? null : 'legal'));
                   if (submitted) setPersonTypeError(false);
                 }}
               >
@@ -101,7 +101,7 @@ export function DashboardNewCheckSteps({ onReportOpen, onStepChange }: Dashboard
                 type="button"
                 className="flex items-center gap-[10px] text-left"
                 onClick={() => {
-                  setPersonType('individual');
+                  setPersonType((prev) => (prev === 'individual' ? null : 'individual'));
                   if (submitted) setPersonTypeError(false);
                 }}
               >

@@ -211,24 +211,28 @@ export function HistoryFilters({
               }
             >
               <div className="grid gap-3">
-                <div className="grid grid-cols-[minmax(0,1fr)_68px_minmax(0,1fr)] items-center text-base">
-                  <Input
-                    type="date"
-                    variant="date"
-                    value={dateFrom}
-                    onChange={(e) => onDateFromChange(e.target.value)}
-                    className="h-[47px] min-w-0 px-[15px] py-[15px] [&::-webkit-calendar-picker-indicator]:pointer-events-none [&::-webkit-calendar-picker-indicator]:opacity-0"
-                    endAdornment={<img src={calendarSvg} alt="" aria-hidden className="h-5 w-5" />}
-                  />
-                  <span className="mx-auto text-[#FDFEFF]">–</span>
-                  <Input
-                    type="date"
-                    variant="date"
-                    value={dateTo}
-                    onChange={(e) => onDateToChange(e.target.value)}
-                    className="h-[47px] min-w-0 px-[15px] py-[15px] [&::-webkit-calendar-picker-indicator]:pointer-events-none [&::-webkit-calendar-picker-indicator]:opacity-0"
-                    endAdornment={<img src={calendarSvg} alt="" aria-hidden className="h-5 w-5" />}
-                  />
+                <div className="flex w-full min-w-0 flex-row flex-wrap items-center gap-[5px] text-base lg:grid lg:grid-cols-[minmax(0,1fr)_68px_minmax(0,1fr)] lg:items-center lg:gap-3">
+                  <div className="min-w-0 flex-1 lg:min-w-0">
+                    <Input
+                      type="date"
+                      variant="date"
+                      value={dateFrom}
+                      onChange={(e) => onDateFromChange(e.target.value)}
+                      className="h-[47px] min-w-0 pl-[15px] py-[15px] leading-normal [&::-webkit-calendar-picker-indicator]:pointer-events-none [&::-webkit-calendar-picker-indicator]:opacity-0"
+                      endAdornment={<img src={calendarSvg} alt="" aria-hidden className="h-5 w-5" />}
+                    />
+                  </div>
+                  <span className="shrink-0 text-[#FDFEFF] lg:mx-auto">–</span>
+                  <div className="min-w-0 flex-1 lg:min-w-0">
+                    <Input
+                      type="date"
+                      variant="date"
+                      value={dateTo}
+                      onChange={(e) => onDateToChange(e.target.value)}
+                      className="h-[47px] min-w-0 pl-[15px] py-[15px] leading-normal [&::-webkit-calendar-picker-indicator]:pointer-events-none [&::-webkit-calendar-picker-indicator]:opacity-0"
+                      endAdornment={<img src={calendarSvg} alt="" aria-hidden className="h-5 w-5" />}
+                    />
+                  </div>
                 </div>
                 <div className="mt-[30px]">
                   <p className="mb-[15px] border-b border-[#FDFEFF]/50 pb-[10px] text-[14px] text-[#FDFEFF]/50">

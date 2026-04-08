@@ -3,7 +3,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useAuthModalUi } from '../../../context/AuthModalUiContext';
 import { MAIN_NAV_ITEMS } from '../../../shared/navConfig';
-import { uiTokens, Button } from '../../ui';
+import { uiTokens, Button, designTokens } from '../../ui';
 import logoSvg from '../../../assets/icons/logo.svg';
 import notificationsSvg from '../../../assets/icons/notifications.svg';
 import accountSvg from '../../../assets/icons/account.svg';
@@ -14,7 +14,6 @@ import chevronSvg from '../../../assets/icons/chevron.svg';
 import employeeIcon from '../../../assets/new_staff.png';      // Человек/сотрудник
 import warningIcon from '../../../assets/icons/notifications/warning.svg';        // Восклицательный знак/блокировка
 import calendarIcon from '../../../assets/icons/notifications/calendar.svg';      // Календарь/тариф
-import documentIcon from '../../../assets/icons/notifications/document.svg';      // Документ/списание
 import moneyIcon from '../../../assets/icons/notifications/money.svg';            // Пополнение/деньги
 import tariffIcon from '../../../assets/icons/notifications/tariff.svg';          // Тариф/галочка
 import editIcon from '../../../assets/icons/notifications/edit.svg';              // Карандаш/изменение
@@ -37,6 +36,67 @@ interface Notification {
   isRead?: boolean;
 }
 
+function AccountMenuDropdown({
+  accounts,
+  className,
+  onSelectAccount,
+  onLogout,
+}: {
+  accounts: readonly string[];
+  className?: string;
+  onSelectAccount: (email: string) => void;
+  onLogout: () => void;
+}) {
+  return (
+    <div
+      className={[
+        'rounded-[18px] border border-[#FDFEFF]/65 bg-[#1A1A1A] p-4 shadow-[0_16px_40px_rgba(0,0,0,0.35)]',
+        className ?? '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      role="menu"
+    >
+      <div>
+        {accounts.map((account, index) => (
+          <div key={account}>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => onSelectAccount(account)}
+              className="group/account-row relative flex w-full items-center bg-transparent px-4 py-4 text-left text-base text-[#FDFEFF] transition-colors lg:text-[18px]"
+            >
+              <span
+                className="pointer-events-none absolute right-[-2px] top-[7px] bottom-[7px] hidden w-[4px] rounded-full bg-[#FDFEFF]/50 opacity-0 transition-opacity lg:block lg:group-hover/account-row:opacity-100"
+                aria-hidden
+              />
+              {account}
+            </button>
+            {index < accounts.length - 1 ? (
+              <div className="h-px bg-[#FDFEFF]/50" role="presentation" aria-hidden />
+            ) : null}
+          </div>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        onClick={onLogout}
+        className="mt-2 flex w-full items-center gap-3 rounded-[12px] bg-[#2A2A2A] px-4 py-4 text-left text-base text-[#FDFEFF] transition hover:bg-[#333333] lg:text-[18px]"
+      >
+        <svg width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M10.6667 0C11.0065 0.000376943 11.3334 0.130506 11.5805 0.363798C11.8276 0.59709 11.9763 0.915937 11.9962 1.25519C12.0161 1.59445 11.9058 1.92851 11.6876 2.18911C11.4695 2.44971 11.1601 2.6172 10.8227 2.65733L10.6667 2.66667H4C3.67342 2.66671 3.35822 2.78661 3.11417 3.00362C2.87012 3.22063 2.71421 3.51967 2.676 3.844L2.66667 4V20C2.66671 20.3266 2.78661 20.6418 3.00362 20.8858C3.22063 21.1299 3.51967 21.2858 3.844 21.324L4 21.3333H10C10.3398 21.3337 10.6667 21.4638 10.9138 21.6971C11.1609 21.9304 11.3096 22.2493 11.3296 22.5885C11.3495 22.9278 11.2391 23.2618 11.021 23.5224C10.8029 23.783 10.4935 23.9505 10.156 23.9907L10 24H4C2.97972 24.0001 1.99798 23.6102 1.25565 22.9103C0.513324 22.2103 0.0665233 21.2532 0.00666683 20.2347L6.21393e-09 20V4C-5.6829e-05 2.97972 0.389767 1.99798 1.08971 1.25565C1.78966 0.513324 2.74681 0.0665233 3.76533 0.00666682L4 0H10.6667ZM18.276 7.28533L22.0467 11.0573C22.2966 11.3074 22.437 11.6464 22.437 12C22.437 12.3536 22.2966 12.6926 22.0467 12.9427L18.276 16.7147C18.0258 16.9647 17.6866 17.1051 17.3329 17.1049C16.9792 17.1048 16.64 16.9642 16.39 16.714C16.14 16.4638 15.9996 16.1246 15.9997 15.7709C15.9999 15.4172 16.1405 15.078 16.3907 14.828L17.8853 13.3333H10.6667C10.313 13.3333 9.97391 13.1929 9.72386 12.9428C9.47381 12.6928 9.33333 12.3536 9.33333 12C9.33333 11.6464 9.47381 11.3072 9.72386 11.0572C9.97391 10.8071 10.313 10.6667 10.6667 10.6667H17.8853L16.3907 9.172C16.1405 8.92199 15.9999 8.58283 15.9997 8.22914C15.9996 7.87545 16.14 7.53619 16.39 7.286C16.64 7.03581 16.9792 6.89519 17.3329 6.89506C17.6866 6.89494 18.0258 7.03532 18.276 7.28533Z"
+            fill="#FDFEFF"
+          />
+        </svg>
+
+        <span>Выход из аккаунта</span>
+      </button>
+    </div>
+  );
+}
+
 export function Header() {
   const { isAuthenticated, logout } = useAuth();
   const { openAuthModal } = useAuthModalUi();
@@ -44,11 +104,14 @@ export function Header() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [activeNotificationTab, setActiveNotificationTab] = useState<NotificationCategory>('all');
   const [showAccountMenu, setShowAccountMenu] = useState(false);
+  /** Раскрытие списка почт внутри полноэкранного бургер-меню (отдельно от выпадашки в шапке). */
+  const [showMobileDrawerAccounts, setShowMobileDrawerAccounts] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [currentAccount, setCurrentAccount] = useState('user.example@gmail.com');
+  const isSettingsNavItem = (to: string) => to === '/settings' || to.includes('settings');
 
   // === ДАННЫЕ УВЕДОМЛЕНИЙ (потом заменишь на API) ===
-  const notifications: Notification[] = [
+  const initialNotifications: Notification[] = [
     {
       id: '1',
       title: 'Добавлен новый сотрудник: Иванов Иван',
@@ -56,6 +119,7 @@ export function Header() {
       category: 'account',
       time: '11 февраля 2026 в 02:49',
       icon: employeeIcon,
+      isRead: false,
     },
     {
       id: '2',
@@ -64,6 +128,7 @@ export function Header() {
       category: 'account',
       time: '11 февраля 2026 в 02:49',
       icon: warningIcon,
+      isRead: false,
     },
     {
       id: '3',
@@ -73,6 +138,7 @@ export function Header() {
       time: '11 февраля 2026 в 02:49',
       icon: calendarIcon,
       action: 'Продлить',
+      isRead: false,
     },
     {
       id: '4',
@@ -80,7 +146,8 @@ export function Header() {
       titleHighlight: '490 ₽',
       category: 'finance',
       time: '11 февраля 2026 в 02:49',
-      icon: documentIcon,
+      icon: moneyIcon,
+      isRead: false,
     },
     {
       id: '5',
@@ -89,6 +156,7 @@ export function Header() {
       category: 'finance',
       time: '11 февраля 2026 в 02:49',
       icon: moneyIcon,
+      isRead: false,
     },
     {
       id: '6',
@@ -97,6 +165,7 @@ export function Header() {
       category: 'tariff',
       time: '11 февраля 2026 в 02:49',
       icon: tariffIcon,
+      isRead: false,
     },
     {
       id: '7',
@@ -105,8 +174,10 @@ export function Header() {
       category: 'tariff',
       time: '11 февраля 2026 в 02:49',
       icon: editIcon,
+      isRead: false,
     },
   ];
+  const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
 
   const accounts = [
     'user1.example@gmail.com',
@@ -117,8 +188,26 @@ export function Header() {
   const handleLogout = () => {
     logout();
     setShowAccountMenu(false);
+    setShowMobileDrawerAccounts(false);
     setShowMobileMenu(false);
     navigate('/');
+  };
+
+  const selectAccount = (email: string) => {
+    setCurrentAccount(email);
+    setShowAccountMenu(false);
+  };
+
+  const handleDeleteNotification = (id: string) => {
+    setNotifications((prev) => prev.filter((notification) => notification.id !== id));
+  };
+
+  const handleMarkRead = (id: string) => {
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        notification.id === id ? { ...notification, isRead: true } : notification,
+      ),
+    );
   };
 
   // Фильтрация уведомлений по табу
@@ -129,12 +218,12 @@ export function Header() {
   // Подсветка текста (разбивает строку и выделяет цветом часть)
   const renderTitle = (notification: Notification) => {
     if (!notification.titleHighlight) {
-      return <span className="text-[15px] leading-[1.4] text-[#FDFEFF]">{notification.title}</span>;
+      return <span className="text-[16px] leading-[19px] text-[#FDFEFF] lg:text-[18px] lg:leading-[22px]">{notification.title}</span>;
     }
 
     const parts = notification.title.split(notification.titleHighlight);
     return (
-      <span className="text-[15px] leading-[1.4] text-[#FDFEFF]">
+      <span className="text-[16px] leading-[19px] text-[#FDFEFF] lg:text-[18px] lg:leading-[22px]">
         {parts[0]}
         <span className="text-[#0EB8D2]">{notification.titleHighlight}</span>
         {parts[1]}
@@ -180,7 +269,10 @@ export function Header() {
         <div className="relative flex items-center lg:hidden w-full justify-between">
           <button
             type="button"
-            onClick={() => setShowMobileMenu(true)}
+            onClick={() => {
+              setShowAccountMenu(false);
+              setShowMobileMenu(true);
+            }}
             aria-label="Открыть меню"
             className="inline-flex h-11 w-11 items-center justify-center text-[#FDFEFF]"
           >
@@ -203,19 +295,42 @@ export function Header() {
             <button
               className="relative inline-flex h-[35px] w-[35px] items-center justify-center rounded-full border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]"
               type="button"
-              onClick={() => setShowNotifications(true)}
+              onClick={() => {
+                setShowAccountMenu(false);
+                setShowNotifications(true);
+              }}
               aria-label="Уведомления"
             >
               <img src={notificationsSvg} alt="" className="h-auto w-[18px]" width={19} height={20} />
             </button>
-            <button
-              className="inline-flex h-[35px] w-[35px] items-center justify-center rounded-full border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]"
-              type="button"
-              onClick={() => setShowAccountMenu((current) => !current)}
-              aria-label="Аккаунт"
-            >
-              <img src={accountSvg} alt="" className="h-auto w-[18px]" width={20} height={20} />
-            </button>
+            <div className="relative z-[45]">
+              {showAccountMenu ? (
+                <button
+                  type="button"
+                  className="fixed inset-0 z-[44] cursor-default lg:hidden"
+                  onClick={() => setShowAccountMenu(false)}
+                  aria-label="Закрыть меню аккаунта"
+                />
+              ) : null}
+              <button
+                className="relative z-[46] inline-flex h-[35px] w-[35px] items-center justify-center rounded-full border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF]"
+                type="button"
+                onClick={() => setShowAccountMenu((current) => !current)}
+                aria-label="Аккаунт"
+                aria-haspopup="menu"
+                aria-expanded={showAccountMenu}
+              >
+                <img src={accountSvg} alt="" className="h-auto w-[18px]" width={20} height={20} />
+              </button>
+              {showAccountMenu ? (
+                <AccountMenuDropdown
+                  accounts={accounts}
+                  className="absolute right-0 top-full z-[46] mt-4 w-[min(calc(100vw-30px),320px)]"
+                  onSelectAccount={selectAccount}
+                  onLogout={handleLogout}
+                />
+              ) : null}
+            </div>
           </div>
         </div>
 
@@ -226,17 +341,28 @@ export function Header() {
               <img src={logoSvg} alt="" width={122} height={29} className="w-[122px] h-auto" />
             </Link>
             <nav className="flex flex-wrap gap-x-6 gap-y-3 text-[14px] font-semibold text-[#FDFEFF] lg:text-[20px]">
-              {MAIN_NAV_ITEMS.map(([label, to]) => (
-                <NavLink
-                  className={({ isActive }) =>
-                    `transition-colors hover:text-[#FDFEFF] ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
-                  }
-                  key={to}
-                  to={to}
-                >
-                  {label}
-                </NavLink>
-              ))}
+              {MAIN_NAV_ITEMS.map(([label, to]) =>
+                isSettingsNavItem(to) ? (
+                  <span
+                    key={to}
+                    className="cursor-not-allowed select-none text-[#FDFEFF]/45"
+                    aria-disabled="true"
+                    title="Раздел временно недоступен"
+                  >
+                    {label}
+                  </span>
+                ) : (
+                  <NavLink
+                    className={({ isActive }) =>
+                      `transition-colors hover:text-[#FDFEFF] ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
+                    }
+                    key={to}
+                    to={to}
+                  >
+                    {label}
+                  </NavLink>
+                ),
+              )}
             </nav>
           </div>
 
@@ -244,7 +370,10 @@ export function Header() {
             <button
               className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[100px] border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF] transition hover:bg-[#FDFEFF]/10"
               type="button"
-              onClick={() => setShowNotifications(true)}
+              onClick={() => {
+                setShowAccountMenu(false);
+                setShowNotifications(true);
+              }}
               aria-label="Уведомления"
             >
               <img src={notificationsSvg} alt="" width={19} height={20} className="h-5 w-5" />
@@ -261,60 +390,54 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setShowAccountMenu((current) => !current)}
-                className={`relative z-40 inline-flex items-center gap-2 bg-transparent p-0 transition-colors ${
-                  showAccountMenu ? 'text-[#FDFEFF]' : 'text-[#FDFEFF] hover:text-[#FDFEFF]'
-                }`}
+                className="group/account-trigger relative z-40 inline-flex items-center gap-2 bg-transparent p-0"
                 aria-haspopup="menu"
                 aria-expanded={showAccountMenu}
               >
-                <span className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[100px] border border-[#FDFEFF]/20 bg-[#FDFEFF]/5">
-                  <img src={accountSvg} alt="" width={20} height={20} className="h-5 w-5" />
+                <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[100px] border border-[#FDFEFF]/20 bg-[#FDFEFF]/5 text-[#FDFEFF] lg:group-hover/account-trigger:text-[#FDFEFF] lg:group-active/account-trigger:text-[#FDFEFF]">
+                  <svg width={20} height={20} viewBox="0 0 20 20" fill="none" aria-hidden className="h-5 w-5">
+                    <path
+                      d="M9.96169 9.96169C12.7136 9.96169 14.9425 7.73277 14.9425 4.98085C14.9425 2.22893 12.7136 0 9.96169 0C7.20978 0 4.98085 2.22893 4.98085 4.98085C4.98085 7.73277 7.20978 9.96169 9.96169 9.96169ZM9.96169 12.4521C6.63698 12.4521 0 14.1207 0 17.433V19.9234H19.9234V17.433C19.9234 14.1207 13.2864 12.4521 9.96169 12.4521Z"
+                      fill="currentColor"
+                    />
+                  </svg>
                 </span>
-                <span>{currentAccount}</span>
-                <img
-                  src={chevronSvg}
-                  alt=""
-                  width={16}
-                  height={16}
-                  className={`h-4 w-4 shrink-0 transition-transform ${showAccountMenu ? 'rotate-180' : ''}`}
-                />
+                <span
+                  className={[
+                    'inline-flex min-w-0 items-center gap-2 text-[#FDFEFF] transition-colors',
+                    designTokens.colors.accent.headerAccountTriggerLabelHoverActive,
+                    showAccountMenu ? designTokens.colors.accent.headerAccountTriggerLabelExpanded : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                >
+                  <span className="truncate">{currentAccount}</span>
+                  <svg
+                    width={16}
+                    height={16}
+                    viewBox="0 0 17 10"
+                    fill="none"
+                    aria-hidden
+                    className={`h-4 w-4 shrink-0 transition-transform ${showAccountMenu ? 'rotate-180' : ''}`}
+                  >
+                    <path
+                      d="M1 0.999999L8.5 8.5L16 1"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
               </button>
 
               {showAccountMenu ? (
-                <div
-                  className="absolute right-0 top-full z-40 mt-4 w-[320px] rounded-[18px] border border-[#FDFEFF]/65 bg-[#1A1A1A] p-4 shadow-[0_16px_40px_rgba(0,0,0,0.35)]"
-                  role="menu"
-                >
-                  <div className="max-h-[180px] space-y-3 overflow-y-auto pr-2">
-                    {accounts.map((account) => (
-                      <button
-                        key={account}
-                        type="button"
-                        role="menuitem"
-                        onClick={() => {
-                          setCurrentAccount(account);
-                          setShowAccountMenu(false);
-                        }}
-                        className="flex w-full items-center border-b border-[#FDFEFF]/15 pb-3 text-left text-base text-[#FDFEFF] transition hover:text-[#FDFEFF] lg:text-[18px]"
-                      >
-                        {account}
-                      </button>
-                    ))}
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="mt-4 flex w-full items-center gap-3 rounded-[12px] bg-[#2A2A2A] px-4 py-4 text-left text-base text-[#FDFEFF] transition hover:bg-[#333333] lg:text-[18px]"
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
-                      <path d="M10 17L15 12L10 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M15 12H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M20 19V5C20 4.44772 19.5523 4 19 4H12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    <span>Выход из аккаунта</span>
-                  </button>
-                </div>
+                <AccountMenuDropdown
+                  accounts={accounts}
+                  className="absolute right-0 top-full z-40 mt-4 w-[320px]"
+                  onSelectAccount={selectAccount}
+                  onLogout={handleLogout}
+                />
               ) : null}
             </div>
           </div>
@@ -331,7 +454,10 @@ export function Header() {
               <img src={logoSvg} alt="" width={122} height={29} className="w-[122px] h-auto" />
               <button
                 type="button"
-                onClick={() => setShowMobileMenu(false)}
+                onClick={() => {
+                  setShowMobileMenu(false);
+                  setShowMobileDrawerAccounts(false);
+                }}
                 aria-label="Закрыть меню"
                 className="inline-flex h-11 w-11 items-center justify-center text-[#FDFEFF]"
               >
@@ -343,27 +469,41 @@ export function Header() {
             </div>
 
             <nav className="mt-[40px] mb-[60px] flex flex-col items-center justify-start gap-[28px] text-center text-[16px] font-semibold text-[#FDFEFF]">
-              {MAIN_NAV_ITEMS.map(([label, to]) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  onClick={() => setShowMobileMenu(false)}
-                  className={({ isActive }) =>
-                    `transition-colors ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
-                  }
-                >
-                  {label}
-                </NavLink>
-              ))}
+              {MAIN_NAV_ITEMS.map(([label, to]) =>
+                isSettingsNavItem(to) ? (
+                  <span
+                    key={to}
+                    className="cursor-not-allowed select-none text-[#FDFEFF]/45"
+                    aria-disabled="true"
+                    title="Раздел временно недоступен"
+                  >
+                    {label}
+                  </span>
+                ) : (
+                  <NavLink
+                    key={to}
+                    to={to}
+                    onClick={() => {
+                      setShowMobileMenu(false);
+                      setShowMobileDrawerAccounts(false);
+                    }}
+                    className={({ isActive }) =>
+                      `transition-colors ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
+                    }
+                  >
+                    {label}
+                  </NavLink>
+                ),
+              )}
             </nav>
 
             <div className="pb-2">
               <button
                 type="button"
-                onClick={() => setShowAccountMenu((v) => !v)}
+                onClick={() => setShowMobileDrawerAccounts((v) => !v)}
                 className="flex w-full items-center justify-between rounded-[999px] border border-[#FDFEFF]/25 bg-[#1A1A1A] px-6 py-5 text-[18px] font-semibold text-[#FDFEFF]"
                 aria-haspopup="menu"
-                aria-expanded={showAccountMenu}
+                aria-expanded={showMobileDrawerAccounts}
               >
                 <span className="flex-1 truncate text-center">{currentAccount}</span>
                 <img
@@ -371,12 +511,12 @@ export function Header() {
                   alt=""
                   width={20}
                   height={20}
-                  className={`h-5 w-5 shrink-0 transition-transform ${showAccountMenu ? 'rotate-180' : ''}`}
+                  className={`h-5 w-5 shrink-0 transition-transform ${showMobileDrawerAccounts ? 'rotate-180' : ''}`}
                 />
               </button>
 
-              {showAccountMenu ? (
-                <div className="mt-3 max-h-[180px] overflow-y-auto rounded-[24px] border border-[#FDFEFF]/15 bg-[#121212] px-6 py-4">
+              {showMobileDrawerAccounts ? (
+                <div className="mt-3 rounded-[24px] border border-[#FDFEFF]/15 bg-[#121212] px-6 py-4">
                   <div className="space-y-3">
                     {accounts.map((account) => (
                       <button
@@ -384,7 +524,7 @@ export function Header() {
                         type="button"
                         onClick={() => {
                           setCurrentAccount(account);
-                          setShowAccountMenu(false);
+                          setShowMobileDrawerAccounts(false);
                         }}
                         className="block w-full border-b border-[#FDFEFF]/10 pb-3 text-left text-[16px] text-[#FDFEFF]"
                       >
@@ -435,40 +575,44 @@ export function Header() {
           onClick={() => setShowNotifications(false)}
         >
           <div
-            className="mt-12 w-full max-w-[800px] rounded-[28px] border border-[#FDFEFF]/20 bg-[#1A1A1A] p-5 sm:p-6"
+            className="mt-12 w-full max-w-[1080px] rounded-[28px] border border-[#FDFEFF]/20 bg-[#1A1A1A] p-5 sm:p-6"
             onClick={(event) => event.stopPropagation()}
           >
             {/* Шапка с табами и кнопкой Очистить */}
-            <header className="mb-5 flex items-center justify-between gap-4 border-b border-[#FDFEFF]/10 pb-4">
-              <nav className="flex flex-wrap gap-2">
-                {[
-                  { id: 'all', label: 'Все' },
-                  { id: 'finance', label: 'Финансы' },
-                  { id: 'tariff', label: 'Тариф' },
-                  { id: 'account', label: 'Аккаунт' },
-                  { id: 'service', label: 'Сервис' },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveNotificationTab(tab.id as NotificationCategory)}
-                    className={`rounded-full px-4 py-2 text-[14px] font-medium transition-colors ${
-                      activeNotificationTab === tab.id
-                        ? 'bg-[#FDFEFF] text-[#1A1A1A]'
-                        : 'bg-[#FDFEFF]/5 text-[#FDFEFF] hover:bg-[#FDFEFF]/10'
-                    }`}
-                    type="button"
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </nav>
-              <button
-                className="shrink-0 text-[14px] font-medium text-[#FDFEFF] underline underline-offset-4 hover:text-[#0EB8D2]"
-                type="button"
-                onClick={() => console.log('Очистить все')}
-              >
-                Очистить
-              </button>
+            <header className="mb-5">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                <div className="w-full border-b border-[#FDFEFF]/10">
+                  <nav className="flex flex-nowrap gap-8 overflow-x-auto pb-1 sm:gap-10">
+                    {[
+                      { id: 'all', label: 'Все' },
+                      { id: 'finance', label: 'Финансы' },
+                      { id: 'tariff', label: 'Тариф' },
+                      { id: 'account', label: 'Аккаунт' },
+                      { id: 'service', label: 'Сервис' },
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveNotificationTab(tab.id as NotificationCategory)}
+                        className={`shrink-0 border-b-2 px-0 pb-2 text-[16px] leading-[19px] font-normal transition-colors lg:text-[18px] lg:leading-[22px] ${
+                          activeNotificationTab === tab.id
+                            ? 'border-[#0EB8D2] text-[#0EB8D2]'
+                            : 'border-transparent text-[#FDFEFF]'
+                        }`}
+                        type="button"
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </nav>
+                </div>
+                <button
+                  className="self-end text-[16px] leading-[19px] font-medium text-[#FDFEFF] hover:text-[#0EB8D2] lg:shrink-0 lg:self-auto lg:text-[18px] lg:leading-[22px]"
+                  type="button"
+                  onClick={() => setNotifications([])}
+                >
+                  Очистить
+                </button>
+              </div>
             </header>
 
             {/* Список уведомлений */}
@@ -481,16 +625,22 @@ export function Header() {
                 filteredNotifications.map((item) => (
                   <article
                     key={item.id}
-                    className="flex items-start gap-4 rounded-[20px] bg-[#2A2A2A] p-4"
+                    className={`flex items-start gap-4 rounded-[20px] p-4 ${
+                      item.isRead ? 'border border-[#FDFEFF]/45 bg-transparent' : 'bg-[#2A2A2A]'
+                    }`}
                   >
-                    {/* Иконка слева */}
-                    <div className="shrink-0">
+                    {/* Иконка слева с обёрткой 44x44 */}
+                    <div
+                      className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[10px] ${
+                        item.id === '1' ? 'overflow-hidden bg-transparent' : 'bg-[#393939]'
+                      }`}
+                    >
                       <img
                         src={item.icon}
                         alt=""
-                        className="h-10 w-10 rounded-full object-cover"
-                        width={40}
-                        height={40}
+                        className={item.id === '1' ? 'h-full w-full object-cover' : 'h-auto w-[24px]'}
+                        width={24}
+                        height={24}
                       />
                     </div>
 
@@ -501,42 +651,43 @@ export function Header() {
                         {renderTitle(item)}
                       </div>
 
-                      {/* Время и доп.действие */}
-                      <div className="flex flex-wrap items-center gap-3">
-                        <time className="text-[13px] text-[#FDFEFF]/50">
-                          {item.time}
-                        </time>
+                      {item.action && (
+                        <button
+                          className="mt-2 rounded-full border border-[#FDFEFF]/30 bg-[#1A1A1A] px-3 py-1 text-[13px] font-medium text-[#FDFEFF] transition hover:bg-[#222222]"
+                          type="button"
+                          onClick={() => console.log('Action:', item.action)}
+                        >
+                          {item.action}
+                        </button>
+                      )}
 
-                        {item.action && (
+                      <div className="mt-2 flex items-center justify-between gap-3">
+                        <div className="flex min-w-0 flex-wrap items-center gap-3">
+                          <time className="text-[13px] text-[#FDFEFF]/50">
+                            {item.time}
+                          </time>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-[15px]">
                           <button
-                            className="rounded-full border border-[#FDFEFF]/30 bg-transparent px-3 py-1 text-[13px] font-medium text-[#FDFEFF] transition hover:bg-[#FDFEFF]/10"
+                            className="inline-flex h-auto w-auto items-center justify-center bg-transparent p-0 text-[#FDFEFF]/60 transition hover:text-[#0EB8D2]"
                             type="button"
-                            onClick={() => console.log('Action:', item.action)}
+                            aria-label="Отметить прочитанным"
+                            title="Отметить прочитанным"
+                            onClick={() => handleMarkRead(item.id)}
                           >
-                            {item.action}
+                            <img src={checkReadIcon} alt="" className="h-6 w-6" />
                           </button>
-                        )}
+                          <button
+                            className="inline-flex h-auto w-auto items-center justify-center bg-transparent p-0 text-[#FDFEFF]/60 transition hover:text-[#FF3B30]"
+                            type="button"
+                            aria-label="Удалить"
+                            title="Удалить"
+                            onClick={() => handleDeleteNotification(item.id)}
+                          >
+                            <img src={trashIcon} alt="" className="h-6 w-6" />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-
-                    {/* Кнопки действий справа */}
-                    <div className="flex shrink-0 flex-col items-center gap-2">
-                      <button
-                        className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1A1A1A] text-[#FDFEFF]/60 transition hover:text-[#0EB8D2]"
-                        type="button"
-                        aria-label="Отметить прочитанным"
-                        title="Отметить прочитанным"
-                      >
-                        <img src={checkReadIcon} alt="" className="h-4 w-4" />
-                      </button>
-                      <button
-                        className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1A1A1A] text-[#FDFEFF]/60 transition hover:text-[#FF3B30]"
-                        type="button"
-                        aria-label="Удалить"
-                        title="Удалить"
-                      >
-                        <img src={trashIcon} alt="" className="h-4 w-4" />
-                      </button>
                     </div>
                   </article>
                 ))

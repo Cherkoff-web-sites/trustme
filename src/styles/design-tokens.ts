@@ -55,6 +55,14 @@ export interface ColorAccentTokens {
   secondaryGradientFromHover: string;
   /** Подсветка чекбокса при hover по `Label` / `group`, пока не выбран. */
   secondaryCheckboxHoverUnchecked: string;
+  /** Текст/иконки — второй акцент (#0EB8D2). */
+  secondaryText: string;
+  /** Текст/иконки — primary при нажатии (#057889). */
+  primaryText: string;
+  /** Шапка (ПК): hover/active текста почты и шеврона (не иконки-аватара). */
+  headerAccountTriggerLabelHoverActive: string;
+  /** Шапка (ПК): открытое меню — цвет почты/шеврона как при hover. */
+  headerAccountTriggerLabelExpanded: string;
 }
 
 export interface StatusTokens {
@@ -224,6 +232,11 @@ export const designTokens: DesignTokens = {
         'hover:bg-gradient-to-b hover:from-[#0EB8D2] active:bg-gradient-to-b active:from-[#0EB8D2]',
       secondaryCheckboxHoverUnchecked:
         'group-hover:peer-[:not(:checked)]:border-[#0EB8D2] group-hover:peer-[:not(:checked)]:bg-[#0EB8D2]',
+      secondaryText: 'text-[#0EB8D2]',
+      primaryText: 'text-[#057889]',
+      headerAccountTriggerLabelHoverActive:
+        'lg:group-hover/account-trigger:text-[#0EB8D2] lg:group-active/account-trigger:text-[#057889]',
+      headerAccountTriggerLabelExpanded: 'lg:text-[#0EB8D2]',
     },
     status: {
       successBg: 'bg-[#34A853]', // фон «успех»

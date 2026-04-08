@@ -3,7 +3,7 @@ import { cn } from '../../../lib/cn';
 import {
   reportActionsDeleteStyles,
   reportActionsPrimaryStyles,
-  reportActionsWrapStyles,
+  reportActionsWrapBaseStyles,
 } from './ReportActions.styles';
 
 export interface ReportActionsProps {
@@ -34,8 +34,13 @@ export function ReportActions({
     equalSplitLg && 'lg:flex-1 lg:min-w-0',
   );
 
+  const wrapClass = cn(
+    reportActionsWrapBaseStyles,
+    showDelete ? 'sm:justify-between' : 'sm:justify-center',
+  );
+
   return (
-    <div className={reportActionsWrapStyles}>
+    <div className={wrapClass}>
       <div className={cn(reportActionsPrimaryStyles, equalSplitLg && 'w-full lg:max-w-full')}>
         <Button className={buttonClassName} onClick={onOpen}>
           {openLabel}

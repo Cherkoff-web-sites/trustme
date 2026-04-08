@@ -8,6 +8,7 @@ import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffI
 import { HistoryReportModal } from '../../components/features/history';
 import { AlertBanner, Button, Card, designTokens } from '../../components/ui';
 import { combineStyles } from '../../lib/combineStyles';
+import { cn } from '../../lib/cn';
 import { TelegramCircleIcon } from '../../shared/icons';
 import { type HistoryItem } from '../../shared/ReportContent';
 import qrSvg from '../../assets/icons/qr.svg';
@@ -54,6 +55,8 @@ export function DashboardPage() {
   const [showCurrentTariffModal, setShowCurrentTariffModal] = useState(false);
   const [openedReportItem, setOpenedReportItem] = useState<HistoryItem | null>(null);
   const [newCheckStep, setNewCheckStep] = useState<DashboardNewCheckFlowStep>('form');
+  const [statsSortMenuOpen, setStatsSortMenuOpen] = useState(false);
+  const [statsSortBy, setStatsSortBy] = useState<'date' | 'reportCategory'>('date');
 
   const newCheckTitle =
     newCheckStep === 'form'
@@ -360,23 +363,91 @@ export function DashboardPage() {
           <Card
             title={<span className="uppercase lg:normal-case">Статистика проверок</span>}
             headerVariant={3}
-            className="h-full flex flex-col"
+            className="relative z-0 flex h-full flex-col overflow-visible"
             contentClassName="gap-[15px]"
             variant="dashboard"
           >
               <p className="text-center">
                 Сводные данные по проверкам
               </p>
-              <div className="flex flex-col items-center">
-                <div className="w-full lg:w-auto flex justify-center lg:justify-end">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="w-full lg:w-auto border-[#FDFEFF]/50 px-[30px] py-[15px] lg:py-[10px] text-[14px] lg:text-[18px]"
-                  >
-                    <span>Сортировать по</span>
-                    <img src={chevronSvg} alt="" className="ml-2 h-auto w-4" />
-                  </Button>
+              <div className="flex w-full flex-col items-center">
+                <div className="relative z-[45] flex w-full justify-center">
+                  {statsSortMenuOpen ? (
+                    <button
+                      type="button"
+                      className="fixed inset-0 z-[40] cursor-default"
+                      onClick={() => setStatsSortMenuOpen(false)}
+                      aria-label="Закрыть меню сортировки"
+                    />
+                  ) : null}
+                  <div className="relative inline-flex max-w-full min-w-0 flex-col items-stretch">
+                    <button
+                      type="button"
+                      className={cn(
+                        'inline-flex max-w-full min-w-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-[#FDFEFF]/50 bg-transparent px-[30px] py-[15px] text-[14px] font-semibold text-[#FDFEFF] transition-[box-shadow] lg:py-[10px] lg:text-[18px]',
+                        statsSortMenuOpen
+                          ? 'shadow-[inset_2px_-2px_6px_#1C3849,inset_-2px_2px_6px_#1C3849]'
+                          : 'shadow-none hover:shadow-[inset_2px_-2px_6px_#057889,inset_-2px_2px_6px_#057889]',
+                      )}
+                      onClick={() => setStatsSortMenuOpen((open) => !open)}
+                      aria-expanded={statsSortMenuOpen}
+                      aria-haspopup="listbox"
+                    >
+                      <span className="min-w-0 truncate">Сортировать по</span>
+                      <img
+                        src={chevronSvg}
+                        alt=""
+                        className={cn('ml-0 h-auto w-4 shrink-0 transition-transform', statsSortMenuOpen && 'rotate-180')}
+                      />
+                    </button>
+                    {statsSortMenuOpen ? (
+                      <div
+                        className="absolute left-0 right-0 top-full z-[50] mt-[15px] min-w-0 rounded-[18px] border border-[#FDFEFF]/65 bg-[#1A1A1A] p-4 shadow-[0_16px_40px_rgba(0,0,0,0.35)]"
+                        role="listbox"
+                        aria-label="Сортировка"
+                      >
+                        <button
+                          type="button"
+                          role="option"
+                          aria-selected={statsSortBy === 'date'}
+                          className="group/sort-opt relative flex w-full items-center bg-transparent py-4 text-left text-base text-[#FDFEFF] transition-colors lg:text-[18px]"
+                          onClick={() => {
+                            setStatsSortBy('date');
+                            setStatsSortMenuOpen(false);
+                          }}
+                        >
+                          <span
+                            className={cn(
+                              'pointer-events-none absolute right-[-2px] top-[7px] bottom-[7px] block w-[4px] rounded-full bg-[#FDFEFF]/50 transition-opacity',
+                              statsSortBy === 'date' ? 'opacity-100' : 'opacity-0 group-hover/sort-opt:opacity-100',
+                            )}
+                            aria-hidden
+                          />
+                          Дате
+                        </button>
+                        <div className="my-2 h-px bg-[#FDFEFF]/50" role="presentation" aria-hidden />
+                        <button
+                          type="button"
+                          role="option"
+                          aria-selected={statsSortBy === 'reportCategory'}
+                          className="group/sort-opt relative flex w-full items-center bg-transparent py-4 text-left text-base text-[#FDFEFF] transition-colors lg:text-[18px]"
+                          onClick={() => {
+                            setStatsSortBy('reportCategory');
+                            setStatsSortMenuOpen(false);
+                          }}
+                        >
+                          <span
+                            className={cn(
+                              'pointer-events-none absolute right-[-2px] top-[7px] bottom-[7px] block w-[4px] rounded-full bg-[#FDFEFF]/50 transition-opacity',
+                              statsSortBy === 'reportCategory' ? 'opacity-100' : 'opacity-0 group-hover/sort-opt:opacity-100',
+                            )}
+                            aria-hidden
+                          />
+                          Категории отчета
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               </div>
 

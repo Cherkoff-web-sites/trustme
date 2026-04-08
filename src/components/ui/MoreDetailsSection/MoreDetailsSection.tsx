@@ -15,18 +15,22 @@ export function MoreDetailsSection({ buttonText = 'Подробнее', classNam
     <div className={className}>
       <Button
         variant="ghost"
-        className="gap-2 text-base text-[#FDFEFF]"
+        className="h-auto min-h-0 justify-start gap-2 p-0 text-[16px] font-normal leading-normal text-[#FDFEFF] hover:text-[#FDFEFF] lg:text-[20px]"
         onClick={() => setOpen((prev) => !prev)}
       >
         {buttonText}
         <img
           src={chevronSvg}
           alt=""
-          className={`h-[10px] w-[17px] transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`h-[10px] w-[17px] shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
         />
       </Button>
 
-      {open ? <div className="mt-4">{children}</div> : null}
+      {open ? (
+        <div className="mt-[15px] flex flex-col gap-[15px] text-[16px] font-normal leading-normal text-[#FDFEFF] lg:text-[20px]">
+          {children}
+        </div>
+      ) : null}
     </div>
   );
 }

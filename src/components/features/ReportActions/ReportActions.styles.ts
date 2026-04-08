@@ -1,5 +1,6 @@
-export const reportActionsWrapStyles =
-  'w-full flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between';
+/** База: без `justify-*` — задаётся в компоненте (с «Удалить» — `between`, без — `center`). */
+export const reportActionsWrapBaseStyles =
+  'w-full flex flex-col gap-4 sm:flex-row sm:items-center';
 
 export const reportActionsPrimaryStyles = 'flex flex-col gap-[20px] sm:flex-row sm:gap-3';
 

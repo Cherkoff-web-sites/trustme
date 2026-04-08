@@ -42,7 +42,7 @@ export function SettingsTariff({
         <MoreDetailsSection>
           <div className={settingsTariffFactorsGridStyles}>
             {personalizationFactors.map((factor) => (
-              <Label variant="inline" className="gap-3" key={factor}>
+              <Label variant="inline" className="gap-3 text-[16px] leading-normal lg:text-[20px]" key={factor}>
                 <Checkbox
                   checked={false}
                   onChange={() => {}}
