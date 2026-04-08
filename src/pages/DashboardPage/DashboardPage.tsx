@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { uiFlags } from '../../config/uiFlags';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { DashboardGrid } from '../../components/layout/DashboardGrid/DashboardGrid';
 import { DashboardNewCheckSteps, type DashboardNewCheckFlowStep } from '../../components/features/DashboardNewCheckModal';
+import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
 import { HistoryReportModal } from '../../components/features/history';
 import { AlertBanner, Button, Card, designTokens } from '../../components/ui';
@@ -57,6 +58,54 @@ export function DashboardPage() {
   const [newCheckStep, setNewCheckStep] = useState<DashboardNewCheckFlowStep>('form');
   const [statsSortMenuOpen, setStatsSortMenuOpen] = useState(false);
   const [statsSortBy, setStatsSortBy] = useState<'date' | 'reportCategory'>('date');
+  const [showTopUpModal, setShowTopUpModal] = useState(false);
+  const [topUpAmount, setTopUpAmount] = useState('4 550');
+  const [topUpStep, setTopUpStep] = useState<TopUpStep>('form');
+  const topUpWaitingTimerRef = useRef<number | null>(null);
+
+  const handleOpenTopUp = () => {
+    setTopUpStep('form');
+    setTopUpAmount('4 550');
+    setShowTopUpModal(true);
+  };
+
+  const handleCloseTopUp = () => {
+    setShowTopUpModal(false);
+    setTopUpStep('form');
+    if (topUpWaitingTimerRef.current) {
+      window.clearTimeout(topUpWaitingTimerRef.current);
+      topUpWaitingTimerRef.current = null;
+    }
+  };
+
+  const handleTopUpContinue = () => {
+    const numericAmount = Number(topUpAmount.replace(/\s/g, ''));
+    if (!numericAmount || numericAmount < 100 || numericAmount > 100000) {
+      return;
+    }
+    setTopUpStep('processing');
+  };
+
+  const handleTopUpPay = () => {
+    setTopUpStep('waiting');
+    if (topUpWaitingTimerRef.current) window.clearTimeout(topUpWaitingTimerRef.current);
+    topUpWaitingTimerRef.current = window.setTimeout(() => {
+      setTopUpStep('success');
+      topUpWaitingTimerRef.current = null;
+    }, 3000);
+  };
+
+  const handleTopUpBack = () => {
+    setTopUpStep('form');
+  };
+
+  useEffect(() => {
+    return () => {
+      if (topUpWaitingTimerRef.current) {
+        window.clearTimeout(topUpWaitingTimerRef.current);
+      }
+    };
+  }, []);
 
   const newCheckTitle =
     newCheckStep === 'form'
@@ -125,8 +174,8 @@ export function DashboardPage() {
                     <img src={walletSvg} alt="" className="h-auto w-[18px] shrink-0 lg:h-6 lg:w-6" />
                     <span>4 550 ₽</span>
                   </div>
-                  <Button asChild className="w-full min-w-0 flex-1 lg:min-h-12">
-                    <Link to="/balance">Пополнить</Link>
+                  <Button className="w-full min-w-0 flex-1 lg:min-h-12" onClick={handleOpenTopUp}>
+                    Пополнить
                   </Button>
                 </div>
           </Card>
@@ -481,6 +530,17 @@ export function DashboardPage() {
         />
       </section>
       <HistoryReportModal item={openedReportItem} onClose={() => setOpenedReportItem(null)} />
+      <BalanceTopUpModal
+        open={showTopUpModal}
+        step={topUpStep}
+        amount={topUpAmount}
+        onAmountChange={setTopUpAmount}
+        onChipSelect={(value) => setTopUpAmount(value.toLocaleString('ru-RU'))}
+        onContinue={handleTopUpContinue}
+        onPay={handleTopUpPay}
+        onBack={handleTopUpBack}
+        onClose={handleCloseTopUp}
+      />
     </PageLayout>
   );
 }
