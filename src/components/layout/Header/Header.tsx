@@ -214,6 +214,7 @@ export function Header() {
   const filteredNotifications = activeNotificationTab === 'all'
     ? notifications
     : notifications.filter(n => n.category === activeNotificationTab);
+  const unreadNotificationsCount = notifications.filter((notification) => !notification.isRead).length;
 
   // Подсветка текста (разбивает строку и выделяет цветом часть)
   const renderTitle = (notification: Notification) => {
@@ -302,6 +303,11 @@ export function Header() {
               aria-label="Уведомления"
             >
               <img src={notificationsSvg} alt="" className="h-auto w-[18px]" width={19} height={20} />
+              {unreadNotificationsCount > 0 ? (
+                <span className="absolute right-0 top-0 inline-flex h-[14px] w-[14px] items-center justify-center rounded-full bg-[#EB4335] text-[11px] leading-none font-semibold text-[#FDFEFF] lg:h-4 lg:w-4">
+                  {unreadNotificationsCount}
+                </span>
+              ) : null}
             </button>
             <div className="relative z-[45]">
               {showAccountMenu ? (
@@ -368,7 +374,7 @@ export function Header() {
 
           <div className="flex flex-wrap items-center gap-3 text-[14px] font-semibold lg:text-[20px]">
             <button
-              className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[100px] border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF] transition hover:bg-[#FDFEFF]/10"
+              className="relative inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[100px] border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF] transition hover:bg-[#FDFEFF]/10"
               type="button"
               onClick={() => {
                 setShowAccountMenu(false);
@@ -377,6 +383,11 @@ export function Header() {
               aria-label="Уведомления"
             >
               <img src={notificationsSvg} alt="" width={19} height={20} className="h-5 w-5" />
+              {unreadNotificationsCount > 0 ? (
+                <span className="absolute right-0 top-0 inline-flex h-[14px] w-[14px] items-center justify-center rounded-full bg-[#EB4335] text-[11px] leading-none font-semibold text-[#FDFEFF] lg:h-4 lg:w-4">
+                  {unreadNotificationsCount}
+                </span>
+              ) : null}
             </button>
             <div className="relative">
               {showAccountMenu ? (

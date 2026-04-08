@@ -15,7 +15,7 @@ export const modalPanelStyles = cva(
         sm: 'max-w-[430px] border-[#FDFEFF] px-5 py-5 sm:px-6 sm:py-6',
         md: 'max-w-[460px] border-[#FDFEFF] px-5 py-6 sm:px-7 sm:py-7',
         lg: 'max-w-[720px] border-[#FDFEFF] p-4 sm:p-5',
-        xl: 'max-w-5xl overflow-hidden border-[#FDFEFF]',
+        xl: 'max-w-[1155px] overflow-hidden border-[#FDFEFF]',
       },
     },
     defaultVariants: {
