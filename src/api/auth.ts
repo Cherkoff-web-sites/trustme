@@ -26,11 +26,8 @@ export class AuthApiError extends Error {
   }
 }
 
-/** Роль по умолчанию для регистрации; уточняйте у бэка при 500/422. */
-export const DEFAULT_REGISTER_ROLE =
-  (import.meta.env.VITE_REGISTER_ROLE as string | undefined)?.trim() || 'company_admin';
-
-export const DEFAULT_REGISTER_PARENT_ID = 0;
+/** Роли регистрации (UserRoleSchema). */
+export type RegisterRole = 'individual' | 'company_admin' | 'company_employee';
 
 async function readResponseBody(res: Response): Promise<unknown> {
   const text = await res.text();
@@ -40,6 +37,17 @@ async function readResponseBody(res: Response): Promise<unknown> {
   } catch {
     return text;
   }
+}
+
+/** FastAPI 422: первое сообщение из `detail[0].msg`. */
+function messageFromValidationDetail422(data: unknown): string | null {
+  if (!data || typeof data !== 'object') return null;
+  const detail = (data as { detail?: unknown }).detail;
+  if (!Array.isArray(detail) || detail.length === 0) return null;
+  const first = detail[0];
+  if (!first || typeof first !== 'object') return null;
+  const msg = (first as { msg?: unknown }).msg;
+  return typeof msg === 'string' && msg.trim() ? msg.trim() : null;
 }
 
 function messageFromValidationDetail(data: unknown): string | null {
@@ -61,6 +69,12 @@ function toAuthApiError(status: number, data: unknown): AuthApiError {
     const d = (data as { detail?: unknown }).detail;
     if (typeof d === 'string' && d.trim()) {
       return new AuthApiError(status, d);
+    }
+  }
+  if (status === 422) {
+    const first422 = messageFromValidationDetail422(data);
+    if (first422) {
+      return new AuthApiError(status, first422);
     }
   }
   const validationMsg = messageFromValidationDetail(data);
@@ -118,7 +132,8 @@ export async function authLogin(email: string, password: string): Promise<LoginS
 export async function authRegister(input: {
   email: string;
   password: string;
-  role?: string;
+  role: RegisterRole;
+  /** Только для `company_employee` — ID пригласившего / компании. Для `individual` и `company_admin` не передаётся. */
   parent_id?: number;
 }): Promise<RegisterSuccessUser> {
   const base = getApiBaseUrl();
@@ -129,12 +144,14 @@ export async function authRegister(input: {
     );
   }
 
-  const body = {
+  const body: Record<string, unknown> = {
     email: input.email.trim(),
     password: input.password,
-    role: input.role ?? DEFAULT_REGISTER_ROLE,
-    parent_id: input.parent_id ?? DEFAULT_REGISTER_PARENT_ID,
+    role: input.role,
   };
+  if (input.role === 'company_employee' && input.parent_id != null && Number.isFinite(input.parent_id)) {
+    body.parent_id = input.parent_id;
+  }
 
   const res = await fetch(`${base}/api/v1/auth/register`, {
     method: 'POST',

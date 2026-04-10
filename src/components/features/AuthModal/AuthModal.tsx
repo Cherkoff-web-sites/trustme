@@ -158,7 +158,11 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
     if (Object.keys(next).length > 0) return;
     setAuthSubmitting(true);
     try {
-      await authRegister({ email: email.trim(), password });
+      await authRegister({
+        email: email.trim(),
+        password,
+        role: accountType === "individual" ? "individual" : "company_admin",
+      });
       try {
         await login(email.trim(), password);
         onClose();
