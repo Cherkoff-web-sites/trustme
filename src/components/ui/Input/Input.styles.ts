@@ -19,9 +19,15 @@ export const inputStyles = cva(
         centered: 'h-[60px] text-center',
         date: 'h-[60px] bg-[#2A2A2A]',
       },
+      /** `<textarea>`: фиксированная высота из `variant` отключается, высота задаётся классами / `rows`. */
+      multiline: {
+        true: 'h-auto max-h-none min-h-[60px] resize-none py-3 max-lg:leading-normal',
+        false: '',
+      },
     },
     defaultVariants: {
       variant: 'default',
+      multiline: false,
     },
   },
 );

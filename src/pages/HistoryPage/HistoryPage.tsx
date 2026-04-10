@@ -13,6 +13,7 @@ import {
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { Card, FilterChip } from '../../components/ui';
+import { formatPeriodFilterChipLabel } from '../../lib/dateDisplayFormat';
 import { type HistoryItem } from '../../shared/ReportContent';
 
 const INITIAL_HISTORY_ITEMS: HistoryItem[] = [
@@ -477,16 +478,19 @@ export function HistoryPage() {
   }
 
   if (dateFrom || dateTo) {
-    activeChips.push({
-      id: 'period',
-      label: `${dateFrom || '—'} — ${dateTo || '—'}`,
-      clear: () => {
-        setDateFrom('');
-        setDateTo('');
-        setCurrentPage(1);
-        setWindowStart(1);
-      },
-    });
+    const periodLabel = formatPeriodFilterChipLabel(dateFrom, dateTo);
+    if (periodLabel) {
+      activeChips.push({
+        id: 'period',
+        label: periodLabel,
+        clear: () => {
+          setDateFrom('');
+          setDateTo('');
+          setCurrentPage(1);
+          setWindowStart(1);
+        },
+      });
+    }
   }
 
   if (categoryFilter !== 'all') {

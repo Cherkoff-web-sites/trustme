@@ -103,11 +103,11 @@ export function NewCheckPage() {
 
   const pricingDetails = (
     <div className="flex flex-col gap-[15px]">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 lg:flex-wrap lg:items-start lg:justify-start lg:gap-x-[30px] lg:gap-y-1">
         <span className="text-[16px] font-normal lg:text-[20px]">С баланса будет списано:</span>
         <span className="text-[16px] font-semibold lg:text-[20px]">100 ₽</span>
       </div>
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 lg:flex-wrap lg:items-start lg:justify-start lg:gap-x-[30px] lg:gap-y-1">
         <span className="text-[16px] font-normal lg:text-[20px]">Ваш текущий тариф:</span>
         <span className="text-[16px] font-semibold lg:text-[20px]">Индивидуальный</span>
       </div>
@@ -122,11 +122,12 @@ export function NewCheckPage() {
       >
         <Card>
           <div className="flex flex-col gap-[30px] lg:gap-6">
-            <div className={cn('relative', personTypeError && 'pb-6')}>
+            <div className="relative">
               <PersonTypeSwitcher
-                className="sm:gap-6"
+                className="sm:gap-8"
                 value={personType}
                 allowClear
+                indicatorMode="settings"
                 onChange={(v) => {
                   setPersonType(v);
                   if (v !== null) setPersonTypeError(false);
@@ -150,30 +151,55 @@ export function NewCheckPage() {
             </div>
 
             <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-[30px] lg:gap-4 xl:flex-row xl:items-start">
-                <div className={cn('relative min-w-0 flex-1', legalQueryError && 'pb-6')}>
-                  <Input
-                    startAdornment={
-                      <img src={searchSvg} alt="" className="h-5 w-5 text-[#FDFEFF]" width={20} height={20} />
-                    }
+              <div className="flex flex-col gap-[30px] lg:flex-row lg:items-end">
+                <div
+                  className={cn(
+                    'min-w-0',
+                    'max-lg:flex-none max-lg:shrink-0',
+                    'lg:flex-1 lg:min-w-0',
+                    /* pb только снаружи: иначе при box-border съедает высоту внутри h-[74px]/h-[59px] и обрезает поле */
+                    legalQueryError && 'pb-6',
+                  )}
+                >
+                  <div
                     className={cn(
-                      'h-12 w-full rounded-[10px] text-base font-normal sm:h-14 sm:rounded-xl sm:text-sm',
-                      'bg-[#2A2A2A] sm:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.05))]',
-                      legalQueryError
-                        ? designTokens.colors.border.inputError
-                        : 'border-[#FDFEFF]/50 sm:border-white/15',
+                      /* мобилка: фикс 74px — только этот блок, без padding */
+                      'max-lg:h-[74px] max-lg:min-h-[74px] max-lg:max-h-[74px]',
+                      'lg:h-[59px] lg:min-h-[59px] lg:max-h-[59px]',
                     )}
-                    placeholder="ИНН (ЮЛ, ФЛ) / ОГРН"
-                    value={legalQuery}
-                    error={legalQueryError}
-                    onChange={(event) => {
-                      setLegalQuery(event.target.value);
-                      setLegalQueryError(undefined);
-                    }}
-                  />
+                  >
+                    <Input
+                      multiline
+                      /* rows={2} даёт нативный min-height > 74px в моб. браузерах */
+                      rows={1}
+                      wrapperClassName={cn(
+                        'h-full min-h-0',
+                        'max-lg:h-[74px] max-lg:min-h-[74px] max-lg:max-h-[74px]',
+                      )}
+                      startAdornment={
+                        <img src={searchSvg} alt="" className="h-5 w-5 text-[#FDFEFF]" width={20} height={20} />
+                      }
+                      className={cn(
+                        'box-border w-full rounded-[10px] sm:rounded-xl',
+                        'max-lg:h-[74px] max-lg:min-h-[74px] max-lg:max-h-[74px] max-lg:resize-none max-lg:py-[17px] max-lg:leading-normal',
+                        'lg:h-full lg:max-h-full lg:min-h-0 lg:overflow-y-auto lg:py-0 lg:leading-[59px]',
+                        'bg-[#2A2A2A] sm:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.05))]',
+                        legalQueryError
+                          ? designTokens.colors.border.inputError
+                          : 'border-[#FDFEFF]/50 sm:border-white/15',
+                      )}
+                      placeholder="ИНН (ЮЛ, ФЛ) / ФИО дд.мм.гггг / ФИО дд.мм.гггг ИНН"
+                      value={legalQuery}
+                      error={legalQueryError}
+                      onChange={(event) => {
+                        setLegalQuery(event.target.value);
+                        setLegalQueryError(undefined);
+                      }}
+                    />
+                  </div>
                 </div>
 
-                <Button className="min-w-[188px]" onClick={() => runCheck('primary')}>
+                <Button className="min-w-[188px] px-[60px]" onClick={() => runCheck('primary')}>
                   Проверить
                 </Button>
               </div>

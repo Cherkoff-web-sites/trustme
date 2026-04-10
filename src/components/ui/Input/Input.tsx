@@ -4,13 +4,11 @@ import eyeSvg from '../../../assets/icons/eye.svg';
 import eyeOpenSvg from '../../../assets/icons/eye_open.svg';
 import { cn } from '../../../lib/cn';
 import { designTokens } from '../design-tokens';
+import { DateFieldComposite } from './DateFieldComposite';
 import { inputStyles } from './Input.styles';
 
 const inputErrorMessageClassName =
   'absolute left-0 right-0 top-full z-[1] mt-[5px] text-left text-[12px] leading-[18px]';
-
-/** Максимальная длина значения `type="date"` в формате yyyy-mm-dd. */
-const DATE_INPUT_VALUE_MAX_LEN = 10;
 
 function mergeRefs<T>(...refs: Array<React.Ref<T> | undefined>) {
   return (node: T | null) => {
@@ -37,7 +35,10 @@ export interface InputProps
   startAdornment?: React.ReactNode;
   /** Слой поверх области ввода (автодополнение); не перехватывает события. */
   inputOverlay?: React.ReactNode;
-  /** Элемент справа внутри поля (например кастомная иконка). Несовместимо с `passwordToggle`. */
+  /**
+   * Элемент справа внутри поля. Несовместимо с `passwordToggle`.
+   * Для `type="date"` используется `DateFieldComposite` (текст ДД/ММ/ГГГГ + скрытый календарь).
+   */
   endAdornment?: React.ReactNode;
   /**
    * Кнопка с иконкой глаза для полей пароля; видимость пароля хранится внутри инстанса `Input`.
@@ -45,9 +46,13 @@ export interface InputProps
    */
   passwordToggle?: boolean;
   type?: React.HTMLInputTypeAttribute;
+  /** Только при `multiline` (`<textarea>`). */
+  rows?: number;
+  /** Классы корневой обёртки (`relative`), например `h-full min-h-0 flex flex-col` для растягивания по высоте flex-родителя. */
+  wrapperClassName?: string;
 }
 
-export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+export const Input = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(
   (
     {
       className,
@@ -67,6 +72,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       onFocus,
       onBlur,
       maxLength,
+      name,
+      multiline,
+      rows = 2,
+      wrapperClassName,
       ...props
     },
     ref,
@@ -79,7 +88,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       () => defaultValue != null && String(defaultValue).length > 0,
     );
 
-    const inputRef = React.useRef<HTMLInputElement | null>(null);
+    const inputRef = React.useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
     const filled = isControlled
       ? String(value ?? '').length > 0
@@ -89,25 +98,17 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const reactId = React.useId();
     const errorMessageId = id ? `${id}-error` : `${reactId}-error`;
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const el = e.target;
-      let next = el.value;
-      if (type === 'date' && next.length > DATE_INPUT_VALUE_MAX_LEN) {
-        next = next.slice(0, DATE_INPUT_VALUE_MAX_LEN);
-        Object.assign(el, { value: next });
-      }
+      const next = el.value;
       if (!isControlled) {
         setUncontrolledFilled(next.length > 0);
       }
-      onChange?.(e);
+      onChange?.(e as React.ChangeEvent<HTMLInputElement>);
     };
 
-    const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
+    const handleInput = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const el = e.currentTarget;
-      if (type === 'date' && el.value.length > DATE_INPUT_VALUE_MAX_LEN) {
-        const next = el.value.slice(0, DATE_INPUT_VALUE_MAX_LEN);
-        Object.assign(el, { value: next });
-      }
       if (!isControlled) {
         setUncontrolledFilled(el.value.length > 0);
       }
@@ -115,14 +116,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       onInput?.(e as unknown as Parameters<NonNullable<typeof onInput>>[0]);
     };
 
-    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setFocused(true);
-      onFocus?.(e);
+      onFocus?.(e as React.FocusEvent<HTMLInputElement>);
     };
 
-    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setFocused(false);
-      onBlur?.(e);
+      onBlur?.(e as React.FocusEvent<HTMLInputElement>);
     };
 
     const resolvedType =
@@ -132,20 +133,28 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           : 'password'
         : type;
 
-    const isDatePickerAdornment =
-      resolvedType === 'date' && Boolean(endAdornment) && !passwordToggle;
+    const isMultiline = Boolean(multiline) && !passwordToggle;
 
-    const openDatePicker = () => {
-      const el = inputRef.current;
-      if (!el || type !== 'date') return;
-      try {
-        el.showPicker?.();
-      } catch {
-        /* небезопасный контекст или браузер без showPicker */
-      }
-    };
+    if (resolvedType === 'date' && !passwordToggle) {
+      return (
+        <DateFieldComposite
+          ref={ref as React.Ref<HTMLInputElement>}
+          variant={variant}
+          className={className}
+          error={error}
+          disabled={disabled}
+          id={id}
+          name={name}
+          value={value as string | undefined}
+          defaultValue={defaultValue as string | undefined}
+          onChange={onChange}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          {...props}
+        />
+      );
+    }
 
-    /** Иконка глаза: правый край 24×24 на отступе 21px от правого края поля; поле `pr-[45px]` = 21 + 24. */
     const passwordToggleNode = passwordToggle ? (
       <button
         type="button"
@@ -163,34 +172,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       </button>
     ) : null;
 
-    const datePickerAdornmentTrigger = isDatePickerAdornment ? (
-      <button
-        type="button"
-        className="inline-flex h-5 w-5 shrink-0 items-center justify-center text-[#FDFEFF] hover:opacity-90"
-        onMouseDown={(ev) => {
-          ev.preventDefault();
-        }}
-        onClick={(ev) => {
-          ev.preventDefault();
-          openDatePicker();
-        }}
-        aria-label="Открыть календарь"
-        tabIndex={-1}
-      >
-        {endAdornment}
-      </button>
-    ) : null;
-
-    const resolvedAdornment = passwordToggle
-      ? passwordToggleNode
-      : datePickerAdornmentTrigger ?? endAdornment;
+    const resolvedAdornment = passwordToggle ? passwordToggleNode : endAdornment;
     const hasRightSlot = Boolean(resolvedAdornment);
     const hasLeftSlot = Boolean(startAdornment);
 
-    const adornmentRightClass = passwordToggle ? 'right-[21px]' : isDatePickerAdornment ? 'right-[10px]' : 'right-[21px]';
+    const adornmentRightClass = passwordToggle ? 'right-[21px]' : 'right-[21px]';
 
     const inputClassName = cn(
-      inputStyles({ variant }),
+      inputStyles({ variant, multiline: isMultiline }),
       !disabled &&
         !hasError &&
         cn(
@@ -210,13 +199,30 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ),
       hasLeftSlot && INPUT_START_ADORNMENT_PL,
       hasLeftSlot && !hasRightSlot && 'pr-[18px]',
-      hasRightSlot && !isDatePickerAdornment && 'pr-[45px]',
+      hasRightSlot && 'pr-[45px]',
       className,
     );
 
-    const resolvedMaxLength = type === 'date' ? DATE_INPUT_VALUE_MAX_LEN : maxLength;
-
-    const inputEl = (
+    const fieldEl = isMultiline ? (
+      <textarea
+        ref={mergeRefs(ref, inputRef)}
+        id={id}
+        className={inputClassName}
+        disabled={disabled}
+        rows={rows}
+        aria-invalid={hasError || undefined}
+        aria-describedby={hasError ? errorMessageId : undefined}
+        maxLength={maxLength}
+        name={name}
+        {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+        value={value}
+        defaultValue={defaultValue}
+        onChange={handleChange}
+        onInput={handleInput}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+      />
+    ) : (
       <input
         ref={mergeRefs(ref, inputRef)}
         id={id}
@@ -225,7 +231,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         disabled={disabled}
         aria-invalid={hasError || undefined}
         aria-describedby={hasError ? errorMessageId : undefined}
-        maxLength={resolvedMaxLength}
+        maxLength={maxLength}
+        name={name}
         {...props}
         value={value}
         defaultValue={defaultValue}
@@ -236,22 +243,22 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       />
     );
 
-    const overlayRightClass =
-      hasRightSlot && !isDatePickerAdornment ? 'right-[45px]' : 'right-[18px]';
+    const overlayRightClass = hasRightSlot ? 'right-[45px]' : 'right-[18px]';
 
     return (
-      <div className="relative w-full">
+      <div className={cn('relative w-full', wrapperClassName)}>
         {hasLeftSlot ? (
           <span
             className={cn(
-              'pointer-events-none absolute top-1/2 z-[1] -translate-y-1/2',
+              'pointer-events-none absolute z-[1]',
               INPUT_START_ADORNMENT_LEFT,
+              'top-1/2 -translate-y-1/2',
             )}
           >
             <span className="flex h-5 w-5 items-center justify-center">{startAdornment}</span>
           </span>
         ) : null}
-        {inputEl}
+        {fieldEl}
         {inputOverlay ? (
           <div
             className={cn(

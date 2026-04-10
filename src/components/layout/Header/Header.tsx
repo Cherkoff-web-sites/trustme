@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { uiFlags } from '../../../config/uiFlags';
 import { useAuth } from '../../../context/AuthContext';
 import { useAuthModalUi } from '../../../context/AuthModalUiContext';
 import { useBodyScrollLock } from '../../../lib/useBodyScrollLock';
@@ -95,10 +96,29 @@ function AccountMenuDropdown({
   );
 }
 
+/** Совпадает с защищёнными маршрутами в `App.tsx`; при обходе авторизации нужен полный хедер на этих путях. */
+const CABINET_ROUTE_PREFIXES = [
+  '/cabinet',
+  '/history',
+  '/new-check',
+  '/tariff',
+  '/balance',
+  '/settings',
+] as const;
+
+function isCabinetPath(pathname: string): boolean {
+  return CABINET_ROUTE_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
 export function Header() {
   const { isAuthenticated, logout } = useAuth();
   const { openAuthModal } = useAuthModalUi();
   const navigate = useNavigate();
+  const location = useLocation();
+  /** Если авторизация отключена флагом — на страницах кабинета показываем полную шапку без токена. См. `uiFlags.cabinetRoutesRequireAuth`. */
+  const showCabinetHeaderWithoutAuth =
+    !uiFlags.cabinetRoutesRequireAuth && isCabinetPath(location.pathname);
+  const showFullHeader = isAuthenticated || showCabinetHeaderWithoutAuth;
   const [showNotifications, setShowNotifications] = useState(false);
   const [activeNotificationTab, setActiveNotificationTab] = useState<NotificationCategory>('all');
   const [showAccountMenu, setShowAccountMenu] = useState(false);
@@ -234,7 +254,7 @@ export function Header() {
 
   useBodyScrollLock(showMobileMenu || showNotifications || showAccountMenu);
 
-  if (!isAuthenticated) {
+  if (!showFullHeader) {
     return (
       <>
         <header className={`${uiTokens.container} pt-6 pb-5 sm:pt-8`}>

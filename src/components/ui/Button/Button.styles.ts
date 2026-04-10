@@ -6,20 +6,20 @@ export const buttonStyles = cva(
     variants: {
       variant: {
         primary:
-          'min-h-14 rounded-[100px] bg-[#057889] px-6 py-4 text-[14px] lg:text-[20px] font-semibold text-[#FDFEFF] ' +
+          'rounded-[100px] bg-[#057889] px-6 py-4 text-[14px] lg:text-[20px] font-semibold text-[#FDFEFF] ' +
           'duration-200 transition-[box-shadow,background-color] ' +
           'hover:shadow-[0_8px_20px_#0EB8D2] ' +
           'active:bg-[#1C3849] active:shadow-[0_8px_20px_#0EB8D2] ' +
           'focus-visible:ring-2 focus-visible:ring-[#057889]/50',
         secondary:
-          'min-h-14 rounded-[100px] border border-[#FDFEFF]/55 px-6 py-4 text-[14px] lg:text-[20px] font-semibold text-[#FDFEFF] hover:bg-[#FDFEFF]/5',
+          'rounded-[100px] border border-[#FDFEFF]/55 px-6 py-4 text-[14px] lg:text-[20px] font-semibold text-[#FDFEFF] hover:bg-[#FDFEFF]/5',
         ghost: 'text-sm text-[#FDFEFF] hover:text-[#FDFEFF]',
         icon: 'rounded-[100px] border border-[#FDFEFF]/20 text-[#FDFEFF] hover:bg-[#FDFEFF]/5',
         pill: 'rounded-[100px] border px-3 py-2 text-sm transition',
       },
       size: {
         default: '',
-        sm: 'min-h-10 px-4 py-2 text-sm',
+        sm: 'px-4 py-2 text-sm',
         icon: 'h-11 w-11 p-0 text-lg',
       },
       fullWidth: {

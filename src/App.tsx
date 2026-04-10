@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { uiFlags } from './config/uiFlags';
 import { useAuth } from './context/AuthContext';
 import { LandingPage } from './pages/LandingPage/LandingPage';
 import { DashboardPage } from './pages/DashboardPage/DashboardPage';
@@ -12,7 +13,8 @@ import { SettingsPage } from './pages/SettingsPage/SettingsPage';
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
-  if (!isAuthenticated) {
+  // Когда `uiFlags.cabinetRoutesRequireAuth === false`, редирект отключён — см. комментарий в `uiFlags.ts`.
+  if (uiFlags.cabinetRoutesRequireAuth && !isAuthenticated) {
     const next = encodeURIComponent(`${location.pathname}${location.search}`);
     return <Navigate to={`/?next=${next}`} replace />;
   }

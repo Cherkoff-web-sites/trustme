@@ -96,7 +96,12 @@ export function DashboardNewCheckSteps({ onReportOpen, onStepChange }: Dashboard
                   if (submitted) setPersonTypeError(false);
                 }}
               >
-                <OptionIndicator type="radio" checked={personType === 'legal'} className="h-[22px] w-[22px]" />
+                <OptionIndicator
+                  type="radio"
+                  mode="settings"
+                  checked={personType === 'legal'}
+                  className="h-[22px] w-[22px]"
+                />
                 Юридическое лицо
               </button>
               <button
@@ -107,7 +112,12 @@ export function DashboardNewCheckSteps({ onReportOpen, onStepChange }: Dashboard
                   if (submitted) setPersonTypeError(false);
                 }}
               >
-                <OptionIndicator type="radio" checked={personType === 'individual'} className="h-[22px] w-[22px]" />
+                <OptionIndicator
+                  type="radio"
+                  mode="settings"
+                  checked={personType === 'individual'}
+                  className="h-[22px] w-[22px]"
+                />
                 Физическое лицо
               </button>
             </div>

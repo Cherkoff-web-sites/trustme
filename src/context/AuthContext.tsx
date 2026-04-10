@@ -1,32 +1,59 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { authLogin } from '../api/auth';
 
-const STORAGE_KEY = 'trstme_auth';
+const LEGACY_AUTH_FLAG = 'trstme_auth';
+const ACCESS_TOKEN_KEY = 'trstme_access_token';
 
 export type AuthContextValue = {
   isAuthenticated: boolean;
-  login: () => void;
+  accessToken: string | null;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem(STORAGE_KEY) === '1';
-  });
+function readInitialAccessToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  const token = localStorage.getItem(ACCESS_TOKEN_KEY);
+  if (token) {
+    if (localStorage.getItem(LEGACY_AUTH_FLAG) === '1') {
+      localStorage.removeItem(LEGACY_AUTH_FLAG);
+    }
+    return token;
+  }
+  if (localStorage.getItem(LEGACY_AUTH_FLAG) === '1') {
+    localStorage.removeItem(LEGACY_AUTH_FLAG);
+  }
+  return null;
+}
 
-  const login = useCallback(() => {
-    localStorage.setItem(STORAGE_KEY, '1');
-    setIsAuthenticated(true);
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [accessToken, setAccessToken] = useState<string | null>(() => readInitialAccessToken());
+
+  const login = useCallback(async (email: string, password: string) => {
+    const { access_token: nextToken } = await authLogin(email, password);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(LEGACY_AUTH_FLAG);
+      localStorage.setItem(ACCESS_TOKEN_KEY, nextToken);
+    }
+    setAccessToken(nextToken);
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
-    setIsAuthenticated(false);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(ACCESS_TOKEN_KEY);
+      localStorage.removeItem(LEGACY_AUTH_FLAG);
+    }
+    setAccessToken(null);
   }, []);
 
-  const value = useMemo(() => ({ isAuthenticated, login, logout }), [isAuthenticated, login, logout]);
+  const isAuthenticated = Boolean(accessToken);
+
+  const value = useMemo(
+    () => ({ isAuthenticated, accessToken, login, logout }),
+    [isAuthenticated, accessToken, login, logout],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

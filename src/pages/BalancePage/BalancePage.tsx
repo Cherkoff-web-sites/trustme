@@ -13,10 +13,11 @@ import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
 import { Button, Card, CardHeaderDecorDivider, FilterChip, designTokens } from '../../components/ui';
+import { formatPeriodFilterChipLabel } from '../../lib/dateDisplayFormat';
 import { combineStyles } from '../../lib/combineStyles';
-import { TelegramSmallIcon } from '../../shared/icons';
 import walletSvg from '../../assets/icons/wallet.svg';
-import websiteHistorySvg from '../../assets/icons/website_on_history.svg';
+import telegramSvg from '../../assets/icons/telegram.svg';
+import websiteOnDashboardSvg from '../../assets/icons/website_on_dashboard.svg';
 
 type BalanceOperation = {
   date: string;
@@ -154,14 +155,17 @@ export function BalancePage() {
   const activeChips: Array<{ id: string; label: string; clear: () => void }> = [];
 
   if (balanceDateFrom || balanceDateTo) {
-    activeChips.push({
-      id: 'period',
-      label: `${balanceDateFrom || '—'} — ${balanceDateTo || '—'}`,
-      clear: () => {
-        setBalanceDateFrom('');
-        setBalanceDateTo('');
-      },
-    });
+    const periodLabel = formatPeriodFilterChipLabel(balanceDateFrom, balanceDateTo);
+    if (periodLabel) {
+      activeChips.push({
+        id: 'period',
+        label: periodLabel,
+        clear: () => {
+          setBalanceDateFrom('');
+          setBalanceDateTo('');
+        },
+      });
+    }
   }
 
   if (balanceSortOrder !== 'new') {
@@ -347,7 +351,7 @@ export function BalancePage() {
           </div>
         ) : null}
 
-        <Card className="hidden overflow-hidden p-4 sm:p-6 lg:block">
+        <Card className="hidden lg:block" variant="dashboard">
           <TransactionTable operations={filteredOperations} />
         </Card>
 
@@ -355,8 +359,10 @@ export function BalancePage() {
           <div className="flex flex-col gap-[20px]">
             {filteredOperations.map((operation) => {
               const isTelegram = operation.source === 'telegram';
-              const operationTypeClass =
-                operation.type === 'Списание' ? 'text-[#FF7A7A]' : 'text-[#77D877]';
+              const typeColorClass =
+                operation.type === 'Списание'
+                  ? designTokens.colors.text.statusError
+                  : designTokens.colors.text.statusSuccess;
 
               return (
                 <Card
@@ -367,22 +373,30 @@ export function BalancePage() {
                 >
                   <div className="flex flex-col gap-[20px]">
                     <div className="flex items-start justify-between gap-4">
-                      <span className="text-[16px] leading-[1.2] text-[#FDFEFF]">{operation.date}</span>
-                      <div className="flex items-center gap-2 text-[16px] leading-[1.2] text-[#FDFEFF]">
-                        {isTelegram ? (
-                          <TelegramSmallIcon className="h-[18px] w-[18px]" />
-                        ) : (
-                          <img src={websiteHistorySvg} alt="" className="h-auto w-[18px]" width={18} height={18} />
-                        )}
-                        <span>{operation.source === 'telegram' ? 'Telegram-бот' : 'Веб-сервис'}</span>
+                      <div className="flex flex-col gap-2">
+                        <span className="text-[16px] leading-[1.2] text-[#FDFEFF]">{operation.date}</span>
+                        <span className={combineStyles('text-[16px] leading-[1.2] font-medium', typeColorClass)}>
+                          {operation.type}
+                        </span>
                       </div>
-                    </div>
 
-                    <div className="flex items-center justify-between gap-4">
-                      <span className={combineStyles('text-[16px] leading-[1.2] font-semibold', operationTypeClass)}>
-                        {operation.type}
-                      </span>
-                      <span className="text-[16px] leading-[1.2] font-semibold text-[#FDFEFF]">{operation.amount}</span>
+                      <div className="flex flex-col items-end gap-2">
+                        <div className="flex items-center gap-[10px] text-[16px] leading-[1.2] text-[#FDFEFF]">
+                          {isTelegram ? (
+                            <img src={telegramSvg} alt="" className="h-[22px] w-[22px]" width={22} height={22} />
+                          ) : (
+                            <img
+                              src={websiteOnDashboardSvg}
+                              alt=""
+                              className="h-[22px] w-[22px]"
+                              width={22}
+                              height={22}
+                            />
+                          )}
+                          <span>{operation.source === 'telegram' ? 'Telegram-бот' : 'Веб-сервис'}</span>
+                        </div>
+                        <span className="text-[16px] leading-[1.2] font-semibold text-[#FDFEFF]">{operation.amount}</span>
+                      </div>
                     </div>
                   </div>
                 </Card>

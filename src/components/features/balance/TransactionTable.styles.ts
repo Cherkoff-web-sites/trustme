@@ -1,4 +1,2 @@
+/** Как таблица «Последние запросы» на дашборде: горизонтальный скролл при узкой колонке. */
 export const transactionTableWrapStyles = 'overflow-x-auto';
-
-export const transactionTableStyles =
-  'min-w-full border-separate border-spacing-y-3 text-left text-base font-normal lg:text-[18px]';

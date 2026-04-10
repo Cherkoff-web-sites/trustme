@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { AppliedFiltersRow, type AppliedFilterItem } from '../filters';
 import { Checkbox, FilterTrigger, Input } from '../../ui';
+import { cn } from '../../../lib/cn';
 import chevronSvg from '../../../assets/icons/chevron.svg';
-import calendarSvg from '../../../assets/icons/calendar.svg';
 import {
+  dateRangePairFieldWrapStyles,
+  dateRangePairRowStyles,
   historyFiltersDropdownPanelStyles,
   historyFiltersToolbarStyles,
 } from '../history/HistoryFilters.styles';
@@ -131,7 +133,11 @@ export function BalanceFilters({
         <div className={panelLayout === 'dropdown' ? 'relative w-full lg:w-[224px]' : 'w-full'}>
           <FilterTrigger
             label="Период"
-            active={isPanelOpen('period')}
+            active={
+              isPanelOpen('period') ||
+              Boolean(dateFrom.trim()) ||
+              Boolean(dateTo.trim())
+            }
             onClick={() => togglePanel('period')}
             icon={renderTriggerIcon(isPanelOpen('period'))}
             className="w-full"
@@ -145,26 +151,26 @@ export function BalanceFilters({
               }
             >
               <div className="grid gap-3">
-                <div className="flex w-full min-w-0 flex-row flex-wrap items-center gap-[5px] text-base lg:grid lg:grid-cols-[minmax(0,1fr)_68px_minmax(0,1fr)] lg:items-center lg:gap-3">
-                  <div className="min-w-0 flex-1 lg:min-w-0">
+                <div className={cn('text-base', dateRangePairRowStyles)}>
+                  <div className={dateRangePairFieldWrapStyles}>
                     <Input
                       type="date"
                       variant="date"
                       value={dateFrom}
                       onChange={(e) => onDateFromChange(e.target.value)}
-                      className="h-[47px] min-w-0 pl-[15px] py-[15px] leading-normal [&::-webkit-calendar-picker-indicator]:pointer-events-none [&::-webkit-calendar-picker-indicator]:opacity-0"
-                      endAdornment={<img src={calendarSvg} alt="" aria-hidden className="h-5 w-5" />}
+                      className="h-[47px] w-full min-w-0 py-[15px] leading-normal"
                     />
                   </div>
-                  <span className="shrink-0 text-[#FDFEFF] lg:mx-auto">–</span>
-                  <div className="min-w-0 flex-1 lg:min-w-0">
+                  <span className="shrink-0 text-center text-[#FDFEFF] tabular-nums" aria-hidden>
+                    –
+                  </span>
+                  <div className={dateRangePairFieldWrapStyles}>
                     <Input
                       type="date"
                       variant="date"
                       value={dateTo}
                       onChange={(e) => onDateToChange(e.target.value)}
-                      className="h-[47px] min-w-0 pl-[15px] py-[15px] leading-normal [&::-webkit-calendar-picker-indicator]:pointer-events-none [&::-webkit-calendar-picker-indicator]:opacity-0"
-                      endAdornment={<img src={calendarSvg} alt="" aria-hidden className="h-5 w-5" />}
+                      className="h-[47px] w-full min-w-0 py-[15px] leading-normal"
                     />
                   </div>
                 </div>

@@ -1,4 +1,6 @@
+import { cn } from '../../../lib/cn';
 import { Button, Card, CardHeaderDecorDivider, SelectedIcon } from '../../ui';
+import { cardInsetAccentHoverStyles } from '../../ui/Card/Card.styles';
 import lockSvg from '../../../assets/icons/lock.svg';
 import {
   tariffPlanCardFeatureListStyles,
@@ -25,7 +27,7 @@ export interface TariffPlanCardProps {
 
 export function TariffPlanCard({ plan, onSelect }: TariffPlanCardProps) {
   return (
-    <Card as="article" className="flex h-full flex-col" variant="tariff">
+    <Card as="article" className={cn('flex h-full flex-col', cardInsetAccentHoverStyles)} variant="tariff">
       <h3 className="text-[16px] lg:text-[24px] leading-[1.05] font-semibold text-white">{plan.title}</h3>
       <div className="">
         <div className={tariffPlanCardPriceRowStyles}>

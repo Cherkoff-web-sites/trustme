@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { AuthApiError, authRegister } from "../../../api/auth";
 import bgModalMob from "../../../assets/bg_modal_mob.webp";
 import bgModalPc from "../../../assets/bg_modal_pc.webp";
 import logoSvg from "../../../assets/icons/logo.svg";
@@ -69,6 +70,9 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
   const [passwordResetFieldErrors, setPasswordResetFieldErrors] = useState<{
     email?: string;
   }>({});
+  const [authSubmitting, setAuthSubmitting] = useState(false);
+  const [loginFormError, setLoginFormError] = useState<string | undefined>();
+  const [registerFormError, setRegisterFormError] = useState<string | undefined>();
 
   useEffect(() => {
     if (!open) {
@@ -78,6 +82,9 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
       setPasswordResetFieldErrors({});
       setAccountType("individual");
       setRegisterInn("");
+      setAuthSubmitting(false);
+      setLoginFormError(undefined);
+      setRegisterFormError(undefined);
     }
   }, [open]);
 
@@ -85,6 +92,8 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
     setLoginFieldErrors({});
     setRegisterFieldErrors({});
     setPasswordResetFieldErrors({});
+    setLoginFormError(undefined);
+    setRegisterFormError(undefined);
   }, [view]);
 
   useEffect(() => {
@@ -99,19 +108,34 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   })();
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const next: { email?: string; password?: string } = {};
     if (!email.trim()) next.email = "Обязательное поле";
     if (!password) next.password = "Обязательное поле";
     setLoginFieldErrors(next);
+    setLoginFormError(undefined);
     if (Object.keys(next).length > 0) return;
-    login();
-    onClose();
-    navigate(getSafeNextPath(searchParams.get("next")));
+    setAuthSubmitting(true);
+    try {
+      await login(email.trim(), password);
+      onClose();
+      navigate(getSafeNextPath(searchParams.get("next")));
+    } catch (err) {
+      const msg =
+        err instanceof AuthApiError
+          ? err.message
+          : "Не удалось войти. Проверьте соединение.";
+      setLoginFormError(msg);
+      if (err instanceof AuthApiError && (err.status === 401 || err.status === 422)) {
+        setLoginFieldErrors((prev) => ({ ...prev, password: msg }));
+      }
+    } finally {
+      setAuthSubmitting(false);
+    }
   };
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const pwdChecks = getPasswordRuleChecks(password);
     const passwordRulesOk =
@@ -130,9 +154,30 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
     }
     if (!consentPersonal) next.consentPersonal = "Обязательное поле";
     setRegisterFieldErrors(next);
+    setRegisterFormError(undefined);
     if (Object.keys(next).length > 0) return;
-    setView("emailConfirm");
-    setCountdownSec(EMAIL_CONFIRM_COUNTDOWN_SEC);
+    setAuthSubmitting(true);
+    try {
+      await authRegister({ email: email.trim(), password });
+      try {
+        await login(email.trim(), password);
+        onClose();
+        navigate(getSafeNextPath(searchParams.get("next")));
+      } catch {
+        setRegisterFormError(
+          "Регистрация прошла, но автоматический вход не удался. Войдите вручную.",
+        );
+        setView("login");
+      }
+    } catch (err) {
+      const msg =
+        err instanceof AuthApiError
+          ? err.message
+          : "Не удалось зарегистрироваться.";
+      setRegisterFormError(msg);
+    } finally {
+      setAuthSubmitting(false);
+    }
   };
 
   const handlePasswordResetSubmit = (e: React.FormEvent) => {
@@ -387,8 +432,19 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                   Забыли пароль?
                 </button>
               </div>
-              <Button type="submit" className="w-full">
-                Войти
+              {loginFormError ? (
+                <p
+                  className={combineStyles(
+                    "m-0 text-center text-[14px] leading-[17px] lg:text-[16px] lg:leading-[19px]",
+                    designTokens.colors.text.statusError,
+                  )}
+                  role="alert"
+                >
+                  {loginFormError}
+                </p>
+              ) : null}
+              <Button type="submit" className="w-full" disabled={authSubmitting}>
+                {authSubmitting ? "Вход…" : "Войти"}
               </Button>
             </form>
           ) : (
@@ -516,8 +572,19 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                   })}
                 </ul>
               </div>
-              <Button type="submit" className="w-full">
-                Зарегистрироваться
+              {registerFormError ? (
+                <p
+                  className={combineStyles(
+                    "m-0 text-center text-[14px] leading-[17px] lg:text-[16px] lg:leading-[19px]",
+                    designTokens.colors.text.statusError,
+                  )}
+                  role="alert"
+                >
+                  {registerFormError}
+                </p>
+              ) : null}
+              <Button type="submit" className="w-full" disabled={authSubmitting}>
+                {authSubmitting ? "Отправка…" : "Зарегистрироваться"}
               </Button>
               <div
                 className={cn(

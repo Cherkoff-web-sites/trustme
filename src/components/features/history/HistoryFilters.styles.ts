@@ -19,3 +19,17 @@ export const historyFiltersDropdownPanelStyles =
     designTokens.colors.background.input,
   ].join(' ');
 
+/**
+ * Два `type="date"` в одну строку: две равные колонки `1fr`, средняя — только тире (`auto`),
+ * на `lg` промежуток между колонками 30px (между полем — тире — полем).
+ */
+export const dateRangePairRowStyles =
+  'grid w-full min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 lg:gap-[30px]';
+
+/** Ячейка под поле даты в паре — тянется на всю ширину колонки сетки. */
+export const dateRangePairFieldWrapStyles = 'min-w-0 w-full';
+
+/** Два поля даты с подписями «с» / «по» в две равные колонки; на `lg` промежуток 30px. */
+export const dateRangeLabeledPairGridStyles =
+  'grid w-full min-w-0 grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-[30px]';
+
