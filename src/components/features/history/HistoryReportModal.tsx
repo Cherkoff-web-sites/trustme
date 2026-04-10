@@ -26,7 +26,7 @@ export function HistoryReportModal({
     >
       <ModalScreenCloseButton onClose={onClose} />
       {item ? (
-        <div className="flex-1 overflow-y-auto text-[#FDFEFF]">
+        <div className="text-[#FDFEFF]">
           <ReportContent item={item} />
         </div>
       ) : null}

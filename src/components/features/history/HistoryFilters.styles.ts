@@ -3,8 +3,14 @@ import { designTokens } from '../../ui';
 export const historyFiltersToolbarStyles =
   'mb-4 flex flex-wrap items-start gap-3 lg:mb-[30px] lg:flex-nowrap lg:gap-[20px]';
 
-export const historyFiltersSearchStyles =
-  'flex h-[59px] min-w-[140px] items-center gap-3 rounded-[10px] border border-[#FDFEFF]/50 bg-[#2A2A2A] px-[20px] text-[16px] font-normal text-[#FDFEFF] placeholder:text-[#FDFEFF]/50';
+/** Стили единого поля «Поиск» (`Input` + `startAdornment`), без внешней flex-обёртки. */
+export const historyFiltersSearchInputClassName =
+  [
+    'h-[59px] min-w-[140px] text-[16px] font-normal',
+    'rounded-[10px] border border-[#FDFEFF]/50 bg-[#2A2A2A]',
+    'transition-[background-color,border-color,box-shadow] duration-150',
+    'lg:hover:bg-[#393939]',
+  ].join(' ');
 
 export const historyFiltersDropdownPanelStyles =
   [

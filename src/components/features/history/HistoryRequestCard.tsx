@@ -7,20 +7,24 @@ import {
   historyRequestCardHeaderStyles,
   historyRequestCardMetaGridStyles,
   historyRequestCardNameRowStyles,
+  historyRequestCardRootStyles,
+  historyRequestCardTitleStyles,
   historyRequestCardTypeChipStyles,
 } from './HistoryRequestCard.styles';
 
 export interface HistoryRequestCardProps {
   item: HistoryItem;
   onOpenReport?: () => void;
+  onDelete?: () => void;
 }
 
 export function HistoryRequestCard({
   item,
   onOpenReport,
+  onDelete,
 }: HistoryRequestCardProps) {
   return (
-    <Card as="article" className="" variant="history">
+    <Card as="article" className={historyRequestCardRootStyles} variant="history">
       <div className={historyRequestCardHeaderStyles}>
         {/* Mobile (смещение структуры под макет): type + иконки в одной обёртке, заголовок отдельной строкой */}
         <div className="sm:hidden">
@@ -33,7 +37,7 @@ export function HistoryRequestCard({
           </div>
 
           <div className={`${historyRequestCardNameRowStyles} mt-[40px]`}>
-            <h3 className="text-[24px] leading-[1.1] font-semibold uppercase text-white sm:text-[30px]">{item.name}</h3>
+            <h3 className={historyRequestCardTitleStyles}>{item.name}</h3>
             <span className={`h-4 w-4 min-w-[16px] rounded-full ${item.dotColor}`} />
           </div>
         </div>
@@ -42,7 +46,7 @@ export function HistoryRequestCard({
         <div className="hidden sm:block">
           <span className={historyRequestCardTypeChipStyles}>{item.type}</span>
           <div className={historyRequestCardNameRowStyles}>
-            <h3 className="text-[24px] leading-[1.1] font-semibold uppercase text-white sm:text-[30px]">{item.name}</h3>
+            <h3 className={historyRequestCardTitleStyles}>{item.name}</h3>
             <span className={`h-4 w-4 min-w-[16px] rounded-full ${item.dotColor}`} />
           </div>
         </div>
@@ -74,7 +78,9 @@ export function HistoryRequestCard({
         </div>
       </div>
 
-      {uiFlags.reportViewsEnabled ? <ReportActions onOpen={onOpenReport} showDelete /> : null}
+      {uiFlags.reportViewsEnabled ? (
+        <ReportActions onOpen={onOpenReport} onDelete={onDelete} showDelete />
+      ) : null}
     </Card>
   );
 }

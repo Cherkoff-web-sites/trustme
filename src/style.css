@@ -9,6 +9,18 @@
     min-width: 320px;
   }
 
+  /* Общий скролл страницы: без полосы (width 0), трек прозрачный */
+  html {
+    scrollbar-width: none;
+    scrollbar-color: transparent transparent;
+  }
+
+  html::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+
   body {
     margin: 0;
     font-family: Inter, Arial, sans-serif;
@@ -17,6 +29,14 @@
     font-size: 16px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    scrollbar-width: none;
+    scrollbar-color: transparent transparent;
+  }
+
+  body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    background: transparent;
   }
 
   /* cursor: pointer для интерактивных элементов */

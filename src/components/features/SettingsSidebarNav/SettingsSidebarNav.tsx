@@ -28,18 +28,18 @@ export function SettingsSidebarNav<T extends string>({
             key={item.key}
             className={cn(
               settingsSidebarNavItemStyles,
-              isActive ? 'bg-white/7 text-[#FDFEFF]' : 'text-[#FDFEFF] hover:bg-white/4',
+              isActive ? 'bg-[#2A2A2A] text-[#FDFEFF]' : 'text-[#FDFEFF] hover:bg-[#393939]',
             )}
             onClick={() => onChange(item.key)}
             type="button"
           >
             {item.icon ? (
-              <img src={item.icon} alt="" className="mr-3 h-[18px] w-[18px] shrink-0" aria-hidden />
+              <img src={item.icon} alt="" className="h-[18px] w-[18px] shrink-0 lg:h-6 lg:w-6" aria-hidden />
             ) : (
-              <span className="mr-3 text-[#FDFEFF]">{isActive ? '◉' : '◌'}</span>
+              <span className="text-[#FDFEFF]">{isActive ? '◉' : '◌'}</span>
             )}
             <span>{item.label}</span>
-            {isActive ? <span className="absolute bottom-3 right-0 top-3 w-1 rounded-full bg-[#057889]" /> : null}
+            {isActive ? <span className="absolute bottom-3 right-0 top-3 w-1 rounded-full bg-[#0EB8D2]" /> : null}
           </button>
         );
       })}

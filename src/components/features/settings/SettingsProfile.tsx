@@ -1,17 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { PersonTypeSwitcher } from '../PersonTypeSwitcher';
 import {
   Button,
   Checkbox,
   Input,
   Label,
-  LabelCaption,
   MoreDetailsSection,
   SectionCard,
   designTokens,
 } from '../../ui';
 import { combineStyles } from '../../../lib/combineStyles';
-import userPng from '../../../assets/user.png';
+import userAvatarPlaceholder from '../../../assets/icons/user.svg';
 import {
   settingsProfileAvatarStyles,
   settingsProfileAvatarWrapStyles,
@@ -21,17 +20,50 @@ import {
 export function SettingsProfile() {
   const [personType, setPersonType] = useState<'legal' | 'individual'>('individual');
   const [consentPromo, setConsentPromo] = useState(false);
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
+  const avatarFileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    return () => {
+      if (profilePhotoUrl?.startsWith('blob:')) URL.revokeObjectURL(profilePhotoUrl);
+    };
+  }, [profilePhotoUrl]);
+
+  const handleAvatarFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file?.type.startsWith('image/')) return;
+    const url = URL.createObjectURL(file);
+    setProfilePhotoUrl((prev) => {
+      if (prev?.startsWith('blob:')) URL.revokeObjectURL(prev);
+      return url;
+    });
+    e.target.value = '';
+  };
 
   return (
     <SectionCard title="Основная информация">
       <div className={settingsProfileLayoutStyles}>
         <div className={settingsProfileAvatarWrapStyles}>
+          <input
+            ref={avatarFileInputRef}
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={handleAvatarFileChange}
+            tabIndex={-1}
+          />
           <div className={settingsProfileAvatarStyles}>
-            <img src={userPng} alt="Аватар пользователя" />
+            <img
+              src={profilePhotoUrl ?? userAvatarPlaceholder}
+              alt={profilePhotoUrl ? 'Фото профиля' : 'Аватар по умолчанию'}
+              className="h-full w-full object-cover"
+            />
           </div>
           <Button
+            type="button"
             variant="ghost"
             className={combineStyles('text-lg font-medium hover:text-[#057889]', designTokens.colors.text.primary)}
+            onClick={() => avatarFileInputRef.current?.click()}
           >
             Изменить фото
           </Button>
@@ -51,16 +83,16 @@ export function SettingsProfile() {
             ]}
           />
 
-          <div className="space-y-4">
-            <Label variant="stack">
-              <LabelCaption>Никнейм</LabelCaption>
-              <Input defaultValue="user.example@gmail.com" />
-            </Label>
+          <div className="flex flex-col gap-[20px] lg:gap-[30px]">
+            <div>
+              <Label id="settings-profile-nickname-label">Никнейм</Label>
+              <Input id="settings-profile-nickname" aria-labelledby="settings-profile-nickname-label" defaultValue="user.example@gmail.com" />
+            </div>
 
-            <Label variant="stack">
-              <LabelCaption>Текущая почта</LabelCaption>
-              <Input defaultValue="user.example@gmail.com" />
-            </Label>
+            <div>
+              <Label id="settings-profile-email-label">Текущая почта</Label>
+              <Input id="settings-profile-email" aria-labelledby="settings-profile-email-label" defaultValue="user.example@gmail.com" />
+            </div>
 
             <Label
               variant="inlineStart"

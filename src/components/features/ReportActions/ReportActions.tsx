@@ -30,8 +30,8 @@ export function ReportActions({
 }: ReportActionsProps) {
   const buttonClassName = cn(
     fullWidthMobile && 'w-full min-w-0',
-    !fullWidthMobile && !equalSplitLg && 'min-w-[196px]',
     equalSplitLg && 'lg:flex-1 lg:min-w-0',
+    'lg:px-[60px]',
   );
 
   const wrapClass = cn(

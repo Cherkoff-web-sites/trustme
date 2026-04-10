@@ -152,26 +152,25 @@ export function NewCheckPage() {
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-[30px] lg:gap-4 xl:flex-row xl:items-start">
                 <div className={cn('relative min-w-0 flex-1', legalQueryError && 'pb-6')}>
-                  <label
+                  <Input
+                    startAdornment={
+                      <img src={searchSvg} alt="" className="h-5 w-5 text-[#FDFEFF]" width={20} height={20} />
+                    }
                     className={cn(
-                      'flex h-12 w-full items-center justify-start gap-3 rounded-[10px] border bg-[#2A2A2A] p-4 text-base font-normal text-[#FDFEFF] sm:h-14 sm:rounded-xl sm:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.05))] sm:text-sm',
+                      'h-12 w-full rounded-[10px] text-base font-normal sm:h-14 sm:rounded-xl sm:text-sm',
+                      'bg-[#2A2A2A] sm:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.05))]',
                       legalQueryError
                         ? designTokens.colors.border.inputError
-                        : 'border border-[#FDFEFF]/50 sm:border-white/15',
+                        : 'border-[#FDFEFF]/50 sm:border-white/15',
                     )}
-                  >
-                    <img src={searchSvg} alt="" className="h-5 w-5 shrink-0 text-[#FDFEFF]" aria-hidden />
-                    <Input
-                      className="h-auto min-w-0 flex-1 border-0 bg-transparent px-0"
-                      placeholder="ИНН (ЮЛ, ФЛ) / ОГРН"
-                      value={legalQuery}
-                      error={legalQueryError}
-                      onChange={(event) => {
-                        setLegalQuery(event.target.value);
-                        setLegalQueryError(undefined);
-                      }}
-                    />
-                  </label>
+                    placeholder="ИНН (ЮЛ, ФЛ) / ОГРН"
+                    value={legalQuery}
+                    error={legalQueryError}
+                    onChange={(event) => {
+                      setLegalQuery(event.target.value);
+                      setLegalQueryError(undefined);
+                    }}
+                  />
                 </div>
 
                 <Button className="min-w-[188px]" onClick={() => runCheck('primary')}>

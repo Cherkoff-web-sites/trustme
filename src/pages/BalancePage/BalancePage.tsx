@@ -12,7 +12,7 @@ import {
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
-import { Button, Card, FilterChip, designTokens } from '../../components/ui';
+import { Button, Card, CardHeaderDecorDivider, FilterChip, designTokens } from '../../components/ui';
 import { combineStyles } from '../../lib/combineStyles';
 import { TelegramSmallIcon } from '../../shared/icons';
 import walletSvg from '../../assets/icons/wallet.svg';
@@ -26,36 +26,6 @@ type BalanceOperation = {
 };
 
 export function BalancePage() {
-  const renderHeaderDecorLine = (gradientId: string) => (
-    <svg
-      className="h-auto w-full"
-      width="591"
-      height="6"
-      viewBox="0 0 591 6"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden
-    >
-      <path
-        d="M0.001302 2.66699C0.00130213 4.13975 1.19521 5.33366 2.66797 5.33366C4.14073 5.33366 5.33464 4.13975 5.33464 2.66699C5.33464 1.19423 4.14073 0.000325313 2.66797 0.000325441C1.19521 0.00032557 0.00130188 1.19423 0.001302 2.66699ZM2.66797 2.66699L2.66797 3.16699L590.668 3.16694L590.668 2.66694L590.668 2.16694L2.66797 2.66699L2.66797 2.66699Z"
-        fill={`url(#${gradientId})`}
-      />
-      <defs>
-        <linearGradient
-          id={gradientId}
-          x1="2.66797"
-          y1="3.16699"
-          x2="590.668"
-          y2="3.16694"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="white" />
-          <stop offset="1" stopColor="#1A1A1A" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-
   const operations: BalanceOperation[] = [
     { date: '23.12.2025', type: 'Поступление', source: 'telegram', amount: '1000 ₽' },
     { date: '23.10.2025', type: 'Поступление', source: 'web', amount: '2000 ₽' },
@@ -245,7 +215,7 @@ export function BalancePage() {
         title="Баланс"
         description="Управляйте балансом аккаунта и отслеживайте историю финансовых операций"
       >
-        <Card title="Текущий баланс" headerDecor={renderHeaderDecorLine('balance_hdr_current')}>
+        <Card title="Текущий баланс" headerDecor={<CardHeaderDecorDivider />}>
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="flex items-center gap-[10px] lg:gap-[15px] text-[18px] lg:text-[36px] font-semibold text-white">

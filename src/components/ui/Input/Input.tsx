@@ -24,11 +24,19 @@ function mergeRefs<T>(...refs: Array<React.Ref<T> | undefined>) {
   };
 }
 
+/** Отступ слева для текста при `startAdornment` (иконка 20px + зазор от `left-[20px]`). */
+const INPUT_START_ADORNMENT_PL = 'pl-[52px]';
+const INPUT_START_ADORNMENT_LEFT = 'left-[20px]';
+
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'children' | 'type'>,
     VariantProps<typeof inputStyles> {
   /** Текст ошибки: красная рамка + строка под полем (`absolute`, не влияет на сетку). */
   error?: string;
+  /** Иконка слева внутри поля (например поиск). `pointer-events: none`, клики проходят в input. */
+  startAdornment?: React.ReactNode;
+  /** Слой поверх области ввода (автодополнение); не перехватывает события. */
+  inputOverlay?: React.ReactNode;
   /** Элемент справа внутри поля (например кастомная иконка). Несовместимо с `passwordToggle`. */
   endAdornment?: React.ReactNode;
   /**
@@ -45,6 +53,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       className,
       variant,
       error,
+      startAdornment,
+      inputOverlay,
       endAdornment,
       passwordToggle,
       disabled,
@@ -175,6 +185,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       ? passwordToggleNode
       : datePickerAdornmentTrigger ?? endAdornment;
     const hasRightSlot = Boolean(resolvedAdornment);
+    const hasLeftSlot = Boolean(startAdornment);
 
     const adornmentRightClass = passwordToggle ? 'right-[21px]' : isDatePickerAdornment ? 'right-[10px]' : 'right-[21px]';
 
@@ -197,8 +208,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           'focus:border-[#EB4335] focus-visible:border-[#EB4335]',
           !focused && 'lg:hover:border-[#EB4335]',
         ),
-      className,
+      hasLeftSlot && INPUT_START_ADORNMENT_PL,
+      hasLeftSlot && !hasRightSlot && 'pr-[18px]',
       hasRightSlot && !isDatePickerAdornment && 'pr-[45px]',
+      className,
     );
 
     const resolvedMaxLength = type === 'date' ? DATE_INPUT_VALUE_MAX_LEN : maxLength;
@@ -223,23 +236,43 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       />
     );
 
+    const overlayRightClass =
+      hasRightSlot && !isDatePickerAdornment ? 'right-[45px]' : 'right-[18px]';
+
     return (
       <div className="relative w-full">
+        {hasLeftSlot ? (
+          <span
+            className={cn(
+              'pointer-events-none absolute top-1/2 z-[1] -translate-y-1/2',
+              INPUT_START_ADORNMENT_LEFT,
+            )}
+          >
+            <span className="flex h-5 w-5 items-center justify-center">{startAdornment}</span>
+          </span>
+        ) : null}
+        {inputEl}
+        {inputOverlay ? (
+          <div
+            className={cn(
+              'pointer-events-none absolute top-1/2 z-[2] flex min-h-0 min-w-0 -translate-y-1/2 items-center overflow-hidden text-left',
+              hasLeftSlot ? cn('left-[52px]', overlayRightClass) : cn('left-[18px]', overlayRightClass),
+            )}
+            aria-hidden
+          >
+            {inputOverlay}
+          </div>
+        ) : null}
         {hasRightSlot ? (
-          <>
-            {inputEl}
-            <span
-              className={cn(
-                'pointer-events-none absolute top-1/2 -translate-y-1/2',
-                adornmentRightClass,
-              )}
-            >
-              <span className="pointer-events-auto flex items-center justify-center">{resolvedAdornment}</span>
-            </span>
-          </>
-        ) : (
-          inputEl
-        )}
+          <span
+            className={cn(
+              'pointer-events-none absolute top-1/2 z-[3] -translate-y-1/2',
+              adornmentRightClass,
+            )}
+          >
+            <span className="pointer-events-auto flex items-center justify-center">{resolvedAdornment}</span>
+          </span>
+        ) : null}
         {hasError ? (
           <p
             id={errorMessageId}

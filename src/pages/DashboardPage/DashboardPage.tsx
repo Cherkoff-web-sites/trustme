@@ -7,7 +7,7 @@ import { DashboardNewCheckSteps, type DashboardNewCheckFlowStep } from '../../co
 import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
 import { HistoryReportModal } from '../../components/features/history';
-import { AlertBanner, Button, Card, designTokens } from '../../components/ui';
+import { AlertBanner, Button, Card, CardHeaderDecorDivider, designTokens } from '../../components/ui';
 import { combineStyles } from '../../lib/combineStyles';
 import { cn } from '../../lib/cn';
 import { TelegramCircleIcon } from '../../shared/icons';
@@ -20,21 +20,6 @@ import telegramSvg from '../../assets/icons/telegram.svg';
 import websiteOnDashboardSvg from '../../assets/icons/website_on_dashboard.svg';
 
 export function DashboardPage() {
-  const renderHeaderDecorLine = (gradientId: string) => (
-    <svg className="h-auto w-full" width="591" height="6" viewBox="0 0 591 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-      <path
-        d="M0.001302 2.66699C0.00130213 4.13975 1.19521 5.33366 2.66797 5.33366C4.14073 5.33366 5.33464 4.13975 5.33464 2.66699C5.33464 1.19423 4.14073 0.000325313 2.66797 0.000325441C1.19521 0.00032557 0.00130188 1.19423 0.001302 2.66699ZM2.66797 2.66699L2.66797 3.16699L590.668 3.16694L590.668 2.66694L590.668 2.16694L2.66797 2.66699L2.66797 2.66699Z"
-        fill={`url(#${gradientId})`}
-      />
-      <defs>
-        <linearGradient id={gradientId} x1="2.66797" y1="3.16699" x2="590.668" y2="3.16694" gradientUnits="userSpaceOnUse">
-          <stop stopColor="white" />
-          <stop offset="1" stopColor="#1A1A1A" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-
   const lastRequests = [
     ['23.12.2025', 'Юр.лицо', 'Telegram-бот', 'Успешно'],
     ['23.10.2025', 'Физ.лицо', 'Веб-сервис', 'Ошибка'],
@@ -129,7 +114,7 @@ export function DashboardPage() {
         newCheck={
           <Card
             title={<span className="uppercase lg:normal-case">{newCheckTitle}</span>}
-            headerDecor={newCheckStep === 'form' ? renderHeaderDecorLine('dashboard_hdr_newcheck') : null}
+            headerDecor={newCheckStep === 'form' ? <CardHeaderDecorDivider /> : null}
             className="lg:row-span-1"
             variant="dashboard"
           >
@@ -142,7 +127,7 @@ export function DashboardPage() {
         balance={
           <Card
             title={<span className="uppercase lg:normal-case">Баланс</span>}
-            headerDecor={renderHeaderDecorLine('dashboard_hdr_balance')}
+            headerDecor={<CardHeaderDecorDivider />}
             aside={
                   <Link
                     to="/balance"
@@ -183,7 +168,7 @@ export function DashboardPage() {
         tariff={
           <Card
             title={<span className="uppercase lg:normal-case"><span className="hidden lg:inline">Текущий</span> <span>тариф</span></span>}
-            headerDecor={renderHeaderDecorLine('dashboard_hdr_tariff')}
+            headerDecor={<CardHeaderDecorDivider />}
             aside={
               <button
                 type="button"
@@ -246,7 +231,7 @@ export function DashboardPage() {
         recentRequests={
           <Card
             title={<span className="uppercase lg:normal-case">Последние запросы</span>}
-            headerDecor={renderHeaderDecorLine('dashboard_hdr_recent')}
+            headerDecor={<CardHeaderDecorDivider />}
             aside={
               <Link
                 to="/history"
@@ -300,7 +285,7 @@ export function DashboardPage() {
                             index === lastRequests.length - 1 ? 'pt-[15px] pb-0' : 'py-[15px]'
                           } pr-6`}
                         >
-                          <div className="flex items-center gap-[10px] text-[16px] leading-[1.2] text-[#FDFEFF]">
+                          <div className="flex items-center gap-[10px] text-[16px] lg:text-[18px] leading-[1.2] text-[#FDFEFF]">
                             {source === 'Telegram-бот' ? (
                               <img src={telegramSvg} alt="" className="h-[22px] w-[22px]" width={22} height={22} />
                             ) : (
@@ -328,7 +313,7 @@ export function DashboardPage() {
                             <Button
                               variant="secondary"
                               size="sm"
-                              className="border-white/40 px-[30px] py-[10px] text-[18px] leading-[1] font-normal"
+                              className="border-[#FDFEFF]/50 px-[30px] py-[10px] lg:!text-[18px] leading-[1] font-normal"
                               onClick={() => setOpenedReportItem(sampleReportItem)}
                             >
                               Открыть

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { cn } from '../../../lib/cn';
 import { Button, FilterChip, Input, ModalShell, OptionIndicator, designTokens } from '../../ui';
 import sbpPng from '../../../assets/sbp.png';
 import {
@@ -32,6 +33,11 @@ export function BalanceTopUpModal({
   onClose,
 }: BalanceTopUpModalProps) {
   const numericAmount = Number(amount.replace(/\s/g, ''));
+  /** Сопоставление с пресетами: только цифры (учёт «1 000», неразрывных пробелов и т.п.) */
+  const amountAsInteger = (() => {
+    const digits = amount.replace(/\D/g, '');
+    return digits === '' ? NaN : Number(digits);
+  })();
   const [amountError, setAmountError] = React.useState<string | undefined>(undefined);
 
   const handleContinue = () => {
@@ -76,26 +82,34 @@ export function BalanceTopUpModal({
             error={amountError}
           />
           <div className={balanceTopUpPresetGridStyles}>
-            {[300, 500, 1000, 2000, 5000, 10000, 20000].map((value) => (
-              <FilterChip
-                key={value}
-                className={[
-                  'flex h-auto min-h-[47px] w-auto shrink-0 items-center justify-center whitespace-nowrap',
-                  'rounded-[100px] border px-5 py-3 text-center',
-                  designTokens.colors.background.input,
-                  designTokens.colors.border.input,
-                  designTokens.colors.text.muted,
-                  designTokens.typography.input,
-                  'hover:bg-[#393939]',
-                ].join(' ')}
-                onClick={() => {
-                  setAmountError(undefined);
-                  onChipSelect(value);
-                }}
-              >
-                {value.toLocaleString('ru-RU')} ₽
-              </FilterChip>
-            ))}
+            {[300, 500, 1000, 2000, 5000, 10000, 20000].map((value) => {
+              const chipSelected = !Number.isNaN(amountAsInteger) && amountAsInteger === value;
+              return (
+                <FilterChip
+                  key={value}
+                  className={cn(
+                    'flex h-auto min-h-[47px] w-auto shrink-0 items-center justify-center whitespace-nowrap',
+                    'rounded-[100px] border px-5 py-3 text-center',
+                    designTokens.typography.input,
+                    chipSelected
+                      ? 'border-[#057889] bg-[#057889] text-[#FDFEFF] hover:bg-[#057889]'
+                      : [
+                          designTokens.colors.background.input,
+                          designTokens.colors.border.input,
+                          designTokens.colors.text.muted,
+                          'hover:bg-[#393939]',
+                        ].join(' '),
+                  )}
+                  aria-pressed={chipSelected}
+                  onClick={() => {
+                    setAmountError(undefined);
+                    onChipSelect(value);
+                  }}
+                >
+                  {value.toLocaleString('ru-RU')} ₽
+                </FilterChip>
+              );
+            })}
           </div>
 
           <Button className="mt-[40px] w-full" onClick={handleContinue}>
@@ -116,7 +130,7 @@ export function BalanceTopUpModal({
             ].join(' ')}
           >
             <div className="flex items-center gap-[10px]">
-              <OptionIndicator type="radio" checked className="h-[22px] w-[22px]" />
+              <OptionIndicator type="radio" checked mode="settings" />
               <span>Система быстрых платежей</span>
             </div>
             <img src={sbpPng} alt="" aria-hidden className="h-auto w-[30px] shrink-0" />

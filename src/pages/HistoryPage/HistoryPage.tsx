@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   HistoryFilters,
   HistoryReportModal,
@@ -15,8 +15,7 @@ import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { Card, FilterChip } from '../../components/ui';
 import { type HistoryItem } from '../../shared/ReportContent';
 
-export function HistoryPage() {
-  const historyItems: HistoryItem[] = [
+const INITIAL_HISTORY_ITEMS: HistoryItem[] = [
     {
       type: 'Юридическое лицо',
       name: 'ООО «УМНЫЙ РИТЕЙЛ»',
@@ -293,7 +292,14 @@ export function HistoryPage() {
     },
   ];
 
-  const [searchQuery, setSearchQuery] = useState('');
+export function HistoryPage() {
+  const [historyItems, setHistoryItems] = useState<HistoryItem[]>(() => [...INITIAL_HISTORY_ITEMS]);
+
+  /** Черновик в поле «Поиск»; фильтр и чип — только `appliedSearch` после blur / выбора подсказки. */
+  const [searchDraft, setSearchDraft] = useState('');
+  const [appliedSearch, setAppliedSearch] = useState('');
+  const searchDraftRef = useRef(searchDraft);
+  searchDraftRef.current = searchDraft;
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<HistoryCategoryFilter>('all');
@@ -311,7 +317,8 @@ export function HistoryPage() {
   const ITEMS_PER_PAGE = 4;
 
   const resetFilters = () => {
-    setSearchQuery('');
+    setSearchDraft('');
+    setAppliedSearch('');
     setDateFrom('');
     setDateTo('');
     setCategoryFilter('all');
@@ -352,7 +359,7 @@ export function HistoryPage() {
 
   // Фильтрация (глобальная - ко всем элементам)
   const filteredItems = historyItems.filter((item) => {
-    const query = searchQuery.trim().toLowerCase();
+    const query = appliedSearch.trim().toLowerCase();
     if (query) {
       const haystack = `${item.name} ${item.document}`.toLowerCase();
       if (!haystack.includes(query)) {
@@ -410,6 +417,16 @@ export function HistoryPage() {
     currentPage * ITEMS_PER_PAGE
   );
 
+  useEffect(() => {
+    const maxPage = Math.max(1, totalPages);
+    setCurrentPage((p) => Math.min(p, maxPage));
+  }, [totalPages]);
+
+  const handleDeleteHistoryItem = (item: HistoryItem) => {
+    setHistoryItems((prev) => prev.filter((x) => x !== item));
+    setOpenedReportItem((open) => (open === item ? null : open));
+  };
+
   // Обработчик смены страницы со скроллом и логикой окна
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -446,11 +463,16 @@ export function HistoryPage() {
 
   const activeChips: Array<{ id: string; label: string; clear: () => void }> = [];
 
-  if (searchQuery.trim()) {
+  if (appliedSearch.trim()) {
     activeChips.push({
       id: 'search',
-      label: `«${searchQuery.trim()}»`,
-      clear: () => handleFilterChange(setSearchQuery, ''),
+      label: `«${appliedSearch.trim()}»`,
+      clear: () => {
+        setSearchDraft('');
+        setAppliedSearch('');
+        setCurrentPage(1);
+        setWindowStart(1);
+      },
     });
   }
 
@@ -542,9 +564,31 @@ export function HistoryPage() {
     return pages;
   };
 
+  const searchCandidates = Array.from(
+    new Set(historyItems.flatMap((it) => [it.name, it.document].filter((s): s is string => Boolean(s?.trim())))),
+  );
+
+  const applySearch = (explicit?: string) => {
+    const raw = (explicit !== undefined ? String(explicit) : searchDraftRef.current).trim();
+    const prev = appliedSearch.trim();
+    searchDraftRef.current = raw;
+    setSearchDraft(raw);
+    setAppliedSearch(raw);
+    if (raw !== prev) {
+      setCurrentPage(1);
+      setWindowStart(1);
+    }
+    if (explicit !== undefined) {
+      setOpenPanel(null);
+      setMobileOpenPanels((p) => ({ ...p, search: false }));
+    }
+  };
+
   const historyFiltersProps: HistoryFiltersProps = {
-    searchQuery,
-    onSearchChange: (val: string) => handleFilterChange(setSearchQuery, val),
+    searchQuery: searchDraft,
+    onSearchChange: setSearchDraft,
+    onSearchApply: applySearch,
+    searchCandidates,
     dateFrom,
     dateTo,
     onDateFromChange: (val: string) => {
@@ -568,6 +612,7 @@ export function HistoryPage() {
     openPanel,
     onTogglePanel: togglePanel,
     onClosePanels: () => setOpenPanel(null),
+    onSearchPanelEnsureOpen: () => setMobileOpenPanels((p) => ({ ...p, search: true })),
     activeChips,
     onReset: resetFilters,
   };
@@ -678,11 +723,12 @@ export function HistoryPage() {
 
         {/* Список карточек (пагинированный, ровно 4 штуки) */}
         <div className="space-y-4 sm:space-y-5">
-          {paginatedItems.map((item, index) => (
+          {paginatedItems.map((item) => (
             <HistoryRequestCard
               item={item}
-              key={`${item.name}-${item.checkedAt}-${index}`}
+              key={`${item.name}\u0000${item.checkedAt}\u0000${item.document}`}
               onOpenReport={() => setOpenedReportItem(item)}
+              onDelete={() => handleDeleteHistoryItem(item)}
             />
           ))}
         </div>

@@ -1,5 +1,15 @@
 import { designTokens } from '../../ui';
 
+/** Hover: внутренняя подсветка по периметру карточки */
+export const historyRequestCardRootStyles = [
+  'transition-[box-shadow] duration-200 ease-out',
+  'hover:[box-shadow:inset_-4px_-4px_20px_rgba(14,184,210,0.5),inset_4px_4px_20px_1px_rgba(14,184,210,0.5)]',
+].join(' ');
+
+/** Заголовок карточки (название проверки) — mobile + desktop */
+export const historyRequestCardTitleStyles =
+  'text-[18px] leading-[1] font-semibold uppercase text-white lg:text-[24px]';
+
 export const historyRequestCardHeaderStyles =
   'flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between';
 

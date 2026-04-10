@@ -17,6 +17,7 @@ import { cn } from "../../../lib/cn";
 import { combineStyles } from "../../../lib/combineStyles";
 import { getSafeNextPath } from "../../../lib/getSafeNextPath";
 import { getPasswordRuleChecks } from "../../../lib/passwordRules";
+import { useBodyScrollLock } from "../../../lib/useBodyScrollLock";
 import {
   authModalBgLayerMobStyles,
   authModalBgLayerPcImgStyles,
@@ -40,6 +41,7 @@ type AccountType = "legal" | "individual";
 const EMAIL_CONFIRM_COUNTDOWN_SEC = 600; // 10 минут
 
 export function AuthModal({ open, onClose }: AuthModalProps) {
+  useBodyScrollLock(open);
   const { login } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();

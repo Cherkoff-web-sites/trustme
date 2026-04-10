@@ -1,3 +1,4 @@
+import { useBodyScrollLock } from "../../../lib/useBodyScrollLock";
 import {
   currentTariffInfoFootnoteStyles,
   currentTariffInfoItemStyles,
@@ -61,6 +62,7 @@ export function CurrentTariffInfoModal({
   open,
   onClose,
 }: CurrentTariffInfoModalProps) {
+  useBodyScrollLock(open);
   if (!open) return null;
 
   return (

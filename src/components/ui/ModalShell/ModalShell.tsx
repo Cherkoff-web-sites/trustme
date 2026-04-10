@@ -1,6 +1,7 @@
 import type { VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { cn } from '../../../lib/cn';
+import { useBodyScrollLock } from '../../../lib/useBodyScrollLock';
 import {
   modalCloseButtonStyles,
   modalOverlayInnerStyles,
@@ -26,6 +27,7 @@ export function ModalShell({
   panelClassName,
   closeButton = true,
 }: ModalShellProps) {
+  useBodyScrollLock(open);
   if (!open) return null;
 
   return (

@@ -149,15 +149,6 @@ export function PageLayout({ children }: { children?: React.ReactNode }) {
     return () => window.removeEventListener('resize', update);
   }, []);
 
-  useEffect(() => {
-    if (!hideChromeForAuthModal) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [hideChromeForAuthModal]);
-
   return (
     <div className={uiTokens.page}>
       {!hideChromeForAuthModal ? (

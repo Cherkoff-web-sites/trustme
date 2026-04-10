@@ -1,14 +1,74 @@
 import * as React from 'react';
 import { AppliedFiltersRow, type AppliedFilterItem } from '../filters';
 import { Checkbox, FilterTrigger, Input } from '../../ui';
+import { cn } from '../../../lib/cn';
 import searchSvg from '../../../assets/icons/search.svg';
 import chevronSvg from '../../../assets/icons/chevron.svg';
 import calendarSvg from '../../../assets/icons/calendar.svg';
+import { scrollableThreeRowListClass } from '../../../shared/scrollListClasses';
 import {
   historyFiltersDropdownPanelStyles,
-  historyFiltersSearchStyles,
+  historyFiltersSearchInputClassName,
   historyFiltersToolbarStyles,
 } from './HistoryFilters.styles';
+
+const historySearchAccentClass = 'text-[#0EB8D2]';
+
+function normalizeHistorySearchQuery(q: string) {
+  return q.trim().toLowerCase();
+}
+
+function getSearchSuggestionsList(query: string, candidates: readonly string[]): string[] {
+  const qn = normalizeHistorySearchQuery(query);
+  if (!qn) return [];
+  const seen = new Set<string>();
+  const starts: string[] = [];
+  const includes: string[] = [];
+  for (const raw of candidates) {
+    const t = raw.trim();
+    if (!t || seen.has(t)) continue;
+    const tn = t.toLowerCase();
+    if (!tn.includes(qn)) continue;
+    seen.add(t);
+    if (tn.startsWith(qn)) starts.push(t);
+    else includes.push(t);
+  }
+  return [...starts, ...includes].slice(0, 30);
+}
+
+function getInlineCompletionSuffix(query: string, candidates: readonly string[]): string {
+  const qn = normalizeHistorySearchQuery(query);
+  if (!qn) return '';
+  for (const raw of candidates) {
+    const t = raw.trim();
+    if (!t) continue;
+    const tn = t.toLowerCase();
+    if (!tn.startsWith(qn) || t.length <= qn.length) continue;
+    return t.slice(qn.length);
+  }
+  return '';
+}
+
+/** Введённый запрос — белый (#FDFEFF), остаток строки подсказки — акцент (#0EB8D2). */
+function renderHighlightedHistorySuggestion(text: string, query: string) {
+  const qi = query.trim();
+  if (!qi) {
+    return <span className="text-[#FDFEFF]">{text}</span>;
+  }
+  const lower = text.toLowerCase();
+  const idx = lower.indexOf(qi.toLowerCase());
+  if (idx === -1) {
+    return <span className={historySearchAccentClass}>{text}</span>;
+  }
+  const end = idx + qi.length;
+  return (
+    <>
+      <span className={historySearchAccentClass}>{text.slice(0, idx)}</span>
+      <span className="text-[#FDFEFF]">{text.slice(idx, end)}</span>
+      <span className={historySearchAccentClass}>{text.slice(end)}</span>
+    </>
+  );
+}
 
 export type HistoryCategoryFilter = 'all' | 'legal' | 'individual';
 export type HistorySourceFilter = 'all' | 'telegram' | 'web';
@@ -20,6 +80,13 @@ export type HistoryFilterPanelKey = Exclude<HistoryFilterPanel, null>;
 export interface HistoryFiltersProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
+  /**
+   * Фиксация запроса: при `blur` поля — без аргумента (текущая строка);
+   * при выборе подсказки — передать выбранное значение.
+   */
+  onSearchApply?: (value?: string) => void;
+  /** Моб. static: при фокусе открыть блок поиска (без toggle). */
+  onSearchPanelEnsureOpen?: () => void;
   dateFrom: string;
   dateTo: string;
   onDateFromChange: (value: string) => void;
@@ -42,11 +109,15 @@ export interface HistoryFiltersProps {
   onReset: () => void;
   showAppliedRow?: boolean;
   panelLayout?: 'dropdown' | 'static';
+  /** Строки для подсказок и автодополнения (ФИО, реквизиты и т.д.) */
+  searchCandidates?: readonly string[];
 }
 
 export function HistoryFilters({
   searchQuery,
   onSearchChange,
+  onSearchApply,
+  onSearchPanelEnsureOpen,
   dateFrom,
   dateTo,
   onDateFromChange,
@@ -68,8 +139,10 @@ export function HistoryFilters({
   onReset,
   showAppliedRow = true,
   panelLayout = 'dropdown',
+  searchCandidates = [],
 }: HistoryFiltersProps) {
   const rootRef = React.useRef<HTMLDivElement | null>(null);
+  const searchInputRef = React.useRef<HTMLInputElement | null>(null);
 
   React.useEffect(() => {
     if (panelLayout !== 'dropdown') return;
@@ -93,11 +166,6 @@ export function HistoryFilters({
       document.removeEventListener('touchstart', handlePointerDown, { capture: true } as any);
     };
   }, [openPanel, onClosePanels, onTogglePanel]);
-  const searchSuggestions = [
-    { id: 'search-1', label: 'Текст', value: 'Значение' },
-    { id: 'search-2', label: 'Текст', value: 'Значение' },
-    { id: 'search-3', label: 'Текст', value: 'Значение' },
-  ];
 
   const renderTriggerIcon = (active: boolean) => (
     <img
@@ -115,6 +183,12 @@ export function HistoryFilters({
     if (panelLayout === 'dropdown') onTogglePanel(key);
     else onTogglePanelMulti?.(key);
   };
+
+  const searchSuggestions = getSearchSuggestionsList(searchQuery, searchCandidates);
+  const ghostCompletionSuffix = getInlineCompletionSuffix(searchQuery, searchCandidates);
+  const hasSearchQuery = searchQuery.trim().length > 0;
+  const showSearchSuggestionsPanel =
+    isPanelOpen('search') && hasSearchQuery && searchSuggestions.length > 0;
 
   const renderChoicePanel = <T extends string>(
     value: T,
@@ -149,45 +223,65 @@ export function HistoryFilters({
     <>
       <div ref={rootRef} className={historyFiltersToolbarStyles}>
         <div className={panelLayout === 'dropdown' ? 'relative w-full lg:w-[380px]' : 'w-full'}>
-          <label
-            className={historyFiltersSearchStyles}
-            onClick={() => {
+          <Input
+            ref={searchInputRef}
+            type="search"
+            autoComplete="off"
+            enterKeyHint="search"
+            startAdornment={
+              <img src={searchSvg} alt="" className="h-5 w-5 text-[#FDFEFF]" width={20} height={20} />
+            }
+            inputOverlay={
+              ghostCompletionSuffix ? (
+                <span className="flex min-w-0 max-w-full items-center truncate text-[16px] font-normal leading-normal">
+                  <span className="shrink-0 whitespace-pre text-[#FDFEFF]">{searchQuery}</span>
+                  <span className={historySearchAccentClass}>{ghostCompletionSuffix}</span>
+                </span>
+              ) : undefined
+            }
+            className={cn(
+              historyFiltersSearchInputClassName,
+              ghostCompletionSuffix
+                ? 'text-transparent caret-[#FDFEFF] selection:bg-[rgba(14,184,210,0.35)]'
+                : undefined,
+            )}
+            placeholder={searchQuery ? '' : 'Поиск'}
+            value={searchQuery}
+            onChange={(event) => onSearchChange(event.target.value)}
+            onBlur={() => onSearchApply?.()}
+            onFocus={() => {
               if (panelLayout === 'dropdown') {
                 if (openPanel !== 'search') onTogglePanel('search');
               } else {
-                togglePanel('search');
+                onSearchPanelEnsureOpen?.();
               }
             }}
-          >
-            <img src={searchSvg} alt="" className="h-5 w-5 shrink-0 text-[#FDFEFF]" aria-hidden />
-            <Input
-              className="h-auto min-w-0 flex-1 border-0 bg-transparent px-0"
-              placeholder="Поиск"
-              value={searchQuery}
-              onChange={(event) => onSearchChange(event.target.value)}
-              onFocus={() => {
-                if (panelLayout === 'dropdown') {
-                  if (openPanel !== 'search') onTogglePanel('search');
-                }
-              }}
-            />
-          </label>
-          {isPanelOpen('search') ? (
+          />
+          {showSearchSuggestionsPanel ? (
             <div
               className={
                 panelLayout === 'dropdown'
-                  ? `${historyFiltersDropdownPanelStyles} h-[152px] overflow-y-auto p-0 [scrollbar-width:none] [&::-webkit-scrollbar]:w-0`
-                  : `mt-[15px] h-[152px] w-full overflow-y-auto rounded-[10px] border border-[#FDFEFF]/50 bg-[#2A2A2A] p-0 [scrollbar-width:none] [&::-webkit-scrollbar]:w-0`
+                  ? cn(historyFiltersDropdownPanelStyles, scrollableThreeRowListClass, 'p-0')
+                  : cn(
+                      'mt-[15px] w-full rounded-[10px] border border-[#FDFEFF]/50 bg-[#2A2A2A] p-0',
+                      scrollableThreeRowListClass,
+                    )
               }
             >
               {searchSuggestions.map((item) => (
                 <button
-                  key={item.id}
+                  key={item}
                   type="button"
-                  className="flex w-full items-center justify-between px-4 py-3 text-left text-base"
+                  className="flex w-full min-w-0 items-center px-4 py-3 text-left text-base hover:bg-[#FDFEFF]/5"
+                  onMouseDown={(event) => {
+                    event.preventDefault();
+                  }}
+                  onClick={() => {
+                    onSearchApply?.(item);
+                    searchInputRef.current?.blur();
+                  }}
                 >
-                  <span className="text-[#FDFEFF]">{item.label}</span>
-                  <span className="text-[#FDFEFF]">{item.value}</span>
+                  <span className="min-w-0 truncate">{renderHighlightedHistorySuggestion(item, searchQuery)}</span>
                 </button>
               ))}
             </div>

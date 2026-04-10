@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { cn } from '../../../lib/cn';
 import { Button, Input, OptionIndicator } from '../../ui';
 import { ReportActions } from '../ReportActions';
 import { combineStyles } from '../../../lib/combineStyles';
 import { designTokens } from '../../ui/design-tokens';
 import loadSvg from '../../../assets/icons/load.svg';
+import searchSvg from '../../../assets/icons/search.svg';
 import {
   dashboardNewCheckFootnoteStyles,
   dashboardNewCheckFormStackStyles,
@@ -118,8 +120,11 @@ export function DashboardNewCheckSteps({ onReportOpen, onStepChange }: Dashboard
           </div>
 
 
-          <div>
+          <div className={cn(queryError && 'pb-6')}>
             <Input
+              startAdornment={
+                <img src={searchSvg} alt="" className="h-5 w-5 text-[#FDFEFF]" width={20} height={20} />
+              }
               placeholder="Введите ИНН / ОГРН / ФИО"
               value={query}
               error={queryError ? 'Обязательное поле' : undefined}

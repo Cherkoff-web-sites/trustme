@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
-import { Grid } from '../../components/layout/Grid/Grid';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import {
   SettingsProfile,
@@ -8,7 +7,7 @@ import {
   SettingsTariff,
 } from '../../components/features/settings';
 import { SettingsSidebarNav } from '../../components/features/SettingsSidebarNav';
-import { Card, uiTokens } from '../../components/ui';
+import { Card } from '../../components/ui';
 import profileSettingsSvg from '../../assets/icons/profile_settings.svg';
 import safetySvg from '../../assets/icons/safety.svg';
 import customSvg from '../../assets/icons/custom.svg';
@@ -43,8 +42,8 @@ export function SettingsPage() {
   return (
     <PageLayout>
       <PageSection title="Настройки аккаунта" description="Управляйте настройками аккаунта">
-        <Grid preset="settings" className={uiTokens.container}>
-          <Card className="h-fit p-3" variant="settings" as="aside">
+        <div className="flex flex-col gap-[30px] lg:flex-row">
+          <Card className="h-fit w-full !p-[15px] lg:w-[410px] lg:shrink-0" variant="settings" as="aside">
             <SettingsSidebarNav
               activeKey={activeTab}
               onChange={setActiveTab}
@@ -56,7 +55,7 @@ export function SettingsPage() {
             />
           </Card>
 
-          <div className="space-y-4">
+          <div className="flex-1 space-y-4">
             {activeTab === 'profile' ? <SettingsProfile /> : null}
 
             {activeTab === 'security' ? (
@@ -80,7 +79,7 @@ export function SettingsPage() {
               />
             ) : null}
           </div>
-        </Grid>
+        </div>
       </PageSection>
     </PageLayout>
   );

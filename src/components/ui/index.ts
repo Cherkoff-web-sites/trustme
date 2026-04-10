@@ -23,6 +23,8 @@ export {
 export type { LabelProps } from './Label';
 export { Card } from './Card/Card';
 export type { CardProps } from './Card/Card';
+export { CardHeaderDecorDivider } from './Card/CardHeaderDecorDivider';
+export type { CardHeaderDecorDividerProps } from './Card/CardHeaderDecorDivider';
 export { SectionCard } from './SectionCard';
 export type { SectionCardProps } from './SectionCard';
 export { ModalShell } from './ModalShell';

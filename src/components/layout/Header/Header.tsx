@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useAuthModalUi } from '../../../context/AuthModalUiContext';
+import { useBodyScrollLock } from '../../../lib/useBodyScrollLock';
 import { MAIN_NAV_ITEMS } from '../../../shared/navConfig';
+import { scrollableThreeRowListClass } from '../../../shared/scrollListClasses';
 import { uiTokens, Button, designTokens } from '../../ui';
 import logoSvg from '../../../assets/icons/logo.svg';
 import notificationsSvg from '../../../assets/icons/notifications.svg';
@@ -57,19 +59,15 @@ function AccountMenuDropdown({
         .join(' ')}
       role="menu"
     >
-      <div>
+      <div className={scrollableThreeRowListClass}>
         {accounts.map((account, index) => (
           <div key={account}>
             <button
               type="button"
               role="menuitem"
               onClick={() => onSelectAccount(account)}
-              className="group/account-row relative flex w-full items-center bg-transparent px-4 py-4 text-left text-base text-[#FDFEFF] transition-colors lg:text-[18px]"
+              className="flex w-full items-center bg-transparent px-4 py-4 text-left text-base text-[#FDFEFF] transition-colors lg:text-[18px]"
             >
-              <span
-                className="pointer-events-none absolute right-[-2px] top-[7px] bottom-[7px] hidden w-[4px] rounded-full bg-[#FDFEFF]/50 opacity-0 transition-opacity lg:block lg:group-hover/account-row:opacity-100"
-                aria-hidden
-              />
               {account}
             </button>
             {index < accounts.length - 1 ? (
@@ -108,7 +106,6 @@ export function Header() {
   const [showMobileDrawerAccounts, setShowMobileDrawerAccounts] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [currentAccount, setCurrentAccount] = useState('user.example@gmail.com');
-  const isSettingsNavItem = (to: string) => to === '/settings' || to.includes('settings');
 
   // === ДАННЫЕ УВЕДОМЛЕНИЙ (потом заменишь на API) ===
   const initialNotifications: Notification[] = [
@@ -183,6 +180,9 @@ export function Header() {
     'user1.example@gmail.com',
     'user2.example@gmail.com',
     'user3.example@gmail.com',
+    'user4.example@gmail.com',
+    'user5.example@gmail.com',
+    'user6.example@gmail.com',
   ] as const;
 
   const handleLogout = () => {
@@ -232,14 +232,7 @@ export function Header() {
     );
   };
 
-  useEffect(() => {
-    if (!showMobileMenu) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [showMobileMenu]);
+  useBodyScrollLock(showMobileMenu || showNotifications || showAccountMenu);
 
   if (!isAuthenticated) {
     return (
@@ -347,28 +340,17 @@ export function Header() {
               <img src={logoSvg} alt="" width={122} height={29} className="w-[122px] h-auto" />
             </Link>
             <nav className="flex flex-wrap gap-x-6 gap-y-3 text-[14px] font-semibold text-[#FDFEFF] lg:text-[20px]">
-              {MAIN_NAV_ITEMS.map(([label, to]) =>
-                isSettingsNavItem(to) ? (
-                  <span
-                    key={to}
-                    className="cursor-not-allowed select-none text-[#FDFEFF]/45"
-                    aria-disabled="true"
-                    title="Раздел временно недоступен"
-                  >
-                    {label}
-                  </span>
-                ) : (
-                  <NavLink
-                    className={({ isActive }) =>
-                      `transition-colors hover:text-[#FDFEFF] ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
-                    }
-                    key={to}
-                    to={to}
-                  >
-                    {label}
-                  </NavLink>
-                ),
-              )}
+              {MAIN_NAV_ITEMS.map(([label, to]) => (
+                <NavLink
+                  className={({ isActive }) =>
+                    `transition-colors hover:text-[#FDFEFF] ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
+                  }
+                  key={to}
+                  to={to}
+                >
+                  {label}
+                </NavLink>
+              ))}
             </nav>
           </div>
 
@@ -480,32 +462,21 @@ export function Header() {
             </div>
 
             <nav className="mt-[40px] mb-[60px] flex flex-col items-center justify-start gap-[28px] text-center text-[16px] font-semibold text-[#FDFEFF]">
-              {MAIN_NAV_ITEMS.map(([label, to]) =>
-                isSettingsNavItem(to) ? (
-                  <span
-                    key={to}
-                    className="cursor-not-allowed select-none text-[#FDFEFF]/45"
-                    aria-disabled="true"
-                    title="Раздел временно недоступен"
-                  >
-                    {label}
-                  </span>
-                ) : (
-                  <NavLink
-                    key={to}
-                    to={to}
-                    onClick={() => {
-                      setShowMobileMenu(false);
-                      setShowMobileDrawerAccounts(false);
-                    }}
-                    className={({ isActive }) =>
-                      `transition-colors ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
-                    }
-                  >
-                    {label}
-                  </NavLink>
-                ),
-              )}
+              {MAIN_NAV_ITEMS.map(([label, to]) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  onClick={() => {
+                    setShowMobileMenu(false);
+                    setShowMobileDrawerAccounts(false);
+                  }}
+                  className={({ isActive }) =>
+                    `transition-colors ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
+                  }
+                >
+                  {label}
+                </NavLink>
+              ))}
             </nav>
 
             <div className="pb-2">
@@ -528,7 +499,7 @@ export function Header() {
 
               {showMobileDrawerAccounts ? (
                 <div className="mt-3 rounded-[24px] border border-[#FDFEFF]/15 bg-[#121212] px-6 py-4">
-                  <div className="space-y-3">
+                  <div className={`space-y-3 ${scrollableThreeRowListClass}`}>
                     {accounts.map((account) => (
                       <button
                         key={account}
@@ -582,13 +553,14 @@ export function Header() {
       {/* === МОДАЛКА УВЕДОМЛЕНИЙ (доработанная под скриншот) === */}
       {showNotifications && (
         <div
-          className="fixed inset-0 z-40 flex items-start justify-center bg-black/60 px-4 py-8 sm:px-6 sm:py-12"
+          className="fixed inset-0 z-40 overflow-y-auto overflow-x-hidden bg-[rgba(26,26,26,0.8)]"
           onClick={() => setShowNotifications(false)}
         >
-          <div
-            className="mt-12 w-full max-w-[1080px] rounded-[28px] border border-[#FDFEFF]/20 bg-[#1A1A1A] p-5 sm:p-6"
-            onClick={(event) => event.stopPropagation()}
-          >
+          <div className="flex min-h-full w-full items-start justify-center px-4 py-8 sm:px-6 sm:py-12">
+            <div
+              className="mt-12 w-full max-w-[1080px] rounded-[28px] border border-[#FDFEFF]/20 bg-[#1A1A1A] p-5 sm:p-6"
+              onClick={(event) => event.stopPropagation()}
+            >
             {/* Шапка с табами и кнопкой Очистить */}
             <header className="mb-5">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
@@ -627,7 +599,7 @@ export function Header() {
             </header>
 
             {/* Список уведомлений */}
-            <div className="flex max-h-[70vh] flex-col gap-3 overflow-y-auto pr-1">
+            <div className="flex flex-col gap-3">
               {filteredNotifications.length === 0 ? (
                 <div className="py-12 text-center text-[#FDFEFF]/50">
                   Нет уведомлений
@@ -703,6 +675,7 @@ export function Header() {
                   </article>
                 ))
               )}
+            </div>
             </div>
           </div>
         </div>
