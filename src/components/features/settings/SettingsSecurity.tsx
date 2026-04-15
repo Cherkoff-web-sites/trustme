@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { cn } from '../../../lib/cn';
 import { getPasswordRuleChecks } from '../../../lib/passwordRules';
@@ -8,8 +8,31 @@ import {
   settingsSecurityInfoCardStyles,
   settingsSecurityRulesStyles,
 } from './SettingsSecurity.styles';
+import { OtpDigitInputs } from './OtpDigitInputs';
 
 const CHANGE_PASSWORD_EMAIL_CODE_LEN = 8;
+const PHONE_ACCESS_CODE_LEN = 5;
+
+function maskEmailForDisplay(email: string): string {
+  const t = email.trim();
+  if (!t) return '…';
+  const at = t.indexOf('@');
+  if (at < 1) return '***';
+  const local = t.slice(0, at);
+  const rest = t.slice(at + 1);
+  const dot = rest.lastIndexOf('.');
+  const dom = dot >= 0 ? rest.slice(0, dot) : rest;
+  const tld = dot >= 0 ? rest.slice(dot + 1) : '';
+  const loc =
+    local.length <= 1
+      ? `${local}*`
+      : `${local[0]}${'*'.repeat(Math.min(10, local.length - 1))}`;
+  const dm =
+    dom.length <= 1 ? `${dom || '*'}**` : `${dom[0]}${'*'.repeat(Math.min(3, dom.length - 1))}`;
+  const td =
+    tld.length <= 1 ? `${tld || '*'}*` : `${tld[0]}${'*'.repeat(Math.min(2, tld.length - 1))}`;
+  return `${loc}@${dm}.${td}`;
+}
 
 export interface SettingsSecurityProps {
   twoFactorEnabled: boolean;
@@ -31,11 +54,9 @@ export function SettingsSecurity({
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [changePwdStep, setChangePwdStep] = useState<'credentials' | 'emailCode' | 'success'>('credentials');
   const [emailCode, setEmailCode] = useState('');
-  const emailCodeInputRef = useRef<HTMLInputElement>(null);
   const [phoneFlowStep, setPhoneFlowStep] = useState<'idle' | 'enterPhone' | 'smsSent' | 'enterCode'>('idle');
   const [phoneCandidate, setPhoneCandidate] = useState('+7 (800) 555 35 35');
   const [phoneAccessCode, setPhoneAccessCode] = useState('');
-  const phoneAccessCodeRef = useRef<HTMLInputElement>(null);
   const [emailFlowStep, setEmailFlowStep] = useState<
     'idle' | 'addEmail' | 'needsConfirmation' | 'confirmationSent'
   >('idle');
@@ -61,23 +82,6 @@ export function SettingsSecurity({
     newPasswordChecks.hasDigit,
   ]);
 
-  useEffect(() => {
-    if (changePwdStep !== 'emailCode') return;
-    const id = window.setTimeout(() => emailCodeInputRef.current?.focus(), 0);
-    return () => window.clearTimeout(id);
-  }, [changePwdStep]);
-
-  useEffect(() => {
-    if (phoneFlowStep !== 'enterCode') return;
-    const id = window.setTimeout(() => phoneAccessCodeRef.current?.focus(), 0);
-    return () => window.clearTimeout(id);
-  }, [phoneFlowStep]);
-
-  const goBackToCredentials = () => {
-    setChangePwdStep('credentials');
-    setEmailCode('');
-  };
-
   const handleCredentialsContinue = () => {
     if (!passwordsValid) return;
     setChangePwdStep('emailCode');
@@ -94,11 +98,6 @@ export function SettingsSecurity({
     setPhoneAccessCode('');
   };
 
-  const handlePhoneCodeInput = (nextRaw: string) => {
-    const next = nextRaw.replace(/\D/g, '').slice(0, 5);
-    setPhoneAccessCode(next);
-  };
-
   const resetEmailFlow = () => {
     setEmailFlowStep('idle');
     setNewEmailDraft('');
@@ -110,9 +109,19 @@ export function SettingsSecurity({
       ? 'Добавить новую электронную почту'
       : 'Электронная почта';
 
+  const changePasswordSectionTitle =
+    changePwdStep === 'emailCode' ? (
+      <>
+        Код подтверждения был отправлен на почту:{' '}
+        <span className="font-semibold">{maskEmailForDisplay(profileEmail)}</span>
+      </>
+    ) : (
+      'Смена пароля'
+    );
+
   return (
     <>
-      <SectionCard title="Смена пароля">
+      <SectionCard title={changePasswordSectionTitle}>
         <div className="relative">
           <div
             className={cn(
@@ -199,7 +208,7 @@ export function SettingsSecurity({
 
             <Button
               type="button"
-              className="min-w-[240px] w-full lg:w-auto disabled:opacity-100"
+              className="min-w-[240px] w-full lg:w-auto lg:flex-none lg:self-start disabled:opacity-100"
               disabled={!passwordsValid}
               onClick={handleCredentialsContinue}
             >
@@ -216,57 +225,45 @@ export function SettingsSecurity({
             )}
             aria-hidden={changePwdStep !== 'emailCode'}
           >
-            <p className="m-0 text-base text-[#FDFEFF] lg:text-[17px]">
-              Для подтверждения смены пароля введите код из письма ({CHANGE_PASSWORD_EMAIL_CODE_LEN} цифр):
-            </p>
+            <div>
+              <Label id="settings-security-email-code-label">Код доступа</Label>
+              {changePwdStep === 'emailCode' ? (
+                <OtpDigitInputs
+                  key="settings-security-pwd-otp"
+                  length={CHANGE_PASSWORD_EMAIL_CODE_LEN}
+                  value={emailCode}
+                  onChange={setEmailCode}
+                  idPrefix="settings-security-email-code"
+                  ariaLabelledBy="settings-security-email-code-label"
+                  compact
+                  transparentCells
+                  className="mt-[15px]"
+                />
+              ) : null}
+            </div>
 
             <div className={authModalEmailInfoBoxStyles}>
+              <p className="m-0">Введите полученный код подтверждения смены пароля.</p>
               <p className="m-0">
-                Письмо с кодом будет отправлено на:{' '}
-                <span className="font-semibold">{profileEmail || '…'}</span>
+                Не приходит код подтверждения?{' '}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="inline h-auto min-h-0 p-0 align-baseline underline underline-offset-4"
+                >
+                  Отправить повторно
+                </Button>
               </p>
-              <p className="m-0">Если письма нет, проверьте папку «Спам».</p>
             </div>
 
-            <div>
-              <Label id="settings-security-email-code-label">Код из письма</Label>
-              <Input
-                ref={emailCodeInputRef}
-                id="settings-security-email-code"
-                aria-labelledby="settings-security-email-code-label"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                maxLength={CHANGE_PASSWORD_EMAIL_CODE_LEN}
-                pattern="[0-9]*"
-                value={emailCode}
-                onChange={(ev) => {
-                  const next = ev.target.value
-                    .replace(/\D/g, '')
-                    .slice(0, CHANGE_PASSWORD_EMAIL_CODE_LEN);
-                  setEmailCode(next);
-                }}
-                placeholder="00000000"
-              />
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-              <Button
-                type="button"
-                variant="secondary"
-                className="min-w-0 sm:min-w-[200px]"
-                onClick={goBackToCredentials}
-              >
-                Назад
-              </Button>
-              <Button
-                type="button"
-                className="min-w-[240px] w-full lg:w-auto disabled:opacity-100"
-                disabled={emailCode.length !== CHANGE_PASSWORD_EMAIL_CODE_LEN}
-                onClick={handleEmailCodeConfirm}
-              >
-                Подтвердить
-              </Button>
-            </div>
+            <Button
+              type="button"
+              className="min-w-[240px] w-full lg:w-auto lg:flex-none lg:self-start disabled:opacity-100"
+              disabled={emailCode.length !== CHANGE_PASSWORD_EMAIL_CODE_LEN}
+              onClick={handleEmailCodeConfirm}
+            >
+              Сохранить изменения
+            </Button>
           </div>
 
           <div
@@ -334,7 +331,7 @@ export function SettingsSecurity({
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <Button
                   type="button"
-                  className="min-w-[240px] disabled:opacity-100"
+                  className="min-w-[240px] w-full lg:w-auto lg:flex-none lg:self-start disabled:opacity-100"
                   disabled={!newEmailDraft.trim()}
                   onClick={() => {
                     const next = newEmailDraft.trim();
@@ -375,7 +372,11 @@ export function SettingsSecurity({
                   письме
                 </p>
               </div>
-              <Button type="button" className="w-full lg:w-auto" onClick={() => setEmailFlowStep('confirmationSent')}>
+              <Button
+                type="button"
+                className="w-full lg:w-auto lg:flex-none lg:self-start"
+                onClick={() => setEmailFlowStep('confirmationSent')}
+              >
                 Отправить подтверждение
               </Button>
             </div>
@@ -403,7 +404,7 @@ export function SettingsSecurity({
                   На вашу электронную почту отправлено письмо с подтверждением. Проследуйте инструкциям в письме
                 </p>
               </div>
-              <Button type="button" className="w-full lg:w-auto" onClick={resetEmailFlow}>
+              <Button type="button" className="w-full lg:w-auto lg:flex-none lg:self-start" onClick={resetEmailFlow}>
                 Подтвердить
               </Button>
             </div>
@@ -448,7 +449,7 @@ export function SettingsSecurity({
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <Button
                   type="button"
-                  className="min-w-[240px]"
+                  className="min-w-[240px] w-full lg:w-auto lg:flex-none lg:self-start"
                   onClick={() => setPhoneFlowStep('smsSent')}
                 >
                   Получить код доступа
@@ -488,7 +489,7 @@ export function SettingsSecurity({
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <Button
                   type="button"
-                  className="min-w-[190px]"
+                  className="min-w-[190px] w-full lg:w-auto lg:flex-none lg:self-start"
                   onClick={() => setPhoneFlowStep('enterCode')}
                 >
                   Продолжить
@@ -510,32 +511,17 @@ export function SettingsSecurity({
             >
               <div>
                 <Label id="settings-security-phone-code-label">Код доступа</Label>
-                <div className="relative mt-[15px]">
-                  <input
-                    ref={phoneAccessCodeRef}
-                    id="settings-security-phone-code-input"
-                    aria-labelledby="settings-security-phone-code-label"
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    pattern="[0-9]*"
+                {phoneFlowStep === 'enterCode' ? (
+                  <OtpDigitInputs
+                    key="settings-security-phone-otp"
+                    length={PHONE_ACCESS_CODE_LEN}
                     value={phoneAccessCode}
-                    onChange={(e) => handlePhoneCodeInput(e.target.value)}
-                    className="absolute inset-0 h-full w-full cursor-text opacity-0"
+                    onChange={setPhoneAccessCode}
+                    idPrefix="settings-security-phone-code"
+                    ariaLabelledBy="settings-security-phone-code-label"
+                    className="mt-[15px]"
                   />
-                  <div className="flex items-center gap-[12px]">
-                    {Array.from({ length: 5 }).map((_, index) => (
-                      <button
-                        key={`settings-security-phone-code-cell-${index}`}
-                        type="button"
-                        className="h-[53px] w-[53px] rounded-[10px] border border-[#FDFEFF]/30 bg-[#2A2A2A] text-[22px] font-normal text-[#FDFEFF]"
-                        onClick={() => phoneAccessCodeRef.current?.focus()}
-                        aria-label={`Цифра кода ${index + 1}`}
-                      >
-                        {phoneAccessCode[index] ?? ''}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                ) : null}
               </div>
 
               <div className={authModalEmailInfoBoxStyles}>
@@ -548,8 +534,8 @@ export function SettingsSecurity({
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <Button
                   type="button"
-                  className="min-w-[190px] disabled:opacity-100"
-                  disabled={phoneAccessCode.length < 5}
+                  className="min-w-[190px] w-full lg:w-auto lg:flex-none lg:self-start disabled:opacity-100"
+                  disabled={phoneAccessCode.length < PHONE_ACCESS_CODE_LEN}
                   onClick={resetPhoneFlow}
                 >
                   Завершить
