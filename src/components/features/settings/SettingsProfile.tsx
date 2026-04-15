@@ -97,6 +97,19 @@ export function SettingsProfile() {
               />
             </div>
 
+            {personType === 'legal' ? (
+              <div>
+                <Label id="settings-profile-inn-label">ИНН</Label>
+                <Input
+                  id="settings-profile-inn"
+                  aria-labelledby="settings-profile-inn-label"
+                  inputMode="numeric"
+                  maxLength={12}
+                  placeholder="Введите ИНН"
+                />
+              </div>
+            ) : null}
+
             <div>
               <Label id="settings-profile-email-label">Текущая почта</Label>
               <Input
@@ -118,14 +131,44 @@ export function SettingsProfile() {
               <span>Я даю согласие на получение рекламных материалов на указанный адрес электронной почты</span>
             </Label>
 
-            <MoreDetailsSection className="mt-1">
-              <p className="m-0 text-[16px] font-normal leading-normal text-[#FDFEFF] lg:text-[20px]">
-                Здесь можно вывести дополнительную информацию или подсказки по настройкам профиля.
-              </p>
-            </MoreDetailsSection>
+            {personType === 'individual' ? (
+              <MoreDetailsSection className="mt-1">
+                <div className="flex flex-col gap-[20px] lg:gap-[30px]">
+                  <div>
+                    <Label id="settings-profile-details-inn-label">ИНН</Label>
+                    <Input
+                      id="settings-profile-details-inn"
+                      aria-labelledby="settings-profile-details-inn-label"
+                      inputMode="numeric"
+                      maxLength={12}
+                      placeholder="Введите ИНН"
+                    />
+                  </div>
+
+                  <div>
+                    <Label id="settings-profile-details-fullname-label">ФИО</Label>
+                    <Input
+                      id="settings-profile-details-fullname"
+                      aria-labelledby="settings-profile-details-fullname-label"
+                      placeholder="Введите ФИО"
+                    />
+                  </div>
+
+                  <div>
+                    <Label id="settings-profile-details-birthdate-label">Дата рождения</Label>
+                    <Input
+                      id="settings-profile-details-birthdate"
+                      aria-labelledby="settings-profile-details-birthdate-label"
+                      type="date"
+                      className="h-[60px]"
+                    />
+                  </div>
+                </div>
+              </MoreDetailsSection>
+            ) : null}
 
             <div className="mt-2 flex justify-end">
-              <Button className="min-w-[260px]">Сохранить изменения</Button>
+              <Button className="w-full min-w-0 lg:w-auto lg:min-w-[260px]">Сохранить изменения</Button>
             </div>
           </div>
         </div>

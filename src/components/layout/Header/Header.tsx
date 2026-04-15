@@ -358,28 +358,17 @@ export function Header() {
               <img src={logoSvg} alt="" width={122} height={29} className="w-[122px] h-auto" />
             </Link>
             <nav className="flex flex-wrap gap-x-6 gap-y-3 text-[14px] font-semibold text-[#FDFEFF] lg:text-[20px]">
-              {MAIN_NAV_ITEMS.map(([label, to]) =>
-                label === 'Настройки' ? (
-                  <span
-                    key={to}
-                    aria-disabled="true"
-                    className="cursor-default text-[#FDFEFF]/50"
-                    title="Раздел временно недоступен"
-                  >
-                    {label}
-                  </span>
-                ) : (
-                  <NavLink
-                    className={({ isActive }) =>
-                      `transition-colors hover:text-[#FDFEFF] ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
-                    }
-                    key={to}
-                    to={to}
-                  >
-                    {label}
-                  </NavLink>
-                ),
-              )}
+              {MAIN_NAV_ITEMS.map(([label, to]) => (
+                <NavLink
+                  className={({ isActive }) =>
+                    `transition-colors hover:text-[#FDFEFF] ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
+                  }
+                  key={to}
+                  to={to}
+                >
+                  {label}
+                </NavLink>
+              ))}
             </nav>
           </div>
 
@@ -491,32 +480,21 @@ export function Header() {
             </div>
 
             <nav className="mt-[40px] mb-[60px] flex flex-col items-center justify-start gap-[28px] text-center text-[16px] font-semibold text-[#FDFEFF]">
-              {MAIN_NAV_ITEMS.map(([label, to]) =>
-                label === 'Настройки' ? (
-                  <span
-                    key={to}
-                    aria-disabled="true"
-                    className="cursor-default text-[#FDFEFF]/50"
-                    title="Раздел временно недоступен"
-                  >
-                    {label}
-                  </span>
-                ) : (
-                  <NavLink
-                    key={to}
-                    to={to}
-                    onClick={() => {
-                      setShowMobileMenu(false);
-                      setShowMobileDrawerAccounts(false);
-                    }}
-                    className={({ isActive }) =>
-                      `transition-colors ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
-                    }
-                  >
-                    {label}
-                  </NavLink>
-                ),
-              )}
+              {MAIN_NAV_ITEMS.map(([label, to]) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  onClick={() => {
+                    setShowMobileMenu(false);
+                    setShowMobileDrawerAccounts(false);
+                  }}
+                  className={({ isActive }) =>
+                    `transition-colors ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
+                  }
+                >
+                  {label}
+                </NavLink>
+              ))}
             </nav>
 
             <div className="pb-2">

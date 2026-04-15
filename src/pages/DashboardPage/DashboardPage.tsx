@@ -135,11 +135,6 @@ export function DashboardPage() {
   const donutStrokeWidth = 10;
   const circleLength = 2 * Math.PI * circleRadius;
   const firstRatio = statsTotal > 0 ? statsSegments[0].value / statsTotal : 0.5;
-  /**
-   * Распределяем длины дуг по пропорциям от "чистой" окружности:
-   * (полная длина - оба зазора), чтобы сегменты не наезжали друг на друга.
-   * Для `round`-концов добавляем толщину линии к геометрическому зазору.
-   */
   const targetVisualGap = 2;
   const geometricGap = donutStrokeWidth + targetVisualGap;
   const totalGaps = geometricGap * 2;
