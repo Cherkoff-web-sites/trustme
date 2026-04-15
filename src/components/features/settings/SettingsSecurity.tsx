@@ -132,79 +132,79 @@ export function SettingsSecurity({
             )}
             aria-hidden={changePwdStep !== 'credentials'}
           >
-            <div>
-              <Label id="settings-security-current-password-label">Текущий пароль</Label>
-              <Input
-                id="settings-security-current-password"
-                aria-labelledby="settings-security-current-password-label"
-                placeholder="Введите пароль"
-                type="password"
-                passwordToggle
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-              />
-            </div>
+          <div>
+            <Label id="settings-security-current-password-label">Текущий пароль</Label>
+            <Input
+              id="settings-security-current-password"
+              aria-labelledby="settings-security-current-password-label"
+              placeholder="Введите пароль"
+              type="password"
+              passwordToggle
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+            />
+          </div>
 
-            <div>
-              <Label id="settings-security-new-password-label">Новый пароль</Label>
-              <Input
-                id="settings-security-new-password"
-                aria-labelledby="settings-security-new-password-label"
-                placeholder="Введите пароль"
-                type="password"
-                passwordToggle
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-            </div>
+          <div>
+            <Label id="settings-security-new-password-label">Новый пароль</Label>
+            <Input
+              id="settings-security-new-password"
+              aria-labelledby="settings-security-new-password-label"
+              placeholder="Введите пароль"
+              type="password"
+              passwordToggle
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+          </div>
 
-            <div className={settingsSecurityRulesStyles}>
-              {(
-                [
-                  { key: 'len', label: 'Не менее 8 символов', ok: newPasswordChecks.minLength },
-                  { key: 'case', label: 'Минимум одна заглавная и одна строчная буква', ok: newPasswordChecks.upperAndLower },
-                  { key: 'digit', label: 'Минимум одна цифра', ok: newPasswordChecks.hasDigit },
-                ] as const
-              ).map((rule) => {
-                const textClass = !newPasswordRulesStarted
-                  ? 'text-[#FDFEFF]'
-                  : rule.ok
-                    ? designTokens.colors.text.statusSuccess
-                    : designTokens.colors.text.statusError;
-                const dotClass = !newPasswordRulesStarted
-                  ? 'bg-[#FDFEFF]'
-                  : rule.ok
-                    ? designTokens.colors.status.successBg
-                    : designTokens.colors.status.errorBg;
+          <div className={settingsSecurityRulesStyles}>
+            {(
+              [
+                { key: 'len', label: 'Не менее 8 символов', ok: newPasswordChecks.minLength },
+                { key: 'case', label: 'Минимум одна заглавная и одна строчная буква', ok: newPasswordChecks.upperAndLower },
+                { key: 'digit', label: 'Минимум одна цифра', ok: newPasswordChecks.hasDigit },
+              ] as const
+            ).map((rule) => {
+              const textClass = !newPasswordRulesStarted
+                ? 'text-[#FDFEFF]'
+                : rule.ok
+                  ? designTokens.colors.text.statusSuccess
+                  : designTokens.colors.text.statusError;
+              const dotClass = !newPasswordRulesStarted
+                ? 'bg-[#FDFEFF]'
+                : rule.ok
+                  ? designTokens.colors.status.successBg
+                  : designTokens.colors.status.errorBg;
 
-                return (
-                  <div key={rule.key} className="flex items-center gap-[10px]">
-                    <span className={cn('h-[19px] w-[19px] shrink-0 rounded-full', dotClass)} aria-hidden />
-                    <span className={cn('text-[14px] leading-[17px] lg:text-[16px] lg:leading-[19px]', textClass)}>{rule.label}</span>
-                  </div>
-                );
-              })}
-            </div>
+              return (
+                <div key={rule.key} className="flex items-center gap-[10px]">
+                  <span className={cn('h-[19px] w-[19px] shrink-0 rounded-full', dotClass)} aria-hidden />
+                  <span className={cn('text-[14px] leading-[17px] lg:text-[16px] lg:leading-[19px]', textClass)}>{rule.label}</span>
+                </div>
+              );
+            })}
+          </div>
 
-            <div>
-              <Label id="settings-security-confirm-password-label">Подтверждение нового пароля</Label>
-              <Input
-                id="settings-security-confirm-password"
-                aria-labelledby="settings-security-confirm-password-label"
-                placeholder="Подтвердите новый пароль"
-                type="password"
-                passwordToggle
-                value={newPasswordConfirm}
-                onChange={(e) => setNewPasswordConfirm(e.target.value)}
-              />
-            </div>
+          <div>
+            <Label id="settings-security-confirm-password-label">Подтверждение нового пароля</Label>
+            <Input
+              id="settings-security-confirm-password"
+              aria-labelledby="settings-security-confirm-password-label"
+              placeholder="Подтвердите новый пароль"
+              type="password"
+              passwordToggle
+              value={newPasswordConfirm}
+              onChange={(e) => setNewPasswordConfirm(e.target.value)}
+            />
+          </div>
 
-            <div className={settingsSecurityInfoCardStyles}>
-              <p className="m-0">Если вы не помните текущий пароль, то воспользуйтесь сбросом пароля.</p>
-              <Button variant="ghost" className="justify-start p-0 text-base font-medium underline underline-offset-4">
-                Сбросить пароль
-              </Button>
-            </div>
+          <div className={settingsSecurityInfoCardStyles}>
+            <p className="m-0">Если вы не помните текущий пароль, то воспользуйтесь сбросом пароля.</p>
+            <Button variant="ghost" className="justify-start p-0 text-base font-medium underline underline-offset-4">
+              Сбросить пароль
+            </Button>
+          </div>
 
             <Button
               type="button"
@@ -286,18 +286,18 @@ export function SettingsSecurity({
 
       <SectionCard title={emailSectionTitle}>
         {emailFlowStep === 'idle' ? (
-          <div className="flex flex-col gap-[20px] lg:gap-[30px]">
-            <div>
-              <Label id="settings-security-current-email-label">Текущая почта</Label>
+        <div className="flex flex-col gap-[20px] lg:gap-[30px]">
+          <div>
+            <Label id="settings-security-current-email-label">Текущая почта</Label>
               <Input
                 key={`settings-security-email-${user?.id ?? 0}`}
                 id="settings-security-current-email"
                 aria-labelledby="settings-security-current-email-label"
                 defaultValue={profileEmail}
               />
-            </div>
+          </div>
 
-            <div className="flex flex-col gap-4 sm:flex-row">
+          <div className="flex flex-col gap-4 sm:flex-row">
               <Button className="min-w-[250px]" onClick={() => setEmailFlowStep('addEmail')}>
                 Добавить почту
               </Button>
@@ -407,24 +407,24 @@ export function SettingsSecurity({
               <Button type="button" className="w-full lg:w-auto lg:flex-none lg:self-start" onClick={resetEmailFlow}>
                 Подтвердить
               </Button>
-            </div>
           </div>
+        </div>
         )}
       </SectionCard>
 
       <SectionCard title={phoneFlowStep === 'idle' ? 'Номер телефона' : 'Добавить номер телефона'}>
         {phoneFlowStep === 'idle' ? (
-          <div className="flex flex-col gap-[20px] lg:gap-[30px]">
-            <div>
-              <Label id="settings-security-phone-label">Привязанный номер телефона</Label>
-              <Input id="settings-security-phone" aria-labelledby="settings-security-phone-label" defaultValue="+7 (800) 555 35 35" />
-            </div>
-
-            <div className="flex flex-col gap-4 sm:flex-row">
-              <Button className="min-w-[290px]" onClick={() => setPhoneFlowStep('enterPhone')}>Добавить номер телефона</Button>
-              <Button variant="secondary" className="min-w-[290px]">Удалить номер телефона</Button>
-            </div>
+        <div className="flex flex-col gap-[20px] lg:gap-[30px]">
+          <div>
+            <Label id="settings-security-phone-label">Привязанный номер телефона</Label>
+            <Input id="settings-security-phone" aria-labelledby="settings-security-phone-label" defaultValue="+7 (800) 555 35 35" />
           </div>
+
+          <div className="flex flex-col gap-4 sm:flex-row">
+              <Button className="min-w-[290px]" onClick={() => setPhoneFlowStep('enterPhone')}>Добавить номер телефона</Button>
+            <Button variant="secondary" className="min-w-[290px]">Удалить номер телефона</Button>
+          </div>
+        </div>
         ) : (
           <div className="relative">
             <div
@@ -554,9 +554,9 @@ export function SettingsSecurity({
         aside={<ToggleSwitch checked={twoFactorEnabled} onChange={onToggleTwoFactor} className="inline-flex shrink-0" />}
       >
         <div className="flex flex-col gap-[40px] lg:gap-[60px]">
-          <p className="m-0 text-base text-[#FDFEFF]">
-            Двухфакторная аутентификация (2FA) обеспечит более надежную защиту вашего аккаунта
-          </p>
+              <p className="m-0 text-base text-[#FDFEFF]">
+                Двухфакторная аутентификация (2FA) обеспечит более надежную защиту вашего аккаунта
+              </p>
 
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 pr-2">

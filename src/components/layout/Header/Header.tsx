@@ -99,6 +99,7 @@ function AccountMenuDropdown({
 /** Совпадает с защищёнными маршрутами в `App.tsx`; при обходе авторизации нужен полный хедер на этих путях. */
 const CABINET_ROUTE_PREFIXES = [
   '/cabinet',
+  '/manage',
   '/history',
   '/new-check',
   '/tariff',

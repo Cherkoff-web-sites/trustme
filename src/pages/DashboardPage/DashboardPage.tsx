@@ -249,24 +249,27 @@ export function DashboardPage() {
           </Card>
         }
         telegram={
-          <Card
-            className="lg:row-span-1"
-            variant="dashboard"
-          >
-              <div className="flex flex-col gap-[30px] items-center text-center">
-                <div className="flex flex-col gap-[15px] items-center text-center">
-                  <div>
-                    <TelegramCircleIcon />
-                  </div>
-                  <h3 className={combineStyles('', designTokens.typography.cardTitle, 'text-center leading-[22px] lg:leading-[29px]')}>
-                    <span className="uppercase lg:normal-case">Telegram-бот</span>
-                  </h3>
-                  <p className="max-w-[284px] lg:max-w-none text-[16px] leading-[19px] lg:text-[18px] lg:leading-[22px]">
-                    Привяжите Telegram-аккаунт, чтобы все отчёты отображались в&nbsp;одном месте.
-                  </p>
+          <Card className="lg:row-span-1" variant="dashboard">
+            <div className="flex flex-col gap-[30px] items-center text-center">
+              <div className="flex flex-col gap-[15px] items-center text-center">
+                <div>
+                  <TelegramCircleIcon />
                 </div>
-                <img src={qrSvg} alt="" className="h-auto w-[144px] max-w-full" />
+                <h3
+                  className={combineStyles(
+                    '',
+                    designTokens.typography.cardTitle,
+                    'text-center leading-[22px] lg:leading-[29px]',
+                  )}
+                >
+                  <span className="uppercase lg:normal-case">Telegram-бот</span>
+                </h3>
+                <p className="max-w-[284px] lg:max-w-none text-[16px] leading-[19px] lg:text-[18px] lg:leading-[22px]">
+                  Привяжите Telegram-аккаунт, чтобы все отчёты отображались в&nbsp;одном месте.
+                </p>
               </div>
+              <img src={qrSvg} alt="" className="h-auto w-[144px] max-w-full" />
+            </div>
           </Card>
         }
         recentRequests={
@@ -515,7 +518,7 @@ export function DashboardPage() {
               </div>
 
               <div className="mt-[15px] flex w-full items-center justify-center">
-                <div className="relative h-[240px] w-[240px] lg:h-[160px] lg:w-[160px]">
+                <div className="relative h-[160px] w-[160px] lg:h-[240px] lg:w-[240px]">
                   <svg viewBox="0 0 120 120" className="h-full w-full" aria-label="Диаграмма статистики">
                     <g transform="rotate(180 60 60)">
                       <circle

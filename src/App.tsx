@@ -9,6 +9,7 @@ import { NewCheckPage } from './pages/NewCheckPage/NewCheckPage';
 import { TariffPage } from './pages/TariffPage/TariffPage';
 import { BalancePage } from './pages/BalancePage/BalancePage';
 import { SettingsPage } from './pages/SettingsPage/SettingsPage';
+import { ManageAccountsPage } from './pages/ManageAccountsPage/ManageAccountsPage';
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -70,6 +71,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <SettingsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/manage"
+        element={
+          <ProtectedRoute>
+            <ManageAccountsPage />
           </ProtectedRoute>
         }
       />
