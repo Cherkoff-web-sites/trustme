@@ -276,7 +276,7 @@ export function SettingsSecurity({
             aria-hidden={changePwdStep !== 'success'}
           >
             <div className="rounded-[10px] border border-[#0EB8D2] bg-[#2A2A2A] px-[20px] py-[16px]">
-              <p className="m-0 text-[20px] font-normal leading-normal text-[#FDFEFF]">
+              <p className="m-0 font-normal leading-normal text-[#FDFEFF]">
                 Ваш пароль успешно изменен.
               </p>
             </div>
@@ -549,25 +549,23 @@ export function SettingsSecurity({
         )}
       </SectionCard>
 
-      <SectionCard title="Двухфакторная аутентификация (2FA)">
-        <div className="space-y-8">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="m-0 text-base text-[#FDFEFF]">
-                Двухфакторная аутентификация (2FA) обеспечит более надежную защиту вашего аккаунта
-              </p>
-            </div>
-            <ToggleSwitch checked={twoFactorEnabled} onChange={onToggleTwoFactor} className="hidden lg:inline-flex" />
-          </div>
+      <SectionCard
+        title="Двухфакторная аутентификация (2FA)"
+        aside={<ToggleSwitch checked={twoFactorEnabled} onChange={onToggleTwoFactor} className="inline-flex shrink-0" />}
+      >
+        <div className="flex flex-col gap-[40px] lg:gap-[60px]">
+          <p className="m-0 text-base text-[#FDFEFF]">
+            Двухфакторная аутентификация (2FA) обеспечит более надежную защиту вашего аккаунта
+          </p>
 
-          <div className="flex items-start justify-between gap-4 border-t border-white/10 pt-6">
-            <div>
-              <h3 className="mb-2 text-[24px] font-semibold text-white">Электронная почта</h3>
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0 pr-2">
+              <h3 className="mb-2 text-[16px] lg:text-[20px] font-semibold text-white">Электронная почта</h3>
               <p className="m-0 text-base text-[#FDFEFF]">
                 Использовать электронную почту для двухфакторной аутентификации
               </p>
             </div>
-            <ToggleSwitch checked={email2faEnabled} onChange={onToggleEmail2fa} className="hidden lg:inline-flex" />
+            <ToggleSwitch checked={email2faEnabled} onChange={onToggleEmail2fa} className="inline-flex shrink-0" />
           </div>
         </div>
       </SectionCard>

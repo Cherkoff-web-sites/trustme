@@ -32,7 +32,7 @@ export const cardRootStyles = cva(
   },
 );
 
-export const cardHeaderStyles = 'flex items-center justify-between gap-4';
+export const cardHeaderStyles = 'flex items-start justify-between gap-4';
 export const cardTitleStyles = designTokens.typography.cardTitle;
 export const cardAsideStyles = designTokens.typography.body;
 

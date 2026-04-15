@@ -57,14 +57,14 @@ export function Card({
 
   const renderTitle = () => {
     if (!title) return null;
-    return <h3 className={cardTitleStyles}>{title}</h3>;
+    return <h3 className={cn(cardTitleStyles, 'min-w-0')}>{title}</h3>;
   };
 
   const renderLegacyHeader = () => {
     return title || aside ? (
       <div className={cardHeaderStyles}>
         {title ? <h3 className={cardTitleStyles}>{title}</h3> : <div />}
-        {aside ? <span className={cardAsideStyles}>{aside}</span> : null}
+        {aside ? <span className={cn(cardAsideStyles, 'shrink-0')}>{aside}</span> : null}
       </div>
     ) : null;
   };
@@ -78,7 +78,7 @@ export function Card({
       return (
         <div className={cn(cardHeaderStyles, 'relative w-full pb-4')}>
           {renderTitle()}
-          {aside ? <span className={cardAsideStyles}>{aside}</span> : null}
+          {aside ? <span className={cn(cardAsideStyles, 'shrink-0')}>{aside}</span> : null}
           <span
             aria-hidden
             className="pointer-events-none absolute left-0 right-0 bottom-0 h-px bg-[#FDFEFF]/100"
@@ -115,7 +115,7 @@ export function Card({
           {renderTitle()}
           <div className="flex items-center gap-3">
             {statusBgClass ? <span className={cn('inline-flex h-4 w-4 rounded-full', statusBgClass)} /> : null}
-            {aside ? <span className={cardAsideStyles}>{aside}</span> : null}
+            {aside ? <span className={cn(cardAsideStyles, 'shrink-0')}>{aside}</span> : null}
           </div>
         </div>
       );
@@ -126,8 +126,8 @@ export function Card({
       if (!title) return null;
       return (
         <div className={cn(cardHeaderStyles, 'w-full py-2')}>
-          {title ? <h3 className={cardTitleStyles}>{title}</h3> : <div />}
-          {aside ? <span className={cardAsideStyles}>{aside}</span> : null}
+          {title ? <h3 className={cn(cardTitleStyles, 'min-w-0')}>{title}</h3> : <div />}
+          {aside ? <span className={cn(cardAsideStyles, 'shrink-0')}>{aside}</span> : null}
         </div>
       );
     }
