@@ -9,6 +9,7 @@ import {
   SectionCard,
   designTokens,
 } from '../../ui';
+import { useAuth } from '../../../context/AuthContext';
 import { combineStyles } from '../../../lib/combineStyles';
 import userAvatarPlaceholder from '../../../assets/icons/user.svg';
 import {
@@ -18,6 +19,8 @@ import {
 } from './SettingsProfile.styles';
 
 export function SettingsProfile() {
+  const { user } = useAuth();
+  const profileEmail = user?.email?.trim() ?? '';
   const [personType, setPersonType] = useState<'legal' | 'individual'>('individual');
   const [consentPromo, setConsentPromo] = useState(false);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
@@ -86,12 +89,22 @@ export function SettingsProfile() {
           <div className="flex flex-col gap-[20px] lg:gap-[30px]">
             <div>
               <Label id="settings-profile-nickname-label">Никнейм</Label>
-              <Input id="settings-profile-nickname" aria-labelledby="settings-profile-nickname-label" defaultValue="user.example@gmail.com" />
+              <Input
+                key={`settings-profile-nickname-${user?.id ?? 0}`}
+                id="settings-profile-nickname"
+                aria-labelledby="settings-profile-nickname-label"
+                defaultValue={profileEmail}
+              />
             </div>
 
             <div>
               <Label id="settings-profile-email-label">Текущая почта</Label>
-              <Input id="settings-profile-email" aria-labelledby="settings-profile-email-label" defaultValue="user.example@gmail.com" />
+              <Input
+                key={`settings-profile-email-${user?.id ?? 0}`}
+                id="settings-profile-email"
+                aria-labelledby="settings-profile-email-label"
+                defaultValue={profileEmail}
+              />
             </div>
 
             <Label

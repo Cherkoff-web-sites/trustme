@@ -16,6 +16,8 @@ export interface ReportActionsProps {
   fullWidthMobile?: boolean;
   /** С `lg`: две кнопки делят ряд поровну (`flex-1`), без фиксированного `min-w`. */
   equalSplitLg?: boolean;
+  /** Принудительно оставляет кнопки столбцом (и на `sm+`). */
+  stacked?: boolean;
 }
 
 export function ReportActions({
@@ -27,6 +29,7 @@ export function ReportActions({
   downloadLabel = 'Скачать отчёт',
   fullWidthMobile = false,
   equalSplitLg = false,
+  stacked = false,
 }: ReportActionsProps) {
   const buttonClassName = cn(
     fullWidthMobile && 'w-full min-w-0',
@@ -36,12 +39,19 @@ export function ReportActions({
 
   const wrapClass = cn(
     reportActionsWrapBaseStyles,
+    stacked && 'sm:flex-col',
     showDelete ? 'sm:justify-between' : 'sm:justify-center',
   );
 
   return (
     <div className={wrapClass}>
-      <div className={cn(reportActionsPrimaryStyles, equalSplitLg && 'w-full lg:max-w-full')}>
+      <div
+        className={cn(
+          reportActionsPrimaryStyles,
+          stacked && 'sm:flex-col sm:gap-[20px]',
+          equalSplitLg && 'w-full lg:max-w-full',
+        )}
+      >
         <Button className={buttonClassName} onClick={onOpen}>
           {openLabel}
         </Button>

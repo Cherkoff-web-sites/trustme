@@ -156,9 +156,19 @@ export const DateFieldComposite = React.forwardRef<HTMLInputElement, DateFieldCo
       const el = hiddenPickerRef.current;
       if (!el || disabled) return;
       try {
-        el.showPicker?.();
+        if (typeof el.showPicker === 'function') {
+          el.showPicker();
+          return;
+        }
       } catch {
         /* cross-origin / unsupported */
+      }
+      // Fallback для iOS Safari: прямой фокус + click на date-input.
+      try {
+        el.focus();
+        el.click();
+      } catch {
+        /* noop */
       }
     };
 
@@ -221,38 +231,30 @@ export const DateFieldComposite = React.forwardRef<HTMLInputElement, DateFieldCo
               onBlur?.(e);
             }}
           />
-          <input
-            ref={hiddenPickerRef}
-            type="date"
-            tabIndex={-1}
-            className="sr-only"
-            value={iso || ''}
-            disabled={disabled}
-            name={name}
-            onChange={(e) => {
-              emitIso(e.target.value);
-              setTextDraft(e.target.value ? isoDateToDdMmYyyy(e.target.value) : '');
-            }}
-          />
-          <button
-            type="button"
+          <span
             className={cn(
-              'inline-flex h-5 w-5 shrink-0 items-center justify-center transition-[color,opacity] duration-150 hover:opacity-90',
+              'relative inline-flex h-5 w-5 shrink-0 items-center justify-center transition-[color,opacity] duration-150 hover:opacity-90',
               filled ? 'text-[#0EB8D2]' : 'text-[#FDFEFF]/50',
             )}
-            disabled={disabled}
-            onMouseDown={(ev) => {
-              ev.preventDefault();
-            }}
-            onClick={(ev) => {
-              ev.preventDefault();
-              openPicker();
-            }}
-            aria-label="Открыть календарь"
-            tabIndex={-1}
           >
             <DateInputCalendarGlyph className="h-5 w-5" />
-          </button>
+            <input
+              ref={hiddenPickerRef}
+              type="date"
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+              value={iso || ''}
+              disabled={disabled}
+              name={name}
+              aria-label="Открыть календарь"
+              onClick={() => {
+                openPicker();
+              }}
+              onChange={(e) => {
+                emitIso(e.target.value);
+                setTextDraft(e.target.value ? isoDateToDdMmYyyy(e.target.value) : '');
+              }}
+            />
+          </span>
         </div>
         {hasError ? (
           <p

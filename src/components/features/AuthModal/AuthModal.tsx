@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
-import { AuthApiError, authRegister } from "../../../api/auth";
+import { AuthApiError, authAcceptRegister, authRegister } from "../../../api/auth";
 import bgModalMob from "../../../assets/bg_modal_mob.webp";
 import bgModalPc from "../../../assets/bg_modal_pc.webp";
 import logoSvg from "../../../assets/icons/logo.svg";
@@ -40,10 +40,13 @@ type AuthView = "login" | "register" | "emailConfirm" | "passwordReset";
 type AccountType = "legal" | "individual";
 
 const EMAIL_CONFIRM_COUNTDOWN_SEC = 600; // 10 минут
+/** Длина кода из письма (реальный код с бэка — 8 цифр). */
+const EMAIL_CONFIRM_CODE_LEN = 8;
 
 export function AuthModal({ open, onClose }: AuthModalProps) {
   useBodyScrollLock(open);
-  const { login } = useAuth();
+  const { login, pendingUserId, setPendingUserId } = useAuth();
+  const confirmCodeInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [view, setView] = useState<AuthView>("login");
@@ -73,6 +76,8 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
   const [authSubmitting, setAuthSubmitting] = useState(false);
   const [loginFormError, setLoginFormError] = useState<string | undefined>();
   const [registerFormError, setRegisterFormError] = useState<string | undefined>();
+  const [confirmCode, setConfirmCode] = useState("");
+  const [confirmFieldError, setConfirmFieldError] = useState<string | undefined>();
 
   useEffect(() => {
     if (!open) {
@@ -85,6 +90,8 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
       setAuthSubmitting(false);
       setLoginFormError(undefined);
       setRegisterFormError(undefined);
+      setConfirmCode("");
+      setConfirmFieldError(undefined);
     }
   }, [open]);
 
@@ -94,7 +101,14 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
     setPasswordResetFieldErrors({});
     setLoginFormError(undefined);
     setRegisterFormError(undefined);
+    setConfirmFieldError(undefined);
   }, [view]);
+
+  useEffect(() => {
+    if (!open || view !== "emailConfirm") return;
+    const id = window.setTimeout(() => confirmCodeInputRef.current?.focus(), 0);
+    return () => window.clearTimeout(id);
+  }, [open, view]);
 
   useEffect(() => {
     if (view !== "emailConfirm" || countdownSec <= 0) return;
@@ -123,9 +137,7 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
       navigate(getSafeNextPath(searchParams.get("next")));
     } catch (err) {
       const msg =
-        err instanceof AuthApiError
-          ? err.message
-          : "Не удалось войти. Проверьте соединение.";
+        err instanceof AuthApiError ? err.message : "Ошибка соединения";
       setLoginFormError(msg);
       if (err instanceof AuthApiError && (err.status === 401 || err.status === 422)) {
         setLoginFieldErrors((prev) => ({ ...prev, password: msg }));
@@ -158,27 +170,49 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
     if (Object.keys(next).length > 0) return;
     setAuthSubmitting(true);
     try {
-      await authRegister({
+      const registered = await authRegister({
         email: email.trim(),
         password,
         role: accountType === "individual" ? "individual" : "company_admin",
       });
-      try {
-        await login(email.trim(), password);
-        onClose();
-        navigate(getSafeNextPath(searchParams.get("next")));
-      } catch {
-        setRegisterFormError(
-          "Регистрация прошла, но автоматический вход не удался. Войдите вручную.",
-        );
-        setView("login");
-      }
+      setPendingUserId(registered.id);
+      setCountdownSec(EMAIL_CONFIRM_COUNTDOWN_SEC);
+      setConfirmCode("");
+      setConfirmFieldError(undefined);
+      setView("emailConfirm");
     } catch (err) {
       const msg =
         err instanceof AuthApiError
           ? err.message
           : "Не удалось зарегистрироваться.";
       setRegisterFormError(msg);
+    } finally {
+      setAuthSubmitting(false);
+    }
+  };
+
+  const handleEmailConfirmSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pendingUserId == null || confirmCode.length !== EMAIL_CONFIRM_CODE_LEN) return;
+    if (!new RegExp(`^\\d{${EMAIL_CONFIRM_CODE_LEN}}$`).test(confirmCode)) {
+      setConfirmFieldError(`Введите ${EMAIL_CONFIRM_CODE_LEN} цифр кода`);
+      return;
+    }
+    setAuthSubmitting(true);
+    setConfirmFieldError(undefined);
+    try {
+      await authAcceptRegister(pendingUserId, confirmCode);
+      await login(email.trim(), password);
+      setPendingUserId(null);
+      setConfirmCode("");
+      onClose();
+      navigate(getSafeNextPath(searchParams.get("next")));
+    } catch (err) {
+      const msg =
+        err instanceof AuthApiError
+          ? err.message
+          : "Ошибка соединения";
+      setConfirmFieldError(msg);
     } finally {
       setAuthSubmitting(false);
     }
@@ -321,28 +355,65 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
               {view === "register" &&
                 "Для создания аккаунта в\u00A0сервисе проверки контрагентов «Trust Me» укажите свои данные:"}
               {view === "emailConfirm" &&
-                "Для завершения регистрации в\u00A0сервисе проверки контрагентов «Trust Me» перейдите по ссылке из письма:"}
+                "Для завершения регистрации в\u00A0сервисе проверки контрагентов «Trust Me» введите код из письма (8\u00A0цифр):"}
             </p>
           </div>
 
           {view === "emailConfirm" ? (
-            <div
+            <form
+              onSubmit={handleEmailConfirmSubmit}
               className={cn(
                 "flex flex-col",
                 designTokens.spacing.gap.cardInternal,
               )}
             >
               <div className={authModalEmailInfoBoxStyles}>
-                <p>Письмо отправлено на указанную почту: {email || "…"}</p>
+                <p>
+                  Письмо с кодом отправлено на:{" "}
+                  <span className="font-semibold">{email.trim() || "…"}</span>
+                </p>
                 <p>Если письма нет, проверьте папку «Спам».</p>
               </div>
-              <p className="text-center text-sm text-[#FDFEFF] lg:text-base">
-                Выслать письмо повторно через{" "}
+              <div>
+                <Label id="auth-modal-confirm-code-label">Код из письма</Label>
+                <Input
+                  ref={confirmCodeInputRef}
+                  id="auth-modal-confirm-code"
+                  aria-labelledby="auth-modal-confirm-code-label"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={EMAIL_CONFIRM_CODE_LEN}
+                  pattern="[0-9]*"
+                  value={confirmCode}
+                  onChange={(ev) => {
+                    const next = ev.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, EMAIL_CONFIRM_CODE_LEN);
+                    setConfirmCode(next);
+                    setConfirmFieldError(undefined);
+                  }}
+                  placeholder="00000000"
+                  error={confirmFieldError}
+                />
+              </div>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={
+                  authSubmitting ||
+                  confirmCode.length < EMAIL_CONFIRM_CODE_LEN ||
+                  pendingUserId == null
+                }
+              >
+                {authSubmitting ? "Проверка…" : "Подтвердить"}
+              </Button>
+              <p className="m-0 text-center text-sm text-[#FDFEFF] lg:text-base">
+                Отправить повторно через{" "}
                 <span className="inline-block w-[42px] lg:w-[50px] shrink-0 text-center tabular-nums">
                   {countdownFormatted}
                 </span>
               </p>
-            </div>
+            </form>
           ) : view === "passwordReset" ? (
             <form
               onSubmit={handlePasswordResetSubmit}
@@ -652,9 +723,17 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
             </p>
           ) : view === "emailConfirm" ? (
             <p className="text-center">
-              Указали не ту почту?{" "}
-              <button type="button" className="border-b font-semibold" onClick={() => setView("register")}>
-                Изменить
+              <button
+                type="button"
+                className="border-b font-semibold"
+                onClick={() => {
+                  setPendingUserId(null);
+                  setConfirmCode("");
+                  setConfirmFieldError(undefined);
+                  setView("register");
+                }}
+              >
+                Изменить email
               </button>
             </p>
           ) : (

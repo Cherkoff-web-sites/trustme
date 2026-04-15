@@ -48,7 +48,7 @@ function AccountMenuDropdown({
   accounts: readonly string[];
   className?: string;
   onSelectAccount: (email: string) => void;
-  onLogout: () => void;
+  onLogout: () => void | Promise<void>;
 }) {
   return (
     <div
@@ -111,7 +111,7 @@ function isCabinetPath(pathname: string): boolean {
 }
 
 export function Header() {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user, accountEmails, switchAccount } = useAuth();
   const { openAuthModal } = useAuthModalUi();
   const navigate = useNavigate();
   const location = useLocation();
@@ -125,7 +125,10 @@ export function Header() {
   /** Раскрытие списка почт внутри полноэкранного бургер-меню (отдельно от выпадашки в шапке). */
   const [showMobileDrawerAccounts, setShowMobileDrawerAccounts] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [currentAccount, setCurrentAccount] = useState('user.example@gmail.com');
+
+  const accountLabel = user?.email?.trim() || '';
+  /** Список смены аккаунта только при реальной авторизации (не «шапка кабинета без входа»). */
+  const menuAccountEmails = isAuthenticated ? accountEmails : [];
 
   // === ДАННЫЕ УВЕДОМЛЕНИЙ (потом заменишь на API) ===
   const initialNotifications: Notification[] = [
@@ -196,26 +199,21 @@ export function Header() {
   ];
   const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
 
-  const accounts = [
-    'user1.example@gmail.com',
-    'user2.example@gmail.com',
-    'user3.example@gmail.com',
-    'user4.example@gmail.com',
-    'user5.example@gmail.com',
-    'user6.example@gmail.com',
-  ] as const;
-
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     setShowAccountMenu(false);
     setShowMobileDrawerAccounts(false);
     setShowMobileMenu(false);
     navigate('/');
   };
 
-  const selectAccount = (email: string) => {
-    setCurrentAccount(email);
-    setShowAccountMenu(false);
+  const selectAccount = async (email: string) => {
+    try {
+      await switchAccount(email);
+    } finally {
+      setShowAccountMenu(false);
+      setShowMobileDrawerAccounts(false);
+    }
   };
 
   const handleDeleteNotification = (id: string) => {
@@ -343,7 +341,7 @@ export function Header() {
               </button>
               {showAccountMenu ? (
                 <AccountMenuDropdown
-                  accounts={accounts}
+                  accounts={menuAccountEmails}
                   className="absolute right-0 top-full z-[46] mt-4 w-[min(calc(100vw-30px),320px)]"
                   onSelectAccount={selectAccount}
                   onLogout={handleLogout}
@@ -360,17 +358,28 @@ export function Header() {
               <img src={logoSvg} alt="" width={122} height={29} className="w-[122px] h-auto" />
             </Link>
             <nav className="flex flex-wrap gap-x-6 gap-y-3 text-[14px] font-semibold text-[#FDFEFF] lg:text-[20px]">
-              {MAIN_NAV_ITEMS.map(([label, to]) => (
-                <NavLink
-                  className={({ isActive }) =>
-                    `transition-colors hover:text-[#FDFEFF] ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
-                  }
-                  key={to}
-                  to={to}
-                >
-                  {label}
-                </NavLink>
-              ))}
+              {MAIN_NAV_ITEMS.map(([label, to]) =>
+                label === 'Настройки' ? (
+                  <span
+                    key={to}
+                    aria-disabled="true"
+                    className="cursor-default text-[#FDFEFF]/50"
+                    title="Раздел временно недоступен"
+                  >
+                    {label}
+                  </span>
+                ) : (
+                  <NavLink
+                    className={({ isActive }) =>
+                      `transition-colors hover:text-[#FDFEFF] ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
+                    }
+                    key={to}
+                    to={to}
+                  >
+                    {label}
+                  </NavLink>
+                ),
+              )}
             </nav>
           </div>
 
@@ -424,7 +433,7 @@ export function Header() {
                     .filter(Boolean)
                     .join(' ')}
                 >
-                  <span className="truncate">{currentAccount}</span>
+                  <span className="truncate">{accountLabel || '—'}</span>
                   <svg
                     width={16}
                     height={16}
@@ -446,7 +455,7 @@ export function Header() {
 
               {showAccountMenu ? (
                 <AccountMenuDropdown
-                  accounts={accounts}
+                  accounts={menuAccountEmails}
                   className="absolute right-0 top-full z-40 mt-4 w-[320px]"
                   onSelectAccount={selectAccount}
                   onLogout={handleLogout}
@@ -482,21 +491,32 @@ export function Header() {
             </div>
 
             <nav className="mt-[40px] mb-[60px] flex flex-col items-center justify-start gap-[28px] text-center text-[16px] font-semibold text-[#FDFEFF]">
-              {MAIN_NAV_ITEMS.map(([label, to]) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  onClick={() => {
-                    setShowMobileMenu(false);
-                    setShowMobileDrawerAccounts(false);
-                  }}
-                  className={({ isActive }) =>
-                    `transition-colors ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
-                  }
-                >
-                  {label}
-                </NavLink>
-              ))}
+              {MAIN_NAV_ITEMS.map(([label, to]) =>
+                label === 'Настройки' ? (
+                  <span
+                    key={to}
+                    aria-disabled="true"
+                    className="cursor-default text-[#FDFEFF]/50"
+                    title="Раздел временно недоступен"
+                  >
+                    {label}
+                  </span>
+                ) : (
+                  <NavLink
+                    key={to}
+                    to={to}
+                    onClick={() => {
+                      setShowMobileMenu(false);
+                      setShowMobileDrawerAccounts(false);
+                    }}
+                    className={({ isActive }) =>
+                      `transition-colors ${isActive ? 'text-[#FDFEFF]' : 'text-[#FDFEFF]'}`
+                    }
+                  >
+                    {label}
+                  </NavLink>
+                ),
+              )}
             </nav>
 
             <div className="pb-2">
@@ -507,7 +527,7 @@ export function Header() {
                 aria-haspopup="menu"
                 aria-expanded={showMobileDrawerAccounts}
               >
-                <span className="flex-1 truncate text-center">{currentAccount}</span>
+                <span className="flex-1 truncate text-center">{accountLabel || '—'}</span>
                 <img
                   src={chevronSvg}
                   alt=""
@@ -520,12 +540,12 @@ export function Header() {
               {showMobileDrawerAccounts ? (
                 <div className="mt-3 rounded-[24px] border border-[#FDFEFF]/15 bg-[#121212] px-6 py-4">
                   <div className={`space-y-3 ${scrollableThreeRowListClass}`}>
-                    {accounts.map((account) => (
+                    {menuAccountEmails.map((account) => (
                       <button
                         key={account}
                         type="button"
                         onClick={() => {
-                          setCurrentAccount(account);
+                          void selectAccount(account);
                           setShowMobileDrawerAccounts(false);
                         }}
                         className="block w-full border-b border-[#FDFEFF]/10 pb-3 text-left text-[16px] text-[#FDFEFF]"
@@ -540,6 +560,11 @@ export function Header() {
               <button
                 type="button"
                 className="mt-4 flex w-full items-center justify-center gap-3 rounded-[999px] border border-[#FDFEFF]/20 bg-transparent px-6 py-5 text-[18px] font-semibold text-[#FDFEFF]"
+                onClick={() => {
+                  setShowMobileMenu(false);
+                  setShowMobileDrawerAccounts(false);
+                  openAuthModal();
+                }}
               >
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <g clip-path="url(#clip0_3161_8717)">
@@ -656,9 +681,14 @@ export function Header() {
 
                       {item.action && (
                         <button
-                          className="mt-2 rounded-full border border-[#FDFEFF]/30 bg-[#1A1A1A] px-3 py-1 text-[13px] font-medium text-[#FDFEFF] transition hover:bg-[#222222]"
+                          className="mt-2 rounded-full border border-[#FDFEFF]/30 bg-[#1A1A1A] px-3 py-1 text-[13px] font-medium text-[#FDFEFF] transition hover:border-[#FDFEFF] hover:[box-shadow:inset_2px_-2px_6px_#057889,inset_-2px_2px_6px_#057889]"
                           type="button"
-                          onClick={() => console.log('Action:', item.action)}
+                          onClick={() => {
+                            if (item.action === 'Продлить') {
+                              setShowNotifications(false);
+                              navigate('/tariff');
+                            }
+                          }}
                         >
                           {item.action}
                         </button>

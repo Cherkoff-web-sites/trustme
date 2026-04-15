@@ -42,6 +42,7 @@ export function BalancePage() {
   const [balanceDateFrom, setBalanceDateFrom] = useState('');
   const [balanceDateTo, setBalanceDateTo] = useState('');
   const [balanceSortOrder, setBalanceSortOrder] = useState<BalanceSortOrder>('new');
+  const [balanceSortOrderTouched, setBalanceSortOrderTouched] = useState(false);
   const [balanceTypeFilter, setBalanceTypeFilter] = useState<BalanceTypeFilter>('all');
   const [balanceSourceFilter, setBalanceSourceFilter] = useState<BalanceSourceFilter>('all');
   const [balanceOpenPanel, setBalanceOpenPanel] = useState<BalanceFilterPanel>(null);
@@ -100,6 +101,7 @@ export function BalancePage() {
     setBalanceDateFrom('');
     setBalanceDateTo('');
     setBalanceSortOrder('new');
+    setBalanceSortOrderTouched(false);
     setBalanceTypeFilter('all');
     setBalanceSourceFilter('all');
     setBalanceOpenPanel(null);
@@ -168,11 +170,14 @@ export function BalancePage() {
     }
   }
 
-  if (balanceSortOrder !== 'new') {
+  if (balanceSortOrderTouched || balanceSortOrder !== 'new') {
     activeChips.push({
       id: 'sort',
-      label: 'Сначала старые',
-      clear: () => setBalanceSortOrder('new'),
+      label: balanceSortOrder === 'new' ? 'Сначала новые' : 'Сначала старые',
+      clear: () => {
+        setBalanceSortOrder('new');
+        setBalanceSortOrderTouched(false);
+      },
     });
   }
 
@@ -203,7 +208,10 @@ export function BalancePage() {
     onDateFromChange: setBalanceDateFrom,
     onDateToChange: setBalanceDateTo,
     sortOrder: balanceSortOrder,
-    onSortOrderChange: setBalanceSortOrder,
+    onSortOrderChange: (val: BalanceSortOrder) => {
+      setBalanceSortOrderTouched(true);
+      setBalanceSortOrder(val);
+    },
     typeFilter: balanceTypeFilter,
     onTypeFilterChange: setBalanceTypeFilter,
     sourceFilter: balanceSourceFilter,

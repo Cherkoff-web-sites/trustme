@@ -213,6 +213,7 @@ export function DashboardNewCheckSteps({ onReportOpen, onStepChange }: Dashboard
             Успешно
           </div>
           <ReportActions
+            stacked
             fullWidthMobile
             equalSplitLg
             openLabel="Открыть отчет"

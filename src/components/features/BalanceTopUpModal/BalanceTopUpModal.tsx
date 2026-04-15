@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useAuth } from '../../../context/AuthContext';
 import { cn } from '../../../lib/cn';
 import { Button, FilterChip, Input, ModalShell, OptionIndicator, designTokens } from '../../ui';
 import sbpPng from '../../../assets/sbp.png';
@@ -19,6 +20,8 @@ export interface BalanceTopUpModalProps {
   onPay: () => void;
   onBack: () => void;
   onClose: () => void;
+  mode?: 'balance_topup' | 'tariff_payment';
+  tariffLabel?: string;
 }
 
 export function BalanceTopUpModal({
@@ -31,7 +34,11 @@ export function BalanceTopUpModal({
   onPay,
   onBack,
   onClose,
+  mode = 'balance_topup',
+  tariffLabel,
 }: BalanceTopUpModalProps) {
+  const { user } = useAuth();
+  const receiptEmail = user?.email?.trim() ?? '';
   const numericAmount = Number(amount.replace(/\s/g, ''));
   /** Сопоставление с пресетами: только цифры (учёт «1 000», неразрывных пробелов и т.п.) */
   const amountAsInteger = (() => {
@@ -39,6 +46,8 @@ export function BalanceTopUpModal({
     return digits === '' ? NaN : Number(digits);
   })();
   const [amountError, setAmountError] = React.useState<string | undefined>(undefined);
+  const isTariffPayment = mode === 'tariff_payment';
+  const resolvedTariffLabel = tariffLabel?.trim() || '—';
 
   const handleContinue = () => {
     if (!amount.trim()) {
@@ -67,12 +76,21 @@ export function BalanceTopUpModal({
           </svg>
         </button>
       </div>
-      <h3 className="mt-[20px] lg:mt-[30px] text-center text-[24px] font-semibold text-[#FDFEFF]">Пополнение баланса</h3>
+      <h3 className="mt-[20px] lg:mt-[30px] text-center text-[24px] font-semibold text-[#FDFEFF]">
+        {isTariffPayment ? 'Оплата тарифа' : 'Пополнение баланса'}
+      </h3>
+      {isTariffPayment ? (
+        <p className="mt-[12px] text-center text-[16px] text-[#FDFEFF]/90 lg:text-[18px]">
+          Тариф: <span className="font-semibold text-[#FDFEFF]">{resolvedTariffLabel}</span>
+        </p>
+      ) : null}
 
       {step === 'form' ? (
         <div className={balanceTopUpFormStyles}>
           <p className="mt-[30px] lg:mt-[20px] text-center text-[18px] text-[#FDFEFF]">
-            Выберите нужную сумму или введите ее вручную
+            {isTariffPayment
+              ? 'Проверьте сумму оплаты тарифа или укажите ее вручную'
+              : 'Выберите нужную сумму или введите ее вручную'}
           </p>
           <Input
             placeholder="Введите сумму от 100 до 100 000"
@@ -144,7 +162,7 @@ export function BalanceTopUpModal({
           </div>
 
           <Button className="mt-[40px] w-full" onClick={onPay}>
-            Пополнить
+            {isTariffPayment ? 'Оплатить тариф' : 'Пополнить'}
           </Button>
           <Button
             variant="secondary"
@@ -158,13 +176,21 @@ export function BalanceTopUpModal({
 
       {step === 'waiting' ? (
         <div className="mt-[40px] lg:mt-[20px]">
-          <p className="text-center text-[18px] text-[#FDFEFF]">Ожидайте, идет пополнение баланса</p>
+          <p className="text-center text-[18px] text-[#FDFEFF]">
+            {isTariffPayment ? 'Ожидайте, идет оплата тарифа' : 'Ожидайте, идет пополнение баланса'}
+          </p>
           <div className="mt-[40px] lg:mt-[20px] rounded-[10px] border border-[#0EB8D2] bg-[#2A2A2A] p-[15px]">
+            {isTariffPayment ? (
+              <p className="m-0 text-[18px] text-[#FDFEFF]">
+                Тариф: <span className="font-semibold">{resolvedTariffLabel}</span>
+              </p>
+            ) : null}
             <p className="m-0 text-[18px] text-[#FDFEFF]">
               Сумма: <span className="font-semibold">{isNaN(numericAmount) ? '—' : `${numericAmount.toLocaleString('ru-RU')} ₽`}</span>
             </p>
             <p className="mt-[15px] mb-0 text-[18px] text-[#FDFEFF]">
-              Чек об оплате вышлем на почту: <span className="font-semibold">user.example@gmail.com</span>
+              {isTariffPayment ? 'Чек по оплате тарифа вышлем на почту:' : 'Чек об оплате вышлем на почту:'}{' '}
+              <span className="font-semibold">{receiptEmail || '—'}</span>
             </p>
           </div>
         </div>

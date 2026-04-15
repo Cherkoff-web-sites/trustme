@@ -307,6 +307,7 @@ export function HistoryPage() {
   const [sourceFilter, setSourceFilter] = useState<HistorySourceFilter>('all');
   const [statusFilter, setStatusFilter] = useState<HistoryStatusFilter>('all');
   const [sortOrder, setSortOrder] = useState<'new' | 'old'>('new');
+  const [sortOrderTouched, setSortOrderTouched] = useState(false);
   const [openPanel, setOpenPanel] = useState<HistoryFilterPanel>(null);
   const [openedReportItem, setOpenedReportItem] = useState<HistoryItem | null>(null);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -326,6 +327,7 @@ export function HistoryPage() {
     setSourceFilter('all');
     setStatusFilter('all');
     setSortOrder('new');
+    setSortOrderTouched(false);
     setOpenPanel(null);
     setMobileFiltersOpen(false);
     setMobileOpenPanels({});
@@ -520,11 +522,14 @@ export function HistoryPage() {
     });
   }
 
-  if (sortOrder !== 'new') {
+  if (sortOrderTouched || sortOrder !== 'new') {
     activeChips.push({
       id: 'sort',
-      label: 'Сначала старые',
-      clear: () => handleFilterChange(setSortOrder, 'new'),
+      label: sortOrder === 'new' ? 'Сначала новые' : 'Сначала старые',
+      clear: () => {
+        setSortOrder('new');
+        setSortOrderTouched(false);
+      },
     });
   }
 
@@ -612,7 +617,10 @@ export function HistoryPage() {
     statusFilter,
     onStatusFilterChange: (val: HistoryStatusFilter) => handleFilterChange(setStatusFilter, val),
     sortOrder,
-    onSortOrderChange: (val: 'new' | 'old') => handleFilterChange(setSortOrder, val),
+    onSortOrderChange: (val: 'new' | 'old') => {
+      setSortOrderTouched(true);
+      handleFilterChange(setSortOrder, val);
+    },
     openPanel,
     onTogglePanel: togglePanel,
     onClosePanels: () => setOpenPanel(null),

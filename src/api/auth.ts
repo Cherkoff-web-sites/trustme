@@ -1,20 +1,7 @@
 import { getApiBaseUrl } from '../config/api';
+import type { AcceptRegisterRequest, TokenResponse, UserResponse } from '../types/api';
 
-export type LoginSuccess = {
-  access_token: string;
-  token_type: string;
-};
-
-export type RegisterSuccessUser = {
-  id: number;
-  email: string;
-  role: string;
-  balance: number;
-  telegram_id: number;
-  ui_theme: string;
-  report_theme: string;
-  company_id: number;
-};
+export type { AcceptRegisterRequest, TokenResponse, UserResponse } from '../types/api';
 
 export class AuthApiError extends Error {
   readonly status: number;
@@ -48,6 +35,14 @@ function messageFromValidationDetail422(data: unknown): string | null {
   if (!first || typeof first !== 'object') return null;
   const msg = (first as { msg?: unknown }).msg;
   return typeof msg === 'string' && msg.trim() ? msg.trim() : null;
+}
+
+/** Строка `detail` или первый `detail[].msg` (FastAPI). */
+function messageFromFastApiDetail(data: unknown): string | null {
+  if (!data || typeof data !== 'object') return null;
+  const detail = (data as { detail?: unknown }).detail;
+  if (typeof detail === 'string' && detail.trim()) return detail.trim();
+  return messageFromValidationDetail422(data);
 }
 
 function messageFromValidationDetail(data: unknown): string | null {
@@ -90,7 +85,7 @@ function toAuthApiError(status: number, data: unknown): AuthApiError {
   return new AuthApiError(status, 'Запрос не выполнен');
 }
 
-export async function authLogin(email: string, password: string): Promise<LoginSuccess> {
+export async function authLogin(email: string, password: string): Promise<TokenResponse> {
   const base = getApiBaseUrl();
   if (!base) {
     throw new AuthApiError(
@@ -104,14 +99,22 @@ export async function authLogin(email: string, password: string): Promise<LoginS
   params.set('password', password);
   params.set('grant_type', 'password');
 
-  const res = await fetch(`${base}/api/v1/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: params.toString(),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${base}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString(),
+    });
+  } catch {
+    throw new AuthApiError(0, 'Ошибка соединения');
+  }
 
   const data = await readResponseBody(res);
   if (!res.ok) {
+    if (res.status === 401) {
+      throw new AuthApiError(401, 'Неверный email или пароль');
+    }
     throw toAuthApiError(res.status, data);
   }
 
@@ -129,13 +132,42 @@ export async function authLogin(email: string, password: string): Promise<LoginS
   };
 }
 
+export async function fetchCurrentUser(accessToken: string): Promise<UserResponse> {
+  const base = getApiBaseUrl();
+  if (!base) {
+    throw new AuthApiError(
+      0,
+      'Не задан VITE_API_BASE_URL — укажите базовый URL API в .env (см. .env.example).',
+    );
+  }
+
+  let res: Response;
+  try {
+    res = await fetch(`${base}/api/v1/users/me`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+  } catch {
+    throw new AuthApiError(0, 'Ошибка соединения');
+  }
+
+  const data = await readResponseBody(res);
+  if (!res.ok) {
+    throw toAuthApiError(res.status, data);
+  }
+
+  if (!data || typeof data !== 'object') {
+    throw new AuthApiError(res.status, 'Некорректный ответ профиля');
+  }
+  return data as UserResponse;
+}
+
 export async function authRegister(input: {
   email: string;
   password: string;
   role: RegisterRole;
   /** Только для `company_employee` — ID пригласившего / компании. Для `individual` и `company_admin` не передаётся. */
   parent_id?: number;
-}): Promise<RegisterSuccessUser> {
+}): Promise<UserResponse> {
   const base = getApiBaseUrl();
   if (!base) {
     throw new AuthApiError(
@@ -167,5 +199,53 @@ export async function authRegister(input: {
   if (!data || typeof data !== 'object') {
     throw new AuthApiError(res.status, 'Некорректный ответ сервера при регистрации');
   }
-  return data as RegisterSuccessUser;
+  return data as UserResponse;
+}
+
+/** Подтверждение регистрации: `PUT /api/v1/auth/accept` (без Bearer). Ответ 200 — профиль пользователя. */
+export async function authAcceptRegister(
+  user_id: number,
+  code: string,
+): Promise<UserResponse> {
+  const base = getApiBaseUrl();
+  if (!base) {
+    throw new AuthApiError(
+      0,
+      'Не задан VITE_API_BASE_URL — укажите базовый URL API в .env (см. .env.example).',
+    );
+  }
+
+  const payload: AcceptRegisterRequest = { user_id, code };
+
+  let res: Response;
+  try {
+    res = await fetch(`${base}/api/v1/auth/accept`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch {
+    throw new AuthApiError(0, 'Ошибка соединения');
+  }
+
+  const data = await readResponseBody(res);
+  if (!res.ok) {
+    if (res.status === 401) {
+      const fromApi = messageFromFastApiDetail(data);
+      throw new AuthApiError(
+        401,
+        fromApi ?? 'Не удалось подтвердить код. Проверьте код или запросите новый.',
+      );
+    }
+    if (res.status === 422) {
+      const first422 = messageFromValidationDetail422(data);
+      throw new AuthApiError(422, first422 ?? 'Неверный код');
+    }
+    throw toAuthApiError(res.status, data);
+  }
+
+  if (!data || typeof data !== 'object') {
+    throw new AuthApiError(res.status, 'Некорректный ответ при подтверждении регистрации');
+  }
+  return data as UserResponse;
 }

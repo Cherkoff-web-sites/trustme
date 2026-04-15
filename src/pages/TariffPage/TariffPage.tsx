@@ -18,6 +18,7 @@ export function TariffPage() {
   const [showTopUpModal, setShowTopUpModal] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState('');
   const [topUpStep, setTopUpStep] = useState<TopUpStep>('processing');
+  const [selectedTariffLabel, setSelectedTariffLabel] = useState('');
   const waitingTimerRef = useRef<number | null>(null);
   const moduleOptions = [
     { label: 'Скоринг', price: 1200 },
@@ -93,6 +94,7 @@ export function TariffPage() {
 
   const handlePlanSelect = (plan: TariffPlanCardData) => {
     setTopUpAmount(extractAmount(plan.price));
+    setSelectedTariffLabel(plan.title);
     setTopUpStep('processing');
     setShowTopUpModal(true);
   };
@@ -100,6 +102,7 @@ export function TariffPage() {
   const handleTopUpClose = () => {
     setShowTopUpModal(false);
     setTopUpStep('processing');
+    setSelectedTariffLabel('');
     if (waitingTimerRef.current) {
       window.clearTimeout(waitingTimerRef.current);
       waitingTimerRef.current = null;
@@ -140,6 +143,7 @@ export function TariffPage() {
 
   const handleIndividualContinue = () => {
     setTopUpAmount(String(individualTariffTotal));
+    setSelectedTariffLabel('Индивидуальный тариф');
     setTopUpStep('processing');
     setShowTopUpModal(true);
   };
@@ -288,6 +292,8 @@ export function TariffPage() {
         onPay={handleTopUpPay}
         onBack={handleTopUpBack}
         onClose={handleTopUpClose}
+        mode="tariff_payment"
+        tariffLabel={selectedTariffLabel}
       />
     </PageLayout>
   );

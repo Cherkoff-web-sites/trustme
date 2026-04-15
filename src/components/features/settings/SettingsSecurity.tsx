@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAuth } from '../../../context/AuthContext';
 import { cn } from '../../../lib/cn';
 import { getPasswordRuleChecks } from '../../../lib/passwordRules';
 import { Button, Input, Label, SectionCard, SourceBadge, ToggleSwitch, designTokens } from '../../ui';
@@ -20,6 +21,8 @@ export function SettingsSecurity({
   email2faEnabled,
   onToggleEmail2fa,
 }: SettingsSecurityProps) {
+  const { user } = useAuth();
+  const profileEmail = user?.email?.trim() ?? '';
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
@@ -112,7 +115,12 @@ export function SettingsSecurity({
         <div className="flex flex-col gap-[20px] lg:gap-[30px]">
           <div>
             <Label id="settings-security-current-email-label">Текущая почта</Label>
-            <Input id="settings-security-current-email" aria-labelledby="settings-security-current-email-label" defaultValue="user.example@gmail.com" />
+            <Input
+              key={`settings-security-email-${user?.id ?? 0}`}
+              id="settings-security-current-email"
+              aria-labelledby="settings-security-current-email-label"
+              defaultValue={profileEmail}
+            />
           </div>
 
           <div className="flex flex-col gap-4 sm:flex-row">
