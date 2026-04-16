@@ -57,7 +57,7 @@ export function SettingsTariff({
               Исключите или добавьте факторы проверки в отчет
             </p>
           </div>
-          <ToggleSwitch checked={factorsEnabled} onChange={onToggleFactors} className="hidden lg:inline-flex" />
+          <ToggleSwitch checked={factorsEnabled} onChange={onToggleFactors} className="inline-flex shrink-0" />
         </div>
 
         <MoreDetailsSection className="mb-[30px]">
@@ -78,14 +78,24 @@ export function SettingsTariff({
         </MoreDetailsSection>
 
         <div className="space-y-[30px]">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-4 opacity-70">
             <span className="text-[16px] font-semibold text-white lg:text-[20px]">Упоминания в СМИ</span>
-            <ToggleSwitch checked={mentionsMediaEnabled} onChange={onToggleMentionsMedia} className="hidden lg:inline-flex" />
+            <ToggleSwitch
+              checked={mentionsMediaEnabled}
+              onChange={onToggleMentionsMedia}
+              disabled
+              className="inline-flex shrink-0"
+            />
           </div>
 
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-4 opacity-70">
             <span className="text-[16px] font-semibold text-white lg:text-[20px]">Упоминания в Telegram</span>
-            <ToggleSwitch checked={mentionsTelegramEnabled} onChange={onToggleMentionsTelegram} className="hidden lg:inline-flex" />
+            <ToggleSwitch
+              checked={mentionsTelegramEnabled}
+              onChange={onToggleMentionsTelegram}
+              disabled
+              className="inline-flex shrink-0"
+            />
           </div>
         </div>
       </div>
