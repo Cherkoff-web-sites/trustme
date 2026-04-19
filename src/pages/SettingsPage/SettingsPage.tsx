@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getTariff, setTariff } from '../../api/tariff';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import {
@@ -7,6 +8,8 @@ import {
   SettingsTariff,
 } from '../../components/features/settings';
 import { SettingsSidebarNav } from '../../components/features/SettingsSidebarNav';
+import { useAuth } from '../../context/AuthContext';
+import { getTariffLabel } from '../../lib/apiMappers';
 import { Card } from '../../components/ui';
 import profileSettingsSvg from '../../assets/icons/profile_settings.svg';
 import safetySvg from '../../assets/icons/safety.svg';
@@ -15,12 +18,14 @@ import customSvg from '../../assets/icons/custom.svg';
 type SettingsTab = 'profile' | 'security' | 'tariff';
 
 export function SettingsPage() {
+  const { accessToken } = useAuth();
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [email2faEnabled, setEmail2faEnabled] = useState(false);
   const [factorsEnabled, setFactorsEnabled] = useState(true);
   const [mentionsMediaEnabled, setMentionsMediaEnabled] = useState(false);
   const [mentionsTelegramEnabled, setMentionsTelegramEnabled] = useState(false);
+  const [currentTariffLabel, setCurrentTariffLabel] = useState('Индивидуальный');
 
   const personalizationFactors = [
     'Розыск МВД',
@@ -38,6 +43,49 @@ export function SettingsPage() {
     'Реестр субсидиарных ответчиков',
     'Задолженность перед ФССП',
   ];
+
+  useEffect(() => {
+    if (!accessToken) return;
+    let cancelled = false;
+    getTariff(accessToken)
+      .then((tariff) => {
+        if (cancelled) return;
+        setFactorsEnabled(tariff.include_factors);
+        setMentionsMediaEnabled(tariff.include_media);
+        setMentionsTelegramEnabled(tariff.include_telegram);
+        setCurrentTariffLabel(getTariffLabel(tariff));
+      })
+      .catch(() => {
+        if (cancelled) return;
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken]);
+
+  const persistTariff = async (next: {
+    factorsEnabled: boolean;
+    mentionsMediaEnabled: boolean;
+    mentionsTelegramEnabled: boolean;
+  }) => {
+    if (!accessToken) return;
+    try {
+      const updated = await setTariff(
+        {
+          include_factors: next.factorsEnabled,
+          include_media: next.mentionsMediaEnabled,
+          include_telegram: next.mentionsTelegramEnabled,
+        },
+        accessToken,
+      );
+      setFactorsEnabled(updated.include_factors);
+      setMentionsMediaEnabled(updated.include_media);
+      setMentionsTelegramEnabled(updated.include_telegram);
+      setCurrentTariffLabel(getTariffLabel(updated));
+    } catch {
+      // Если сохранение не удалось, UI останется в последнем локальном состоянии до следующей перезагрузки профиля.
+    }
+  };
 
   return (
     <PageLayout>
@@ -70,12 +118,37 @@ export function SettingsPage() {
             {activeTab === 'tariff' ? (
               <SettingsTariff
                 personalizationFactors={personalizationFactors}
+                currentTariffLabel={currentTariffLabel}
                 factorsEnabled={factorsEnabled}
-                onToggleFactors={() => setFactorsEnabled((value) => !value)}
+                onToggleFactors={() => {
+                  const next = !factorsEnabled;
+                  setFactorsEnabled(next);
+                  void persistTariff({
+                    factorsEnabled: next,
+                    mentionsMediaEnabled,
+                    mentionsTelegramEnabled,
+                  });
+                }}
                 mentionsMediaEnabled={mentionsMediaEnabled}
-                onToggleMentionsMedia={() => setMentionsMediaEnabled((value) => !value)}
+                onToggleMentionsMedia={() => {
+                  const next = !mentionsMediaEnabled;
+                  setMentionsMediaEnabled(next);
+                  void persistTariff({
+                    factorsEnabled,
+                    mentionsMediaEnabled: next,
+                    mentionsTelegramEnabled,
+                  });
+                }}
                 mentionsTelegramEnabled={mentionsTelegramEnabled}
-                onToggleMentionsTelegram={() => setMentionsTelegramEnabled((value) => !value)}
+                onToggleMentionsTelegram={() => {
+                  const next = !mentionsTelegramEnabled;
+                  setMentionsTelegramEnabled(next);
+                  void persistTariff({
+                    factorsEnabled,
+                    mentionsMediaEnabled,
+                    mentionsTelegramEnabled: next,
+                  });
+                }}
               />
             ) : null}
           </div>

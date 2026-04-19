@@ -1,12 +1,16 @@
 import { useMemo, useState } from 'react';
+import { createLegalReport, createPhysicalReport, waitForReportResolution } from '../../api/reports';
 import { uiFlags } from '../../config/uiFlags';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { PersonTypeSwitcher } from '../../components/features/PersonTypeSwitcher';
 import { ReportActions } from '../../components/features/ReportActions';
 import { SupportSection } from '../../components/layout/SupportSection/SupportSection';
+import { useAuth } from '../../context/AuthContext';
+import { downloadHtmlReport, mapReportToHistoryItem } from '../../lib/apiMappers';
 import { Button, Card, Input, Label, MoreDetailsSection, designTokens } from '../../components/ui';
 import { type HistoryItem, ReportContent } from '../../shared/ReportContent';
+import type { ReportResponse } from '../../types/api';
 import { cn } from '../../lib/cn';
 import { combineStyles } from '../../lib/combineStyles';
 import searchSvg from '../../assets/icons/search.svg';
@@ -16,6 +20,7 @@ import warningSvg from '../../assets/icons/warning.svg';
 const REQUIRED_FIELD_MESSAGE = 'Обязательное поле';
 
 export function NewCheckPage() {
+  const { accessToken } = useAuth();
   const [personType, setPersonType] = useState<'legal' | 'individual' | null>(null);
   const [personTypeError, setPersonTypeError] = useState(false);
   const [legalQuery, setLegalQuery] = useState('');
@@ -32,8 +37,12 @@ export function NewCheckPage() {
   const [reportState, setReportState] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [showInlineReport, setShowInlineReport] = useState(false);
   const [lastSubmitSource, setLastSubmitSource] = useState<'primary' | 'alt'>('primary');
+  const [currentReport, setCurrentReport] = useState<ReportResponse | null>(null);
 
   const reportItem: HistoryItem = useMemo(() => {
+    if (currentReport) {
+      return mapReportToHistoryItem(currentReport);
+    }
     if (lastSubmitSource === 'alt') {
       return {
         type: 'Физическое лицо',
@@ -69,11 +78,21 @@ export function NewCheckPage() {
       source: 'web',
       success: reportState !== 'error',
     };
-  }, [lastSubmitSource, personType, legalQuery, fio, birthDate, individualInn, reportState]);
+  }, [currentReport, lastSubmitSource, personType, legalQuery, fio, birthDate, individualInn, reportState]);
 
-  const runCheck = (source: 'primary' | 'alt') => {
+  const normalizeBirthDate = (value: string): string | null => {
+    const trimmed = value.trim();
+    const iso = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (iso) return trimmed;
+    const dot = trimmed.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+    if (!dot) return null;
+    return `${dot[3]}-${dot[2]}-${dot[1]}`;
+  };
+
+  const runCheck = async (source: 'primary' | 'alt') => {
     setShowInlineReport(false);
     setLastSubmitSource(source);
+    setCurrentReport(null);
 
     if (source === 'primary') {
       setLegalQueryError(undefined);
@@ -95,10 +114,48 @@ export function NewCheckPage() {
       if (Object.keys(next).length > 0) return;
     }
 
+    if (!accessToken) {
+      setReportState('error');
+      return;
+    }
+
     setReportState('loading');
-    window.setTimeout(() => {
-      setReportState('ready');
-    }, 1200);
+    try {
+      const created =
+        source === 'alt'
+          ? await createPhysicalReport(
+              {
+                lastname: fio.trim().split(/\s+/)[0] || fio.trim(),
+                firstname: fio.trim().split(/\s+/)[1] || '-',
+                middlename: fio.trim().split(/\s+/)[2] || '-',
+                search_type: 'fio_inn_birthday',
+                birthday: normalizeBirthDate(birthDate),
+                inn: individualInn.trim(),
+              },
+              accessToken,
+            )
+          : personType === 'legal'
+            ? await createLegalReport({ inn: legalQuery.trim() }, accessToken)
+            : await createPhysicalReport(
+                {
+                  lastname: legalQuery.trim().split(/\s+/)[0] || legalQuery.trim(),
+                  firstname: legalQuery.trim().split(/\s+/)[1] || '-',
+                  middlename: legalQuery.trim().split(/\s+/)[2] || '-',
+                  search_type: 'fio',
+                },
+                accessToken,
+              );
+
+      const resolved =
+        created.status === 'pending' || created.status === 'processing'
+          ? await waitForReportResolution(created.id, accessToken)
+          : created;
+
+      setCurrentReport(resolved);
+      setReportState(resolved.status === 'failed' ? 'error' : 'ready');
+    } catch {
+      setReportState('error');
+    }
   };
 
   const pricingDetails = (
@@ -315,6 +372,7 @@ export function NewCheckPage() {
                     onOpen={() => setShowInlineReport(true)}
                     openLabel="Открыть отчет"
                     downloadLabel="Скачать отчет"
+                    onDownload={() => downloadHtmlReport(currentReport)}
                     fullWidthMobile
                     equalSplitLg
                   />

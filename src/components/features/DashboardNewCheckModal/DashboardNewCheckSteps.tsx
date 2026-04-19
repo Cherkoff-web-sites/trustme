@@ -1,9 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createLegalReport, createPhysicalReport, waitForReportResolution } from '../../../api/reports';
+import { useAuth } from '../../../context/AuthContext';
+import { downloadHtmlReport, mapReportToHistoryItem } from '../../../lib/apiMappers';
 import { cn } from '../../../lib/cn';
 import { Button, Input, OptionIndicator } from '../../ui';
 import { ReportActions } from '../ReportActions';
 import { combineStyles } from '../../../lib/combineStyles';
 import { designTokens } from '../../ui/design-tokens';
+import type { ReportResponse } from '../../../types/api';
+import type { HistoryItem } from '../../../shared/ReportContent';
 import loadSvg from '../../../assets/icons/load.svg';
 import searchSvg from '../../../assets/icons/search.svg';
 import {
@@ -22,7 +27,7 @@ type PersonType = 'legal' | 'individual';
 
 export interface DashboardNewCheckStepsProps {
   /** После «Открыть отчёт» в шаге успеха — например открыть превью отчёта в истории. */
-  onReportOpen?: () => void;
+  onReportOpen?: (item?: HistoryItem) => void;
   /** Сообщить текущий шаг наверх (чтобы менять заголовок карточки). */
   onStepChange?: (step: DashboardNewCheckFlowStep) => void;
 }
@@ -32,12 +37,15 @@ export interface DashboardNewCheckStepsProps {
  * Демо ошибки: в поле введите `!fail`.
  */
 export function DashboardNewCheckSteps({ onReportOpen, onStepChange }: DashboardNewCheckStepsProps) {
+  const { accessToken } = useAuth();
   const [flowStep, setFlowStep] = useState<DashboardNewCheckFlowStep>('form');
   const [personType, setPersonType] = useState<PersonType | null>(null);
   const [query, setQuery] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [personTypeError, setPersonTypeError] = useState(false);
   const [queryError, setQueryError] = useState(false);
+  const [latestReport, setLatestReport] = useState<ReportResponse | null>(null);
+  const [latestReportItem, setLatestReportItem] = useState<HistoryItem | null>(null);
   const failTokenRef = useRef(false);
 
   const resetFormFields = useCallback(() => {
@@ -46,6 +54,8 @@ export function DashboardNewCheckSteps({ onReportOpen, onStepChange }: Dashboard
     setSubmitted(false);
     setPersonTypeError(false);
     setQueryError(false);
+    setLatestReport(null);
+    setLatestReportItem(null);
     failTokenRef.current = false;
   }, []);
 
@@ -58,15 +68,40 @@ export function DashboardNewCheckSteps({ onReportOpen, onStepChange }: Dashboard
     return !nextPersonErr && !nextQueryErr;
   };
 
-  const handleLaunch = () => {
+  const handleLaunch = async () => {
     if (!validateForm()) return;
 
     failTokenRef.current = query.trim().toLowerCase() === '!fail';
     setFlowStep('loading');
+    if (!accessToken) {
+      setFlowStep('error');
+      return;
+    }
 
-    window.setTimeout(() => {
-      setFlowStep(failTokenRef.current ? 'error' : 'success');
-    }, 1600);
+    try {
+      const created =
+        personType === 'legal'
+          ? await createLegalReport({ inn: query.trim() }, accessToken)
+          : await createPhysicalReport(
+              {
+                lastname: query.trim().split(/\s+/)[0] || query.trim(),
+                firstname: query.trim().split(/\s+/)[1] || '-',
+                middlename: query.trim().split(/\s+/)[2] || '-',
+                search_type: 'fio',
+              },
+              accessToken,
+            );
+      const resolved =
+        created.status === 'pending' || created.status === 'processing'
+          ? await waitForReportResolution(created.id, accessToken)
+          : created;
+      const nextItem = mapReportToHistoryItem(resolved);
+      setLatestReport(resolved);
+      setLatestReportItem(nextItem);
+      setFlowStep(failTokenRef.current || resolved.status === 'failed' ? 'error' : 'success');
+    } catch {
+      setFlowStep('error');
+    }
   };
 
   const handleRetryFromError = () => {
@@ -75,7 +110,7 @@ export function DashboardNewCheckSteps({ onReportOpen, onStepChange }: Dashboard
   };
 
   const handleReportOpen = () => {
-    onReportOpen?.();
+    onReportOpen?.(latestReportItem ?? undefined);
   };
 
   useEffect(() => {
@@ -220,7 +255,7 @@ export function DashboardNewCheckSteps({ onReportOpen, onStepChange }: Dashboard
             downloadLabel="Скачать отчет"
             onOpen={handleReportOpen}
             onDownload={() => {
-              /* заглушка */
+              downloadHtmlReport(latestReport);
             }}
           />
         </div>

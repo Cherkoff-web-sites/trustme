@@ -13,7 +13,10 @@ import {
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { Card, FilterChip } from '../../components/ui';
+import { listReports } from '../../api/reports';
+import { useAuth } from '../../context/AuthContext';
 import { formatPeriodFilterChipLabel } from '../../lib/dateDisplayFormat';
+import { mapReportToHistoryItem } from '../../lib/apiMappers';
 import { type HistoryItem } from '../../shared/ReportContent';
 
 const INITIAL_HISTORY_ITEMS: HistoryItem[] = [
@@ -294,7 +297,9 @@ const INITIAL_HISTORY_ITEMS: HistoryItem[] = [
   ];
 
 export function HistoryPage() {
+  const { accessToken } = useAuth();
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>(() => [...INITIAL_HISTORY_ITEMS]);
+  const [isLoading, setIsLoading] = useState(false);
 
   /** Черновик в поле «Поиск»; фильтр и чип — только `appliedSearch` после blur / выбора подсказки. */
   const [searchDraft, setSearchDraft] = useState('');
@@ -312,6 +317,27 @@ export function HistoryPage() {
   const [openedReportItem, setOpenedReportItem] = useState<HistoryItem | null>(null);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [mobileOpenPanels, setMobileOpenPanels] = useState<Partial<Record<HistoryFilterPanelKey, boolean>>>({});
+
+  useEffect(() => {
+    if (!accessToken) return;
+    let cancelled = false;
+    setIsLoading(true);
+    listReports({}, accessToken)
+      .then((reports) => {
+        if (cancelled) return;
+        setHistoryItems(reports.map(mapReportToHistoryItem));
+      })
+      .catch(() => {
+        if (cancelled) return;
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken]);
 
   // Состояние пагинации
   const [currentPage, setCurrentPage] = useState(1);
@@ -401,17 +427,12 @@ export function HistoryPage() {
     return true;
   });
 
-  // ПОРЯДОК КАК В КОНСТАНТАХ: убираем сортировку, оставляем исходный порядок
-  // Если нужна сортировка, раскомментируйте блок ниже:
-  /*
   const sortedItems = filteredItems.slice().sort((a, b) => {
     const aDate = parseHistoryDate(a.checkedAt);
     const bDate = parseHistoryDate(b.checkedAt);
     if (!aDate || !bDate) return 0;
     return sortOrder === 'new' ? bDate.getTime() - aDate.getTime() : aDate.getTime() - bDate.getTime();
   });
-  */
-  const sortedItems = filteredItems; // Порядок как в константах
 
   // Пагинация: ровно 4 карточки на страницу
   const totalPages = Math.ceil(sortedItems.length / ITEMS_PER_PAGE);
@@ -733,6 +754,12 @@ export function HistoryPage() {
           </div>
         ) : null}
 
+        {isLoading ? (
+          <Card variant="history">
+            <p className="m-0 text-center text-[#FDFEFF]">Загружаем историю отчётов...</p>
+          </Card>
+        ) : null}
+
         {/* Список карточек (пагинированный, ровно 4 штуки) */}
         <div className="space-y-4 sm:space-y-5">
           {paginatedItems.map((item) => (
@@ -744,6 +771,12 @@ export function HistoryPage() {
             />
           ))}
         </div>
+
+        {!isLoading && paginatedItems.length === 0 ? (
+          <Card variant="history">
+            <p className="m-0 text-center text-[#FDFEFF]">По выбранным фильтрам отчёты не найдены.</p>
+          </Card>
+        ) : null}
 
         {/* Пагинация с оконной логикой */}
         {totalPages > 1 && (

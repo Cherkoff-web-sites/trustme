@@ -7,6 +7,7 @@ import {
 
 export interface SettingsTariffProps {
   personalizationFactors: string[];
+  currentTariffLabel?: string;
   factorsEnabled: boolean;
   onToggleFactors: () => void;
   mentionsMediaEnabled: boolean;
@@ -17,6 +18,7 @@ export interface SettingsTariffProps {
 
 export function SettingsTariff({
   personalizationFactors,
+  currentTariffLabel = 'Индивидуальный',
   factorsEnabled,
   onToggleFactors,
   mentionsMediaEnabled,
@@ -40,7 +42,7 @@ export function SettingsTariff({
       title={
         <>
           <span>Настроить текущий тариф: </span>
-          <span className="text-[#0EB8D2]">Индивидуальный</span>
+          <span className="text-[#0EB8D2]">{currentTariffLabel}</span>
         </>
       }
     >
@@ -83,7 +85,6 @@ export function SettingsTariff({
             <ToggleSwitch
               checked={mentionsMediaEnabled}
               onChange={onToggleMentionsMedia}
-              disabled
               className="inline-flex shrink-0"
             />
           </div>
@@ -93,7 +94,6 @@ export function SettingsTariff({
             <ToggleSwitch
               checked={mentionsTelegramEnabled}
               onChange={onToggleMentionsTelegram}
-              disabled
               className="inline-flex shrink-0"
             />
           </div>

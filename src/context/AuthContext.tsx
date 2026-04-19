@@ -31,6 +31,7 @@ export type AuthContextValue = {
   /** Переключение на другой сохранённый аккаунт (тот же токен из списка). */
   switchAccount: (email: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
+  refreshUser: () => Promise<UserResponse | null>;
   logout: () => Promise<void>;
 };
 
@@ -171,6 +172,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [clearSession],
   );
 
+  const refreshUser = useCallback(async () => {
+    if (!accessToken) {
+      setUser(null);
+      return null;
+    }
+    const nextUser = await fetchCurrentUser(accessToken);
+    setUser(nextUser);
+    if (typeof window !== 'undefined') {
+      const merged = upsertAccountSession(readAccountSessions(), nextUser.email, accessToken);
+      writeAccountSessions(merged);
+      setAccountSessions(merged);
+    }
+    return nextUser;
+  }, [accessToken]);
+
   const switchAccount = useCallback(
     async (email: string) => {
       const trimmed = email.trim();
@@ -243,6 +259,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       accountEmails,
       switchAccount,
       login,
+      refreshUser,
       logout,
     }),
     [
@@ -254,6 +271,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       accountEmails,
       switchAccount,
       login,
+      refreshUser,
       logout,
     ],
   );

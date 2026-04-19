@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { uiFlags } from '../../config/uiFlags';
+import { topupBalance } from '../../api/balance';
+import { listReports } from '../../api/reports';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { DashboardGrid } from '../../components/layout/DashboardGrid/DashboardGrid';
 import { DashboardNewCheckSteps, type DashboardNewCheckFlowStep } from '../../components/features/DashboardNewCheckModal';
 import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
+import { useAuth } from '../../context/AuthContext';
+import { mapReportToHistoryItem } from '../../lib/apiMappers';
 import { HistoryReportModal } from '../../components/features/history';
 import { AlertBanner, Button, Card, CardHeaderDecorDivider, designTokens } from '../../components/ui';
 import { combineStyles } from '../../lib/combineStyles';
@@ -21,14 +25,16 @@ import telegramSvg from '../../assets/icons/telegram.svg';
 import websiteOnDashboardSvg from '../../assets/icons/website_on_dashboard.svg';
 
 export function DashboardPage() {
-  const lastRequests = [
+  const { accessToken, user, refreshUser } = useAuth();
+  const [lastRequests, setLastRequests] = useState<Array<[string, string, string, string]>>([
     ['23.12.2025', 'Юр.лицо', 'Telegram-бот', 'Успешно'],
     ['23.10.2025', 'Физ.лицо', 'Веб-сервис', 'Ошибка'],
     ['23.09.2025', 'Юр.лицо', 'Telegram-бот', 'Успешно'],
     ['23.09.2024', 'Юр.лицо', 'Веб-сервис', 'Ошибка'],
-  ] as const;
+  ]);
+  const [recentReportItems, setRecentReportItems] = useState<HistoryItem[]>([]);
 
-  const sampleReportItem: HistoryItem = {
+  const fallbackReportItem: HistoryItem = {
     type: 'Юридическое лицо',
     name: 'ООО «УМНЫЙ РИТЕЙЛ»',
     dotColor: designTokens.colors.status.errorBg,
@@ -49,9 +55,37 @@ export function DashboardPage() {
   const [topUpStep, setTopUpStep] = useState<TopUpStep>('form');
   const topUpWaitingTimerRef = useRef<number | null>(null);
 
+  useEffect(() => {
+    if (!accessToken) return;
+    let cancelled = false;
+    listReports({}, accessToken)
+      .then((reports) => {
+        if (cancelled) return;
+        const mapped = reports
+          .slice()
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          .map(mapReportToHistoryItem);
+        setRecentReportItems(mapped.slice(0, 4));
+        setLastRequests(
+          mapped.slice(0, 4).map((item) => [
+            item.checkedAt,
+            item.type === 'Юридическое лицо' ? 'Юр.лицо' : 'Физ.лицо',
+            item.source === 'telegram' ? 'Telegram-бот' : 'Веб-сервис',
+            item.success ? 'Успешно' : 'Ошибка',
+          ]),
+        );
+      })
+      .catch(() => {
+        if (cancelled) return;
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken]);
+
   const handleOpenTopUp = () => {
     setTopUpStep('form');
-    setTopUpAmount('4 550');
+    setTopUpAmount(user ? user.balance.toLocaleString('ru-RU') : '4 550');
     setShowTopUpModal(true);
   };
 
@@ -72,13 +106,16 @@ export function DashboardPage() {
     setTopUpStep('processing');
   };
 
-  const handleTopUpPay = () => {
+  const handleTopUpPay = async () => {
+    if (!accessToken) return;
     setTopUpStep('waiting');
-    if (topUpWaitingTimerRef.current) window.clearTimeout(topUpWaitingTimerRef.current);
-    topUpWaitingTimerRef.current = window.setTimeout(() => {
+    try {
+      await topupBalance({ amount: Number(topUpAmount.replace(/\D/g, '')) }, accessToken);
+      await refreshUser();
       setTopUpStep('success');
-      topUpWaitingTimerRef.current = null;
-    }, 3000);
+    } catch {
+      setTopUpStep('processing');
+    }
   };
 
   const handleTopUpBack = () => {
@@ -121,14 +158,13 @@ export function DashboardPage() {
       ] as const;
     }
 
-    // Демо-значения для карточки статистики (по макету).
-    const legalCount = 25;
-    const individualCount = 57;
+    const legalCount = recentReportItems.filter((item) => item.type === 'Юридическое лицо').length;
+    const individualCount = recentReportItems.filter((item) => item.type === 'Физическое лицо').length;
     return [
       { label: 'Физическое лицо', value: individualCount, color: '#FDFEFF' },
       { label: 'Юридическое лицо', value: legalCount, color: '#0EB8D2' },
     ] as const;
-  }, [lastRequests, statsSortBy]);
+  }, [lastRequests, recentReportItems, statsSortBy]);
 
   const statsTotal = statsSegments[0].value + statsSegments[1].value;
   const circleRadius = 48;
@@ -161,7 +197,7 @@ export function DashboardPage() {
           >
             <DashboardNewCheckSteps
               onStepChange={setNewCheckStep}
-              onReportOpen={() => setOpenedReportItem(sampleReportItem)}
+              onReportOpen={(item) => setOpenedReportItem(item ?? recentReportItems[0] ?? fallbackReportItem)}
             />
           </Card>
         }
@@ -198,7 +234,7 @@ export function DashboardPage() {
                     }}
                   >
                     <img src={walletSvg} alt="" className="h-auto w-[18px] shrink-0 lg:h-6 lg:w-6" />
-                    <span>4 550 ₽</span>
+                    <span>{user ? `${user.balance.toLocaleString('ru-RU')} ₽` : '—'}</span>
                   </div>
                   <Button className="w-full min-w-0 flex-1 lg:min-h-12" onClick={handleOpenTopUp}>
                     Пополнить
@@ -358,7 +394,7 @@ export function DashboardPage() {
                               variant="secondary"
                               size="sm"
                               className="border-[#FDFEFF]/50 px-[30px] py-[10px] lg:!text-[18px] leading-[1] font-normal"
-                              onClick={() => setOpenedReportItem(sampleReportItem)}
+                              onClick={() => setOpenedReportItem(recentReportItems[index] ?? fallbackReportItem)}
                             >
                               Открыть
                             </Button>
@@ -372,7 +408,7 @@ export function DashboardPage() {
 
               {/* Mobile: каждая строка таблицы превращается в отдельную карточку */}
               <div className="flex flex-col gap-[20px] lg:hidden">
-                {lastRequests.map(([date, category, source, status]) => {
+                {lastRequests.map(([date, category, source, status], index) => {
                   const statusColor =
                     status === 'Ошибка' ? designTokens.colors.text.statusError : designTokens.colors.text.statusSuccess;
 
@@ -415,7 +451,7 @@ export function DashboardPage() {
                           <Button
                             variant="secondary"
                             className="w-full border-white/40 px-[15px] py-[15px] text-[14px] leading-[1] font-normal"
-                            onClick={() => setOpenedReportItem(sampleReportItem)}
+                            onClick={() => setOpenedReportItem(recentReportItems[index] ?? fallbackReportItem)}
                           >
                             Открыть отчет
                           </Button>

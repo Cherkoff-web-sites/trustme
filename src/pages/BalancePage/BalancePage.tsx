@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   BalanceFilters,
   TransactionTable,
+  type TransactionRow,
   type BalanceFilterPanel,
   type BalanceFilterPanelKey,
   type BalanceFiltersProps,
@@ -9,30 +10,28 @@ import {
   type BalanceSourceFilter,
   type BalanceTypeFilter,
 } from '../../components/features/balance';
+import { listTransactions, topupBalance } from '../../api/balance';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
+import { useAuth } from '../../context/AuthContext';
 import { Button, Card, CardHeaderDecorDivider, FilterChip, designTokens } from '../../components/ui';
 import { formatPeriodFilterChipLabel } from '../../lib/dateDisplayFormat';
+import { mapTransactionToRow } from '../../lib/apiMappers';
 import { combineStyles } from '../../lib/combineStyles';
 import walletSvg from '../../assets/icons/wallet.svg';
 import telegramSvg from '../../assets/icons/telegram.svg';
 import websiteOnDashboardSvg from '../../assets/icons/website_on_dashboard.svg';
 
-type BalanceOperation = {
-  date: string;
-  type: 'Поступление' | 'Списание';
-  source: 'telegram' | 'web';
-  amount: string;
-};
-
 export function BalancePage() {
-  const operations: BalanceOperation[] = [
+  const { accessToken, user, refreshUser } = useAuth();
+  const [operations, setOperations] = useState<TransactionRow[]>([
     { date: '23.12.2025', type: 'Поступление', source: 'telegram', amount: '1000 ₽' },
     { date: '23.10.2025', type: 'Поступление', source: 'web', amount: '2000 ₽' },
     { date: '23.09.2025', type: 'Списание', source: 'telegram', amount: '1000 ₽' },
     { date: '23.09.2024', type: 'Списание', source: 'web', amount: '2000 ₽' },
-  ];
+  ]);
+  const [transactionsLoading, setTransactionsLoading] = useState(false);
 
   const [showTopUpModal, setShowTopUpModal] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState('');
@@ -72,13 +71,18 @@ export function BalancePage() {
     setTopUpStep('processing');
   };
 
-  const handleTopUpPay = () => {
+  const handleTopUpPay = async () => {
+    if (!accessToken) return;
     setTopUpStep('waiting');
-    if (waitingTimerRef.current) window.clearTimeout(waitingTimerRef.current);
-    waitingTimerRef.current = window.setTimeout(() => {
+    try {
+      await topupBalance({ amount: Number(topUpAmount.replace(/\D/g, '')) }, accessToken);
+      await refreshUser();
+      const items = await listTransactions(accessToken);
+      setOperations(items.map(mapTransactionToRow));
       setTopUpStep('success');
-      waitingTimerRef.current = null;
-    }, 3000);
+    } catch {
+      setTopUpStep('processing');
+    }
   };
 
   const handleTopUpBack = () => {
@@ -92,6 +96,27 @@ export function BalancePage() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!accessToken) return;
+    let cancelled = false;
+    setTransactionsLoading(true);
+    listTransactions(accessToken)
+      .then((items) => {
+        if (cancelled) return;
+        setOperations(items.map(mapTransactionToRow));
+      })
+      .catch(() => {
+        if (cancelled) return;
+      })
+      .finally(() => {
+        if (!cancelled) setTransactionsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken]);
 
   const toggleBalancePanel = (panel: BalanceFilterPanel) => {
     setBalanceOpenPanel((current) => (current === panel ? null : panel));
@@ -232,7 +257,7 @@ export function BalancePage() {
             <div>
               <div className="flex items-center gap-[10px] lg:gap-[15px] text-[18px] lg:text-[36px] font-semibold text-white">
                 <img src={walletSvg} alt="" className="h-auto w-[20px] lg:w-[30px]" />
-                <span>100 ₽</span>
+                <span>{user ? `${user.balance.toLocaleString('ru-RU')} ₽` : '—'}</span>
               </div>
               <p
                 className={combineStyles(
@@ -360,10 +385,17 @@ export function BalancePage() {
         ) : null}
 
         <Card className="hidden lg:block" variant="dashboard">
-          <TransactionTable operations={filteredOperations} />
+          {transactionsLoading ? (
+            <p className="m-0 text-center text-[#FDFEFF]">Загружаем операции...</p>
+          ) : (
+            <TransactionTable operations={filteredOperations} />
+          )}
         </Card>
 
         <Card className="lg:hidden">
+          {transactionsLoading ? (
+            <p className="m-0 text-center text-[#FDFEFF]">Загружаем операции...</p>
+          ) : (
           <div className="flex flex-col gap-[20px]">
             {filteredOperations.map((operation) => {
               const isTelegram = operation.source === 'telegram';
@@ -411,6 +443,7 @@ export function BalancePage() {
               );
             })}
           </div>
+          )}
         </Card>
       </PageSection>
 

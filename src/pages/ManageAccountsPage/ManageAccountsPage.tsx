@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { uiFlags } from '../../config/uiFlags';
+import { topupBalance } from '../../api/balance';
+import { createCompany } from '../../api/companies';
+import { useAuth } from '../../context/AuthContext';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { ManageAccountsGrid } from '../../components/layout/DashboardGrid/ManageAccountsGrid';
 import { DashboardNewCheckSteps, type DashboardNewCheckFlowStep } from '../../components/features/DashboardNewCheckModal';
@@ -105,7 +108,10 @@ const MANAGE_RECENT_REQUESTS_DEMO: ManageRecentRequestRow[] = [
 ];
 
 export function ManageAccountsPage() {
+  const { accessToken, user, refreshUser } = useAuth();
   const manageRecentRequests = MANAGE_RECENT_REQUESTS_DEMO;
+  const [companyName, setCompanyName] = useState('');
+  const [companyActionMessage, setCompanyActionMessage] = useState<string | null>(null);
 
   const sampleReportItem: HistoryItem = {
     type: 'Юридическое лицо',
@@ -130,7 +136,7 @@ export function ManageAccountsPage() {
 
   const handleOpenTopUp = () => {
     setTopUpStep('form');
-    setTopUpAmount('4 550');
+    setTopUpAmount(user ? user.balance.toLocaleString('ru-RU') : '4 550');
     setShowTopUpModal(true);
   };
 
@@ -151,13 +157,16 @@ export function ManageAccountsPage() {
     setTopUpStep('processing');
   };
 
-  const handleTopUpPay = () => {
+  const handleTopUpPay = async () => {
+    if (!accessToken) return;
     setTopUpStep('waiting');
-    if (topUpWaitingTimerRef.current) window.clearTimeout(topUpWaitingTimerRef.current);
-    topUpWaitingTimerRef.current = window.setTimeout(() => {
+    try {
+      await topupBalance({ amount: Number(topUpAmount.replace(/\D/g, '')) }, accessToken);
+      await refreshUser();
       setTopUpStep('success');
-      topUpWaitingTimerRef.current = null;
-    }, 3000);
+    } catch {
+      setTopUpStep('processing');
+    }
   };
 
   const handleTopUpBack = () => {
@@ -220,6 +229,18 @@ export function ManageAccountsPage() {
   const firstDash = drawableLength * firstRatio;
   const secondDash = Math.max(0, drawableLength - firstDash);
 
+  const handleCreateCompany = async () => {
+    if (!accessToken || !companyName.trim()) return;
+    try {
+      await createCompany({ name: companyName.trim() }, accessToken);
+      await refreshUser();
+      setCompanyActionMessage('Компания успешно создана.');
+      setCompanyName('');
+    } catch {
+      setCompanyActionMessage('Не удалось создать компанию. Попробуйте позже.');
+    }
+  };
+
   return (
     <PageLayout>
       <section className="relative">
@@ -239,7 +260,7 @@ export function ManageAccountsPage() {
             >
               <DashboardNewCheckSteps
                 onStepChange={setNewCheckStep}
-                onReportOpen={() => setOpenedReportItem(sampleReportItem)}
+                onReportOpen={(item) => setOpenedReportItem(item ?? sampleReportItem)}
               />
             </Card>
           }
@@ -276,7 +297,7 @@ export function ManageAccountsPage() {
                   }}
                 >
                   <img src={walletSvg} alt="" className="h-auto w-[18px] shrink-0 lg:h-6 lg:w-6" />
-                  <span>4 550 ₽</span>
+                  <span>{user ? `${user.balance.toLocaleString('ru-RU')} ₽` : '—'}</span>
                 </div>
                 <Button className="w-full min-w-0 flex-1 lg:min-h-12" onClick={handleOpenTopUp}>
                   Пополнить
@@ -748,6 +769,31 @@ export function ManageAccountsPage() {
           </div>
         </Card>
       </section>
+
+      {user?.role === 'company_admin' && user.company_id == null ? (
+        <section className="mt-[20px]">
+          <Card title="Компания" headerDecor={<CardHeaderDecorDivider />}>
+            <div className="flex flex-col gap-[20px]">
+              <p className="m-0 text-[#FDFEFF]">
+                В API доступно создание компании. Текущая таблица сотрудников пока остаётся демо до появления
+                endpoint-ов чтения.
+              </p>
+              <div className="flex flex-col gap-[15px] lg:flex-row">
+                <input
+                  className="min-h-[48px] flex-1 rounded-[10px] border border-[#FDFEFF]/20 bg-[#2A2A2A] px-4 text-[#FDFEFF]"
+                  placeholder="Название компании"
+                  value={companyName}
+                  onChange={(event) => setCompanyName(event.target.value)}
+                />
+                <Button className="lg:min-w-[220px]" onClick={handleCreateCompany}>
+                  Создать компанию
+                </Button>
+              </div>
+              {companyActionMessage ? <p className="m-0 text-[#FDFEFF]/80">{companyActionMessage}</p> : null}
+            </div>
+          </Card>
+        </section>
+      ) : null}
 
       <HistoryReportModal item={openedReportItem} onClose={() => setOpenedReportItem(null)} />
       <BalanceTopUpModal

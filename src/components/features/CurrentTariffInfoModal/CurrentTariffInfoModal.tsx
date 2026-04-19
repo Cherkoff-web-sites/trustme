@@ -9,12 +9,6 @@ import {
   currentTariffInfoTextStyles,
 } from "./CurrentTariffInfoModal.styles";
 
-const tariffItems = [
-  { label: "Упоминания в Telegram", positive: false },
-  { label: "Упоминания в СМИ", positive: false },
-  { label: "Все факторы проверок", positive: true },
-] as const;
-
 function CrossIcon() {
   return (
     <svg
@@ -56,11 +50,19 @@ function CheckIcon() {
 export interface CurrentTariffInfoModalProps {
   open: boolean;
   onClose: () => void;
+  tariffLabel?: string;
+  items?: Array<{ label: string; positive: boolean }>;
 }
 
 export function CurrentTariffInfoModal({
   open,
   onClose,
+  tariffLabel = 'Индивидуальный',
+  items = [
+    { label: 'Упоминания в Telegram', positive: false },
+    { label: 'Упоминания в СМИ', positive: false },
+    { label: 'Все факторы проверок', positive: true },
+  ],
 }: CurrentTariffInfoModalProps) {
   useBodyScrollLock(open);
   if (!open) return null;
@@ -79,12 +81,12 @@ export function CurrentTariffInfoModal({
           aria-label="Показ тарифа"
         >
           <p className={currentTariffInfoTextStyles}>
-            Ваш тарифный план «Индивидуальный» включает в себя следующие
+            Ваш тарифный план «{tariffLabel}» включает в себя следующие
             категории:
           </p>
 
           <ul className={currentTariffInfoListStyles}>
-            {tariffItems.map((item) => (
+            {items.map((item) => (
               <li
                 key={item.label}
                 className={`${currentTariffInfoItemStyles} ${item.positive ? "text-[#45C857]" : "text-[#F45353]"}`}
