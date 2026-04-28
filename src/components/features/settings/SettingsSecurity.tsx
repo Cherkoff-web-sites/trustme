@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { authChangePassword, authConfirmCode } from '../../../api/auth';
 import { useAuth } from '../../../context/AuthContext';
 import { cn } from '../../../lib/cn';
 import { getPasswordRuleChecks } from '../../../lib/passwordRules';
@@ -47,13 +48,14 @@ export function SettingsSecurity({
   email2faEnabled,
   onToggleEmail2fa,
 }: SettingsSecurityProps) {
-  const { user } = useAuth();
+  const { accessToken, refreshUser, user } = useAuth();
   const profileEmail = user?.email?.trim() ?? '';
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [changePwdStep, setChangePwdStep] = useState<'credentials' | 'emailCode' | 'success'>('credentials');
   const [emailCode, setEmailCode] = useState('');
+  const [passwordActionMessage, setPasswordActionMessage] = useState<string | null>(null);
   const [phoneFlowStep, setPhoneFlowStep] = useState<'idle' | 'enterPhone' | 'smsSent' | 'enterCode'>('idle');
   const [phoneCandidate, setPhoneCandidate] = useState('+7 (800) 555 35 35');
   const [phoneAccessCode, setPhoneAccessCode] = useState('');
@@ -84,13 +86,43 @@ export function SettingsSecurity({
 
   const handleCredentialsContinue = () => {
     if (!passwordsValid) return;
+    setPasswordActionMessage(null);
     setChangePwdStep('emailCode');
   };
 
-  const handleEmailCodeConfirm = () => {
+  const handleEmailCodeConfirm = async () => {
     if (emailCode.length !== CHANGE_PASSWORD_EMAIL_CODE_LEN) return;
-    setChangePwdStep('success');
-    setEmailCode('');
+    if (!accessToken || !user) {
+      setPasswordActionMessage('Необходима авторизация.');
+      return;
+    }
+    try {
+      await authConfirmCode(
+        {
+          user_id: user.id,
+          code: Number(emailCode),
+          type_code: 'change_password',
+        },
+        accessToken,
+      );
+      await authChangePassword(
+        {
+          old_pswd: currentPassword,
+          new_pswd: newPassword,
+          email: user.email,
+        },
+        accessToken,
+      );
+      await refreshUser();
+      setChangePwdStep('success');
+      setEmailCode('');
+      setCurrentPassword('');
+      setNewPassword('');
+      setNewPasswordConfirm('');
+      setPasswordActionMessage(null);
+    } catch (error) {
+      setPasswordActionMessage(error instanceof Error ? error.message : 'Не удалось изменить пароль.');
+    }
   };
 
   const resetPhoneFlow = () => {
@@ -264,6 +296,7 @@ export function SettingsSecurity({
             >
               Сохранить изменения
             </Button>
+            {passwordActionMessage ? <p className="m-0 text-[#EB4335]">{passwordActionMessage}</p> : null}
           </div>
 
           <div

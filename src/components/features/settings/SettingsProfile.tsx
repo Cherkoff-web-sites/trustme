@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import { bindTelegram, updateUserThemes } from '../../../api/users';
 import { PersonTypeSwitcher } from '../PersonTypeSwitcher';
 import {
   Button,
@@ -19,11 +20,13 @@ import {
 } from './SettingsProfile.styles';
 
 export function SettingsProfile() {
-  const { user } = useAuth();
+  const { accessToken, refreshUser, user } = useAuth();
   const profileEmail = user?.email?.trim() ?? '';
   const [personType, setPersonType] = useState<'legal' | 'individual'>('individual');
   const [consentPromo, setConsentPromo] = useState(false);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
+  const [telegramUserId, setTelegramUserId] = useState(user?.telegram_id ? String(user.telegram_id) : '');
+  const [profileApiMessage, setProfileApiMessage] = useState<string | null>(null);
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -41,6 +44,27 @@ export function SettingsProfile() {
       return url;
     });
     e.target.value = '';
+  };
+
+  const handleSaveProfileApiSettings = async () => {
+    if (!accessToken || !user) return;
+    try {
+      await updateUserThemes(
+        {
+          ui_theme: user.ui_theme,
+          report_theme: user.report_theme,
+        },
+        accessToken,
+      );
+      const telegramId = Number(telegramUserId.replace(/\D/g, ''));
+      if (telegramId) {
+        await bindTelegram({ telegram_user_id: telegramId }, accessToken);
+      }
+      await refreshUser();
+      setProfileApiMessage('Профильные API-настройки сохранены.');
+    } catch (error) {
+      setProfileApiMessage(error instanceof Error ? error.message : 'Не удалось сохранить профильные API-настройки.');
+    }
   };
 
   return (
@@ -169,6 +193,26 @@ export function SettingsProfile() {
 
             <div className="mt-2 flex justify-end">
               <Button className="w-full min-w-0 lg:w-auto lg:min-w-[260px]">Сохранить изменения</Button>
+            </div>
+
+            <div className="rounded-[16px] bg-[#2A2A2A] px-[15px] py-[15px]">
+              <div className="flex flex-col gap-[20px]">
+                <div>
+                  <Label id="settings-profile-telegram-label">Telegram user ID</Label>
+                  <Input
+                    id="settings-profile-telegram"
+                    aria-labelledby="settings-profile-telegram-label"
+                    inputMode="numeric"
+                    placeholder="Введите Telegram ID"
+                    value={telegramUserId}
+                    onChange={(event) => setTelegramUserId(event.target.value)}
+                  />
+                </div>
+                <Button type="button" className="w-full lg:w-auto lg:self-start" onClick={handleSaveProfileApiSettings}>
+                  Сохранить API-настройки профиля
+                </Button>
+                {profileApiMessage ? <p className="m-0 text-[#FDFEFF]">{profileApiMessage}</p> : null}
+              </div>
             </div>
           </div>
         </div>

@@ -25,12 +25,7 @@ import websiteOnDashboardSvg from '../../assets/icons/website_on_dashboard.svg';
 
 export function BalancePage() {
   const { accessToken, user, refreshUser } = useAuth();
-  const [operations, setOperations] = useState<TransactionRow[]>([
-    { date: '23.12.2025', type: 'Поступление', source: 'telegram', amount: '1000 ₽' },
-    { date: '23.10.2025', type: 'Поступление', source: 'web', amount: '2000 ₽' },
-    { date: '23.09.2025', type: 'Списание', source: 'telegram', amount: '1000 ₽' },
-    { date: '23.09.2024', type: 'Списание', source: 'web', amount: '2000 ₽' },
-  ]);
+  const [operations, setOperations] = useState<TransactionRow[]>([]);
   const [transactionsLoading, setTransactionsLoading] = useState(false);
 
   const [showTopUpModal, setShowTopUpModal] = useState(false);
@@ -387,6 +382,8 @@ export function BalancePage() {
         <Card className="hidden lg:block" variant="dashboard">
           {transactionsLoading ? (
             <p className="m-0 text-center text-[#FDFEFF]">Загружаем операции...</p>
+          ) : filteredOperations.length === 0 ? (
+            <p className="m-0 text-center text-[#FDFEFF]">Операции не найдены.</p>
           ) : (
             <TransactionTable operations={filteredOperations} />
           )}
@@ -395,6 +392,8 @@ export function BalancePage() {
         <Card className="lg:hidden">
           {transactionsLoading ? (
             <p className="m-0 text-center text-[#FDFEFF]">Загружаем операции...</p>
+          ) : filteredOperations.length === 0 ? (
+            <p className="m-0 text-center text-[#FDFEFF]">Операции не найдены.</p>
           ) : (
           <div className="flex flex-col gap-[20px]">
             {filteredOperations.map((operation) => {

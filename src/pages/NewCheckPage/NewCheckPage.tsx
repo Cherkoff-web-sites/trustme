@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { createLegalReport, createPhysicalReport, waitForReportResolution } from '../../api/reports';
 import { uiFlags } from '../../config/uiFlags';
+import { SUPPORT_TELEGRAM_URL } from '../../shared/supportLinks';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { PersonTypeSwitcher } from '../../components/features/PersonTypeSwitcher';
@@ -391,8 +392,10 @@ export function NewCheckPage() {
                 </div>
                 <p className="mt-4 text-[#FDFEFF]">
                   Что-то пошло не так?{' '}
-                  <Button variant="ghost" className="font-medium text-[#FDFEFF] underline underline-offset-4 hover:text-[#FDFEFF]">
-                    Написать в поддержку
+                  <Button asChild variant="ghost" className="font-medium text-[#FDFEFF] underline underline-offset-4 hover:text-[#FDFEFF]">
+                    <a href={SUPPORT_TELEGRAM_URL} target="_blank" rel="noopener noreferrer">
+                      Написать в поддержку
+                    </a>
                   </Button>
                 </p>
               </div>

@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { createSubscriptionPayment, getSubscriptionCatalog, getSubscriptionStatus, waitForPaymentActivation } from '../../api/subscription';
+import {
+  createReportPayment,
+  createSubscriptionPayment,
+  getSubscriptionCatalog,
+  getSubscriptionStatus,
+  waitForPaymentActivation,
+} from '../../api/subscription';
 import { getTariff, setTariff as saveTariff } from '../../api/tariff';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
@@ -29,6 +35,7 @@ export function TariffPage() {
   const [catalog, setCatalog] = useState<Awaited<ReturnType<typeof getSubscriptionCatalog>> | null>(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState<Awaited<ReturnType<typeof getSubscriptionStatus>> | null>(null);
   const [tariff, setTariff] = useState<Awaited<ReturnType<typeof getTariff>> | null>(null);
+  const [reportPaymentMessage, setReportPaymentMessage] = useState<string | null>(null);
   const moduleOptions = [
     { label: 'Все факторы проверок', price: 1200 },
     { label: 'Упоминания в СМИ', price: 1300 },
@@ -224,6 +231,26 @@ export function TariffPage() {
     setShowTopUpModal(true);
   };
 
+  const handleReportPayment = async (reportType: 'legal' | 'physical') => {
+    if (!accessToken) return;
+    try {
+      setReportPaymentMessage(null);
+      const payment = await createReportPayment({ report_type: reportType }, accessToken);
+      window.open(payment.payment_url, '_blank', 'noopener,noreferrer');
+      const status = await waitForPaymentActivation(
+        { orderId: payment.order_id, paymentId: payment.payment_id },
+        accessToken,
+      );
+      setReportPaymentMessage(
+        isPaymentSuccessful(status)
+          ? 'Оплата разового отчёта активирована.'
+          : 'Платёж создан. Если он уже оплачен, статус обновится после подтверждения платёжной системы.',
+      );
+    } catch (error) {
+      setReportPaymentMessage(error instanceof Error ? error.message : 'Не удалось создать оплату отчёта.');
+    }
+  };
+
   useEffect(() => {
     return () => {
       if (waitingTimerRef.current) window.clearTimeout(waitingTimerRef.current);
@@ -361,6 +388,31 @@ export function TariffPage() {
             </Button>
           </Card>
         </div>
+      </PageSection>
+
+      <PageSection
+        title="Разовая оплата отчёта"
+        description="Создайте платёж на отдельный юридический или физический отчёт по API"
+      >
+        <Card title="Оплата отчёта" headerDecor={<CardHeaderDecorDivider />}>
+          <div className="flex flex-col gap-[20px]">
+            {catalog ? (
+              <p className="m-0 text-[#FDFEFF]">
+                ЮЛ {catalog.legal_report_price.toLocaleString('ru-RU')} ₽, ФЛ{' '}
+                {catalog.physical_report_price.toLocaleString('ru-RU')} ₽
+              </p>
+            ) : null}
+            <div className="flex flex-col gap-[15px] lg:flex-row">
+              <Button className="lg:min-w-[260px]" onClick={() => void handleReportPayment('legal')}>
+                Оплатить отчёт ЮЛ
+              </Button>
+              <Button className="lg:min-w-[260px]" onClick={() => void handleReportPayment('physical')}>
+                Оплатить отчёт ФЛ
+              </Button>
+            </div>
+            {reportPaymentMessage ? <p className="m-0 text-[#FDFEFF]">{reportPaymentMessage}</p> : null}
+          </div>
+        </Card>
       </PageSection>
 
       <SupportSection />

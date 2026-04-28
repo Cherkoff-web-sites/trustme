@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom';
 import { uiFlags } from '../../config/uiFlags';
 import { topupBalance } from '../../api/balance';
 import { listReports } from '../../api/reports';
+import { getSubscriptionStatus } from '../../api/subscription';
+import { getTariff } from '../../api/tariff';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { DashboardGrid } from '../../components/layout/DashboardGrid/DashboardGrid';
 import { DashboardNewCheckSteps, type DashboardNewCheckFlowStep } from '../../components/features/DashboardNewCheckModal';
 import { BalanceTopUpModal, type TopUpStep } from '../../components/features/BalanceTopUpModal';
 import { CurrentTariffInfoModal } from '../../components/features/CurrentTariffInfoModal';
 import { useAuth } from '../../context/AuthContext';
-import { mapReportToHistoryItem } from '../../lib/apiMappers';
+import { getSubscriptionBanner, getTariffFeatureItems, getTariffLabel, mapReportToHistoryItem } from '../../lib/apiMappers';
 import { HistoryReportModal } from '../../components/features/history';
 import { AlertBanner, Button, Card, CardHeaderDecorDivider, designTokens } from '../../components/ui';
 import { combineStyles } from '../../lib/combineStyles';
@@ -17,6 +19,7 @@ import { cn } from '../../lib/cn';
 import { TelegramCircleIcon } from '../../shared/icons';
 import { type HistoryItem } from '../../shared/ReportContent';
 import { scrollableThreeRowListClass } from '../../shared/scrollListClasses';
+import type { SubscriptionStatusResponse, TariffResponse } from '../../types/api';
 import qrSvg from '../../assets/icons/qr.svg';
 import arrowLinkNextSvg from '../../assets/icons/arrow_link_next.svg';
 import chevronSvg from '../../assets/icons/chevron.svg';
@@ -26,24 +29,10 @@ import websiteOnDashboardSvg from '../../assets/icons/website_on_dashboard.svg';
 
 export function DashboardPage() {
   const { accessToken, user, refreshUser } = useAuth();
-  const [lastRequests, setLastRequests] = useState<Array<[string, string, string, string]>>([
-    ['23.12.2025', 'Юр.лицо', 'Telegram-бот', 'Успешно'],
-    ['23.10.2025', 'Физ.лицо', 'Веб-сервис', 'Ошибка'],
-    ['23.09.2025', 'Юр.лицо', 'Telegram-бот', 'Успешно'],
-    ['23.09.2024', 'Юр.лицо', 'Веб-сервис', 'Ошибка'],
-  ]);
+  const [lastRequests, setLastRequests] = useState<Array<[string, string, string, string]>>([]);
   const [recentReportItems, setRecentReportItems] = useState<HistoryItem[]>([]);
-
-  const fallbackReportItem: HistoryItem = {
-    type: 'Юридическое лицо',
-    name: 'ООО «УМНЫЙ РИТЕЙЛ»',
-    dotColor: designTokens.colors.status.errorBg,
-    document: 'ИНН: 7711771234',
-    checkedAt: '23.12.2025, 12:00',
-    duration: '2 минуты',
-    source: 'telegram',
-    success: true,
-  };
+  const [tariff, setTariff] = useState<TariffResponse | null>(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatusResponse | null>(null);
 
   const [showCurrentTariffModal, setShowCurrentTariffModal] = useState(false);
   const [openedReportItem, setOpenedReportItem] = useState<HistoryItem | null>(null);
@@ -74,6 +63,23 @@ export function DashboardPage() {
             item.success ? 'Успешно' : 'Ошибка',
           ]),
         );
+      })
+      .catch(() => {
+        if (cancelled) return;
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken]);
+
+  useEffect(() => {
+    if (!accessToken) return;
+    let cancelled = false;
+    Promise.all([getTariff(accessToken), getSubscriptionStatus(accessToken)])
+      .then(([tariffResponse, statusResponse]) => {
+        if (cancelled) return;
+        setTariff(tariffResponse);
+        setSubscriptionStatus(statusResponse);
       })
       .catch(() => {
         if (cancelled) return;
@@ -177,13 +183,14 @@ export function DashboardPage() {
   const drawableLength = Math.max(0, circleLength - totalGaps);
   const firstDash = drawableLength * firstRatio;
   const secondDash = Math.max(0, drawableLength - firstDash);
+  const tariffLabel = getTariffLabel(tariff);
+  const subscriptionBanner = getSubscriptionBanner(subscriptionStatus);
   return (
     <PageLayout>
       <section className="relative">
         <AlertBanner className="mb-4 lg:mb-0 lg:absolute lg:left-0 lg:right-0 lg:bottom-full lg:mb-[30px] lg:z-20">
           <p className="m-0">
-            Тариф заканчивается через 3 дня. Пополните баланс или измените тариф, чтобы избежать отключения от сервиса
-            проверки контрагентов «Trust Me».
+            {subscriptionBanner ?? 'Настройте тариф или продлите подписку, чтобы сохранить доступ к сервису проверки контрагентов «Trust Me».'}
           </p>
         </AlertBanner>
 
@@ -197,7 +204,7 @@ export function DashboardPage() {
           >
             <DashboardNewCheckSteps
               onStepChange={setNewCheckStep}
-              onReportOpen={(item) => setOpenedReportItem(item ?? recentReportItems[0] ?? fallbackReportItem)}
+              onReportOpen={(item) => setOpenedReportItem(item ?? recentReportItems[0] ?? null)}
             />
           </Card>
         }
@@ -271,7 +278,7 @@ export function DashboardPage() {
                         'linear-gradient(0deg, rgba(253, 254, 255, 0.1), rgba(253, 254, 255, 0.1)), rgba(255, 255, 255, 0.01)',
                     }}
                   >
-                    <span className="min-w-0 truncate">Индивидуальный</span>
+                    <span className="min-w-0 truncate">{tariffLabel}</span>
                   </div>
                   <Button asChild className="w-full min-w-0 flex-1 lg:min-h-12">
                     <Link to="/tariff">Изменить</Link>
@@ -281,6 +288,8 @@ export function DashboardPage() {
                 <CurrentTariffInfoModal
                   open={showCurrentTariffModal}
                   onClose={() => setShowCurrentTariffModal(false)}
+                  tariffLabel={tariffLabel}
+                  items={getTariffFeatureItems(tariff)}
                 />
           </Card>
         }
@@ -394,7 +403,7 @@ export function DashboardPage() {
                               variant="secondary"
                               size="sm"
                               className="border-[#FDFEFF]/50 px-[30px] py-[10px] lg:!text-[18px] leading-[1] font-normal"
-                              onClick={() => setOpenedReportItem(recentReportItems[index] ?? fallbackReportItem)}
+                              onClick={() => setOpenedReportItem(recentReportItems[index] ?? null)}
                             >
                               Открыть
                             </Button>
@@ -451,7 +460,7 @@ export function DashboardPage() {
                           <Button
                             variant="secondary"
                             className="w-full border-white/40 px-[15px] py-[15px] text-[14px] leading-[1] font-normal"
-                            onClick={() => setOpenedReportItem(recentReportItems[index] ?? fallbackReportItem)}
+                            onClick={() => setOpenedReportItem(recentReportItems[index] ?? null)}
                           >
                             Открыть отчет
                           </Button>
@@ -614,6 +623,7 @@ export function DashboardPage() {
           }
         />
       </section>
+
       <HistoryReportModal item={openedReportItem} onClose={() => setOpenedReportItem(null)} />
       <BalanceTopUpModal
         open={showTopUpModal}

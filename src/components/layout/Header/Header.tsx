@@ -43,11 +43,13 @@ function AccountMenuDropdown({
   accounts,
   className,
   onSelectAccount,
+  onAddAccount,
   onLogout,
 }: {
   accounts: readonly string[];
   className?: string;
   onSelectAccount: (email: string) => void;
+  onAddAccount: () => void;
   onLogout: () => void | Promise<void>;
 }) {
   return (
@@ -67,7 +69,7 @@ function AccountMenuDropdown({
               type="button"
               role="menuitem"
               onClick={() => onSelectAccount(account)}
-              className="flex w-full items-center bg-transparent px-4 py-4 text-left text-base text-[#FDFEFF] transition-colors lg:text-[18px]"
+              className="flex w-full items-center bg-transparent px-4 py-4 text-left text-base text-[#FDFEFF] transition-colors lg:text-[16px] 2xl:text-[18px]"
             >
               {account}
             </button>
@@ -80,8 +82,20 @@ function AccountMenuDropdown({
 
       <button
         type="button"
+        onClick={onAddAccount}
+        className="mt-3 flex w-full items-center justify-center gap-3 rounded-[999px] border border-[#FDFEFF]/20 bg-transparent px-4 py-4 text-left text-base text-[#FDFEFF] transition hover:bg-[#FDFEFF]/5 lg:text-[16px] 2xl:text-[18px]"
+      >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden className="h-5 w-5 shrink-0">
+          <path d="M10 4V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M4 10H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <span>Добавить аккаунт</span>
+      </button>
+
+      <button
+        type="button"
         onClick={onLogout}
-        className="mt-2 flex w-full items-center gap-3 rounded-[12px] bg-[#2A2A2A] px-4 py-4 text-left text-base text-[#FDFEFF] transition hover:bg-[#333333] lg:text-[18px]"
+        className="mt-2 flex w-full items-center gap-3 rounded-[12px] bg-[#2A2A2A] px-4 py-4 text-left text-base text-[#FDFEFF] transition hover:bg-[#333333] lg:text-[16px] 2xl:text-[18px]"
       >
         <svg width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -216,6 +230,12 @@ export function Header() {
       setShowMobileDrawerAccounts(false);
     }
   };
+  const handleAddAccount = () => {
+    setShowAccountMenu(false);
+    setShowMobileDrawerAccounts(false);
+    setShowMobileMenu(false);
+    openAuthModal();
+  };
 
   const handleDeleteNotification = (id: string) => {
     setNotifications((prev) => prev.filter((notification) => notification.id !== id));
@@ -345,6 +365,7 @@ export function Header() {
                   accounts={menuAccountEmails}
                   className="absolute right-0 top-full z-[46] mt-4 w-[min(calc(100vw-30px),320px)]"
                   onSelectAccount={selectAccount}
+                  onAddAccount={handleAddAccount}
                   onLogout={handleLogout}
                 />
               ) : null}
@@ -358,7 +379,7 @@ export function Header() {
             <Link to="/cabinet" className="flex shrink-0" aria-label="Trust Me — на главную">
               <img src={logoSvg} alt="" width={122} height={29} className="w-[122px] h-auto" />
             </Link>
-            <nav className="flex flex-wrap gap-x-6 gap-y-3 text-[14px] font-semibold text-[#FDFEFF] lg:text-[20px]">
+            <nav className="flex flex-wrap gap-x-6 gap-y-3 text-[14px] font-semibold text-[#FDFEFF] lg:text-[16px] 2xl:text-[20px]">
               {MAIN_NAV_ITEMS.map(([label, to]) => (
                 <NavLink
                   className={({ isActive }) =>
@@ -373,7 +394,7 @@ export function Header() {
             </nav>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 text-[14px] font-semibold lg:text-[20px]">
+          <div className="flex flex-wrap items-center gap-3 text-[14px] font-semibold lg:text-[16px] 2xl:text-[20px]">
             <button
               className="relative inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[100px] border border-[#FDFEFF]/25 bg-[#FDFEFF]/5 text-[#FDFEFF] transition hover:bg-[#FDFEFF]/10"
               type="button"
@@ -448,6 +469,7 @@ export function Header() {
                   accounts={menuAccountEmails}
                   className="absolute right-0 top-full z-40 mt-4 w-[320px]"
                   onSelectAccount={selectAccount}
+                  onAddAccount={handleAddAccount}
                   onLogout={handleLogout}
                 />
               ) : null}
@@ -545,16 +567,9 @@ export function Header() {
                   openAuthModal();
                 }}
               >
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <g clip-path="url(#clip0_3161_8717)">
-                  <path d="M7 17V13L17 3L21 7L11 17H7Z" stroke="#FDFEFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M14 6L18 10" stroke="#FDFEFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </g>
-                  <defs>
-                  <clipPath id="clip0_3161_8717">
-                  <rect width="18" height="18" fill="white"/>
-                  </clipPath>
-                  </defs>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden className="h-5 w-5 shrink-0">
+                  <path d="M10 4V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M4 10H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
                 <span>Добавить учетную запись</span>
               </button>

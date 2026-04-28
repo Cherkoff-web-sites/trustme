@@ -1,3 +1,5 @@
+import { SUPPORT_TELEGRAM_URL } from './supportLinks';
+
 /**
  * Единый источник ссылок для шапки и подвала.
  * Изменения здесь автоматически применяются в Header и Footer.
@@ -12,9 +14,9 @@ export const MAIN_NAV_ITEMS = [
 ] as const;
 
 export const FOOTER_SUPPORT_LINKS = [
-  { label: 'support@trstme.com', href: 'mailto:support@trstme.com' },
-  { label: 't.me/trstme_support', href: 'https://t.me/trstme_support' },
-  { label: '@trustme_supportbot', href: 'https://t.me/trustme_supportbot' },
+  { label: 't.me/trstme_support', href: SUPPORT_TELEGRAM_URL },
+  { label: '@trstme_support', href: SUPPORT_TELEGRAM_URL },
+  { label: '@trustme_supportbot', href: SUPPORT_TELEGRAM_URL },
 ] as const;
 
 export const FOOTER_EXTRA_LINKS = [

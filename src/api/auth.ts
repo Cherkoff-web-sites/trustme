@@ -1,5 +1,12 @@
 import { getApiBaseUrl } from '../config/api';
-import type { AcceptRegisterRequest, TokenResponse, UserResponse } from '../types/api';
+import type {
+  AcceptRegisterRequest,
+  ChangePasswordRequest,
+  ConfirmationCodeRequest,
+  ConfirmationCodeResponse,
+  TokenResponse,
+  UserResponse,
+} from '../types/api';
 
 export type { AcceptRegisterRequest, TokenResponse, UserResponse } from '../types/api';
 
@@ -215,7 +222,11 @@ export async function authAcceptRegister(
     );
   }
 
-  const payload: AcceptRegisterRequest = { user_id, code };
+  const numericCode = Number(code);
+  if (!Number.isFinite(numericCode)) {
+    throw new AuthApiError(422, 'Неверный код');
+  }
+  const payload: AcceptRegisterRequest = { user_id, code: numericCode };
 
   let res: Response;
   try {
@@ -248,4 +259,57 @@ export async function authAcceptRegister(
     throw new AuthApiError(res.status, 'Некорректный ответ при подтверждении регистрации');
   }
   return data as UserResponse;
+}
+
+export async function authChangePassword(payload: ChangePasswordRequest, accessToken: string): Promise<UserResponse> {
+  const base = getApiBaseUrl();
+  if (!base) {
+    throw new AuthApiError(
+      0,
+      'Не задан VITE_API_BASE_URL — укажите базовый URL API в .env (см. .env.example).',
+    );
+  }
+
+  const res = await fetch(`${base}/api/v1/auth/password`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await readResponseBody(res);
+  if (!res.ok) {
+    throw toAuthApiError(res.status, data);
+  }
+  return data as UserResponse;
+}
+
+export async function authConfirmCode(
+  payload: ConfirmationCodeRequest,
+  accessToken: string,
+): Promise<ConfirmationCodeResponse> {
+  const base = getApiBaseUrl();
+  if (!base) {
+    throw new AuthApiError(
+      0,
+      'Не задан VITE_API_BASE_URL — укажите базовый URL API в .env (см. .env.example).',
+    );
+  }
+
+  const res = await fetch(`${base}/api/v1/auth/confirmation`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await readResponseBody(res);
+  if (!res.ok) {
+    throw toAuthApiError(res.status, data);
+  }
+  return data as ConfirmationCodeResponse;
 }

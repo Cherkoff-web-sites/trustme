@@ -6,6 +6,7 @@ import {
   FOOTER_SUPPORT_LINKS,
   FOOTER_EXTRA_LINKS,
 } from '../../../shared/navConfig';
+import { SUPPORT_TELEGRAM_URL } from '../../../shared/supportLinks';
 import { uiTokens, designTokens } from '../../ui';
 import { combineStyles } from '../../../lib/combineStyles';
 import logoSvg from '../../../assets/icons/logo.svg';
@@ -86,8 +87,8 @@ const FOOTER_CONTACT_ROWS: readonly {
   label: string;
   Icon: ComponentType;
 }[] = [
-  { href: 'mailto:admin@trstme.com', label: 'admin@trstme.com', Icon: EmailIcon },
-  { href: 'https://t.me/ceo_trustme', label: 'ceo_trustme', Icon: TelegramIcon },
+  { href: SUPPORT_TELEGRAM_URL, label: 't.me/trstme_support', Icon: EmailIcon },
+  { href: SUPPORT_TELEGRAM_URL, label: 't.me/trstme_support', Icon: TelegramIcon },
 ];
 
 type FooterNavLinkItem =
@@ -146,8 +147,8 @@ export function Footer() {
           <div className="lg:col-span-5">
             <div className="mb-10 lg:mb-10">
               <div className="space-y-10 lg:space-y-10">
-                {FOOTER_CONTACT_ROWS.map(({ href, label, Icon }) => (
-                  <div key={href}>
+                {FOOTER_CONTACT_ROWS.map(({ href, label, Icon }, index) => (
+                  <div key={`${href}-${label}-${index}`}>
                     <a
                       href={href}
                       className={combineStyles(footerContactLinkClassName, designTokens.colors.text.primary)}

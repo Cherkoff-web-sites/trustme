@@ -9,6 +9,7 @@ import { combineStyles } from '../../../lib/combineStyles';
 import { designTokens } from '../../ui/design-tokens';
 import type { ReportResponse } from '../../../types/api';
 import type { HistoryItem } from '../../../shared/ReportContent';
+import { SUPPORT_TELEGRAM_URL } from '../../../shared/supportLinks';
 import loadSvg from '../../../assets/icons/load.svg';
 import searchSvg from '../../../assets/icons/search.svg';
 import {
@@ -227,11 +228,13 @@ export function DashboardNewCheckSteps({ onReportOpen, onStepChange }: Dashboard
           <p className="m-0 text-center text-sm text-[#FDFEFF]">
             Что-то пошло не так?{' '}
             <Button
-              type="button"
+              asChild
               variant="ghost"
               className="font-medium text-[#FDFEFF] underline underline-offset-4 hover:text-[#FDFEFF]"
             >
-              Написать в поддержку
+              <a href={SUPPORT_TELEGRAM_URL} target="_blank" rel="noopener noreferrer">
+                Написать в поддержку
+              </a>
             </Button>
           </p>
         </div>

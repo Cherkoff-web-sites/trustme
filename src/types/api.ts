@@ -40,8 +40,26 @@ export interface HTTPValidationError {
 /** Тело `PUT /api/v1/auth/accept` — подтверждение регистрации по коду из письма. */
 export interface AcceptRegisterRequest {
   user_id: number;
-  /** Строка из письма (например 8 цифр), без потери ведущих нулей. */
-  code: string;
+  code: number;
+}
+
+export interface ChangePasswordRequest {
+  old_pswd: string;
+  new_pswd: string;
+  email: string;
+}
+
+export interface ConfirmationCodeRequest {
+  user_id: number;
+  code: number;
+  type_code: TypeConfirmationCodeSchema;
+}
+
+export interface ConfirmationCodeResponse {
+  user_id: number;
+  code: number;
+  type_code: TypeConfirmationCodeSchema;
+  result: boolean;
 }
 
 export interface SetThemesRequest {

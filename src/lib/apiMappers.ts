@@ -78,6 +78,7 @@ export function getReportDotColor(report: ReportResponse): string {
 
 export function mapReportToHistoryItem(report: ReportResponse): HistoryItem {
   return {
+    id: report.id,
     type: report.subject_type === 'legal' ? 'Юридическое лицо' : 'Физическое лицо',
     name: getReportName(report),
     dotColor: getReportDotColor(report),
@@ -87,6 +88,7 @@ export function mapReportToHistoryItem(report: ReportResponse): HistoryItem {
     duration: report.status === 'ready' ? 'Готово' : report.status === 'failed' ? 'Ошибка' : 'В обработке',
     source: getReportSource(report),
     success: report.status === 'ready',
+    resultHtml: report.result_html,
   };
 }
 

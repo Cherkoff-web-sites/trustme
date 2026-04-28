@@ -2,7 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { uiFlags } from '../../config/uiFlags';
 import { topupBalance } from '../../api/balance';
-import { createCompany } from '../../api/companies';
+import { attachUserToCompany, createCompany } from '../../api/companies';
+import { listReports } from '../../api/reports';
+import { getSubscriptionStatus } from '../../api/subscription';
+import { getTariff } from '../../api/tariff';
 import { useAuth } from '../../context/AuthContext';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { ManageAccountsGrid } from '../../components/layout/DashboardGrid/ManageAccountsGrid';
@@ -13,9 +16,11 @@ import { HistoryReportModal } from '../../components/features/history';
 import { AlertBanner, Button, Card, CardHeaderDecorDivider, designTokens } from '../../components/ui';
 import { combineStyles } from '../../lib/combineStyles';
 import { cn } from '../../lib/cn';
+import { getSubscriptionBanner, getTariffFeatureItems, getTariffLabel, mapReportToHistoryItem } from '../../lib/apiMappers';
 import { TelegramCircleIcon } from '../../shared/icons';
 import { type HistoryItem } from '../../shared/ReportContent';
 import { scrollableThreeRowListClass } from '../../shared/scrollListClasses';
+import type { SubscriptionStatusResponse, TariffResponse } from '../../types/api';
 import qrSvg from '../../assets/icons/qr.svg';
 import telegramSvg from '../../assets/icons/telegram.svg';
 import websiteOnDashboardSvg from '../../assets/icons/website_on_dashboard.svg';
@@ -34,6 +39,7 @@ type ManageRecentRequestRow = {
   category: string;
   source: string;
   verificationStatus: string;
+  report: HistoryItem;
 };
 
 function manageEmployeeStatusTextClass(status: ManageEmployeeStatus) {
@@ -72,57 +78,15 @@ function ManageUserAvatar({
   );
 }
 
-const MANAGE_RECENT_REQUESTS_DEMO: ManageRecentRequestRow[] = [
-  {
-    date: '23.12.2025',
-    user: { name: 'Килиренко Алексей', email: 'alextoptop@gmail.com', usePhoto: true },
-    employeeStatus: 'Активен',
-    category: 'Юр.лицо',
-    source: 'Telegram-бот',
-    verificationStatus: 'Успешно',
-  },
-  {
-    date: '23.10.2025',
-    user: { name: 'Иванова Мария', email: 'maria.ivanova@example.com' },
-    employeeStatus: 'Неактивен',
-    category: 'Физ.лицо',
-    source: 'Веб-сервис',
-    verificationStatus: 'Ошибка',
-  },
-  {
-    date: '23.09.2025',
-    user: { name: 'Петров Сергей', email: 'sergey.p@example.com' },
-    employeeStatus: 'Приглашен',
-    category: '—',
-    source: '—',
-    verificationStatus: '—',
-  },
-  {
-    date: '23.09.2024',
-    user: { name: 'Сидорова Анна', email: 'anna.sidorova@example.com' },
-    employeeStatus: 'Активен',
-    category: 'Юр.лицо',
-    source: 'Веб-сервис',
-    verificationStatus: 'Успешно',
-  },
-];
-
 export function ManageAccountsPage() {
   const { accessToken, user, refreshUser } = useAuth();
-  const manageRecentRequests = MANAGE_RECENT_REQUESTS_DEMO;
+  const [manageRecentRequests, setManageRecentRequests] = useState<ManageRecentRequestRow[]>([]);
+  const [tariff, setTariff] = useState<TariffResponse | null>(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatusResponse | null>(null);
   const [companyName, setCompanyName] = useState('');
+  const [attachCompanyId, setAttachCompanyId] = useState(user?.company_id ? String(user.company_id) : '');
+  const [attachUserId, setAttachUserId] = useState('');
   const [companyActionMessage, setCompanyActionMessage] = useState<string | null>(null);
-
-  const sampleReportItem: HistoryItem = {
-    type: 'Юридическое лицо',
-    name: 'ООО «УМНЫЙ РИТЕЙЛ»',
-    dotColor: designTokens.colors.status.errorBg,
-    document: 'ИНН: 7711771234',
-    checkedAt: '23.12.2025, 12:00',
-    duration: '2 минуты',
-    source: 'telegram',
-    success: true,
-  };
 
   const [showCurrentTariffModal, setShowCurrentTariffModal] = useState(false);
   const [openedReportItem, setOpenedReportItem] = useState<HistoryItem | null>(null);
@@ -181,6 +145,57 @@ export function ManageAccountsPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!accessToken) return;
+    let cancelled = false;
+    listReports({}, accessToken)
+      .then((reports) => {
+        if (cancelled) return;
+        const currentUserEmail = user?.email ?? '—';
+        const currentUserName = currentUserEmail !== '—' ? currentUserEmail.split('@')[0] : '—';
+        const currentEmployeeStatus: ManageEmployeeStatus = user ? 'Активен' : 'Неактивен';
+        const rows = reports
+          .slice()
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          .map(mapReportToHistoryItem)
+          .slice(0, 4)
+          .map((report) => ({
+            date: report.checkedAt,
+            user: { name: currentUserName, email: currentUserEmail },
+            employeeStatus: currentEmployeeStatus,
+            category: report.type === 'Юридическое лицо' ? 'Юр.лицо' : 'Физ.лицо',
+            source: report.source === 'telegram' ? 'Telegram-бот' : 'Веб-сервис',
+            verificationStatus: report.success ? 'Успешно' : 'Ошибка',
+            report,
+          }));
+        setManageRecentRequests(rows);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setManageRecentRequests([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken, user]);
+
+  useEffect(() => {
+    if (!accessToken) return;
+    let cancelled = false;
+    Promise.all([getTariff(accessToken), getSubscriptionStatus(accessToken)])
+      .then(([tariffResponse, statusResponse]) => {
+        if (cancelled) return;
+        setTariff(tariffResponse);
+        setSubscriptionStatus(statusResponse);
+      })
+      .catch(() => {
+        if (cancelled) return;
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken]);
+
   const newCheckTitle =
     newCheckStep === 'form'
       ? 'Новая проверка'
@@ -193,7 +208,7 @@ export function ManageAccountsPage() {
   const statsSegments = useMemo(() => {
     if (statsSortBy === 'date') {
       const yearCounts = new Map<string, number>();
-      MANAGE_RECENT_REQUESTS_DEMO.forEach(({ date }) => {
+      manageRecentRequests.forEach(({ date }) => {
         const year = date.split('.').at(-1)?.trim() ?? '—';
         yearCounts.set(year, (yearCounts.get(year) ?? 0) + 1);
       });
@@ -209,13 +224,13 @@ export function ManageAccountsPage() {
       ] as const;
     }
 
-    const legalCount = MANAGE_RECENT_REQUESTS_DEMO.filter((r) => r.category === 'Юр.лицо').length;
-    const individualCount = MANAGE_RECENT_REQUESTS_DEMO.filter((r) => r.category === 'Физ.лицо').length;
+    const legalCount = manageRecentRequests.filter((r) => r.category === 'Юр.лицо').length;
+    const individualCount = manageRecentRequests.filter((r) => r.category === 'Физ.лицо').length;
     return [
       { label: 'Физическое лицо', value: individualCount, color: '#FDFEFF' },
       { label: 'Юридическое лицо', value: legalCount, color: '#0EB8D2' },
     ] as const;
-  }, [statsSortBy]);
+  }, [manageRecentRequests, statsSortBy]);
 
   const statsTotal = statsSegments[0].value + statsSegments[1].value;
   const circleRadius = 48;
@@ -228,6 +243,8 @@ export function ManageAccountsPage() {
   const drawableLength = Math.max(0, circleLength - totalGaps);
   const firstDash = drawableLength * firstRatio;
   const secondDash = Math.max(0, drawableLength - firstDash);
+  const tariffLabel = getTariffLabel(tariff);
+  const subscriptionBanner = getSubscriptionBanner(subscriptionStatus);
 
   const handleCreateCompany = async () => {
     if (!accessToken || !companyName.trim()) return;
@@ -241,13 +258,26 @@ export function ManageAccountsPage() {
     }
   };
 
+  const handleAttachUserToCompany = async () => {
+    if (!accessToken) return;
+    const companyId = Number(attachCompanyId);
+    const userId = Number(attachUserId);
+    if (!companyId || !userId) return;
+    try {
+      await attachUserToCompany(companyId, userId, accessToken);
+      setCompanyActionMessage('Пользователь привязан к компании.');
+      setAttachUserId('');
+    } catch {
+      setCompanyActionMessage('Не удалось привязать пользователя к компании.');
+    }
+  };
+
   return (
     <PageLayout>
       <section className="relative">
         <AlertBanner className="mb-4 lg:mb-0 lg:absolute lg:left-0 lg:right-0 lg:bottom-full lg:mb-[30px] lg:z-20">
           <p className="m-0">
-            Тариф заканчивается через 3 дня. Пополните баланс или измените тариф, чтобы избежать отключения от сервиса
-            проверки контрагентов «Trust Me».
+            {subscriptionBanner ?? 'Настройте тариф или продлите подписку, чтобы сохранить доступ к сервису проверки контрагентов «Trust Me».'}
           </p>
         </AlertBanner>
 
@@ -260,7 +290,7 @@ export function ManageAccountsPage() {
             >
               <DashboardNewCheckSteps
                 onStepChange={setNewCheckStep}
-                onReportOpen={(item) => setOpenedReportItem(item ?? sampleReportItem)}
+                onReportOpen={(item) => setOpenedReportItem(item ?? manageRecentRequests[0]?.report ?? null)}
               />
             </Card>
           }
@@ -338,14 +368,19 @@ export function ManageAccountsPage() {
                       'linear-gradient(0deg, rgba(253, 254, 255, 0.1), rgba(253, 254, 255, 0.1)), rgba(255, 255, 255, 0.01)',
                   }}
                 >
-                  <span className="min-w-0 truncate">Индивидуальный</span>
+                  <span className="min-w-0 truncate">{tariffLabel}</span>
                 </div>
                 <Button asChild className="w-full min-w-0 flex-1 lg:min-h-12">
                   <Link to="/tariff">Изменить</Link>
                 </Button>
               </div>
 
-              <CurrentTariffInfoModal open={showCurrentTariffModal} onClose={() => setShowCurrentTariffModal(false)} />
+              <CurrentTariffInfoModal
+                open={showCurrentTariffModal}
+                onClose={() => setShowCurrentTariffModal(false)}
+                tariffLabel={tariffLabel}
+                items={getTariffFeatureItems(tariff)}
+              />
             </Card>
           }
           telegram={
@@ -657,7 +692,7 @@ export function ManageAccountsPage() {
                             variant="secondary"
                             size="sm"
                             className="border-[#FDFEFF]/50 px-[30px] py-[10px] font-normal leading-[1] lg:!text-[18px]"
-                            onClick={() => setOpenedReportItem(sampleReportItem)}
+                            onClick={() => setOpenedReportItem(row.report)}
                           >
                             Открыть
                           </Button>
@@ -747,7 +782,7 @@ export function ManageAccountsPage() {
                       <Button
                         variant="secondary"
                         className="w-full border-white/40 px-[15px] py-[15px] text-[14px] font-normal leading-[1]"
-                        onClick={() => setOpenedReportItem(sampleReportItem)}
+                        onClick={() => setOpenedReportItem(row.report)}
                       >
                         Открыть отчет
                       </Button>
@@ -787,6 +822,36 @@ export function ManageAccountsPage() {
                 />
                 <Button className="lg:min-w-[220px]" onClick={handleCreateCompany}>
                   Создать компанию
+                </Button>
+              </div>
+              {companyActionMessage ? <p className="m-0 text-[#FDFEFF]/80">{companyActionMessage}</p> : null}
+            </div>
+          </Card>
+        </section>
+      ) : null}
+
+      {user?.role === 'company_admin' ? (
+        <section className="mt-[20px]">
+          <Card title="Привязать пользователя к компании" headerDecor={<CardHeaderDecorDivider />}>
+            <div className="flex flex-col gap-[20px]">
+              <p className="m-0 text-[#FDFEFF]">
+                Endpoint API: POST /companies/{'{company_id}'}/users/{'{user_id}'}.
+              </p>
+              <div className="flex flex-col gap-[15px] lg:flex-row">
+                <input
+                  className="min-h-[48px] flex-1 rounded-[10px] border border-[#FDFEFF]/20 bg-[#2A2A2A] px-4 text-[#FDFEFF]"
+                  placeholder="ID компании"
+                  value={attachCompanyId}
+                  onChange={(event) => setAttachCompanyId(event.target.value)}
+                />
+                <input
+                  className="min-h-[48px] flex-1 rounded-[10px] border border-[#FDFEFF]/20 bg-[#2A2A2A] px-4 text-[#FDFEFF]"
+                  placeholder="ID пользователя"
+                  value={attachUserId}
+                  onChange={(event) => setAttachUserId(event.target.value)}
+                />
+                <Button className="lg:min-w-[220px]" onClick={handleAttachUserToCompany}>
+                  Привязать
                 </Button>
               </div>
               {companyActionMessage ? <p className="m-0 text-[#FDFEFF]/80">{companyActionMessage}</p> : null}
