@@ -6,7 +6,7 @@ import {
   getSubscriptionStatus,
   waitForPaymentActivation,
 } from '../../api/subscription';
-import { getTariff, setTariff as saveTariff } from '../../api/tariff';
+import { getTariff, getTariffFactors, setTariff as saveTariff, setTariffFactors } from '../../api/tariff';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { SupportSection } from '../../components/layout/SupportSection/SupportSection';
@@ -35,6 +35,7 @@ export function TariffPage() {
   const [catalog, setCatalog] = useState<Awaited<ReturnType<typeof getSubscriptionCatalog>> | null>(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState<Awaited<ReturnType<typeof getSubscriptionStatus>> | null>(null);
   const [tariff, setTariff] = useState<Awaited<ReturnType<typeof getTariff>> | null>(null);
+  const [tariffFactors, setTariffFactorsState] = useState<Awaited<ReturnType<typeof getTariffFactors>> | null>(null);
   const [reportPaymentMessage, setReportPaymentMessage] = useState<string | null>(null);
   const moduleOptions = [
     { label: 'Все факторы проверок', price: 1200 },
@@ -116,12 +117,18 @@ export function TariffPage() {
   useEffect(() => {
     if (!accessToken) return;
     let cancelled = false;
-    Promise.all([getTariff(accessToken), getSubscriptionCatalog(accessToken), getSubscriptionStatus(accessToken)])
-      .then(([tariffResponse, catalogResponse, statusResponse]) => {
+    Promise.all([
+      getTariff(accessToken),
+      getSubscriptionCatalog(accessToken),
+      getSubscriptionStatus(accessToken),
+      getTariffFactors(accessToken).catch(() => null),
+    ])
+      .then(([tariffResponse, catalogResponse, statusResponse, factorsResponse]) => {
         if (cancelled) return;
         setTariff(tariffResponse);
         setCatalog(catalogResponse);
         setSubscriptionStatus(statusResponse);
+        setTariffFactorsState(factorsResponse);
         setSelectedModules([
           ...(tariffResponse.include_factors ? [moduleOptions[0].label] : []),
           ...(tariffResponse.include_media ? [moduleOptions[1].label] : []),
@@ -176,6 +183,24 @@ export function TariffPage() {
         },
         accessToken,
       );
+      if (tariffFactors) {
+        await setTariffFactors(
+          {
+            factors: tariffFactors.factors.map((factor) => ({
+              ...factor,
+              enabled:
+                factor.title === moduleOptions[0].label
+                  ? selectedModules.includes(moduleOptions[0].label)
+                  : factor.title === moduleOptions[1].label
+                    ? selectedModules.includes(moduleOptions[1].label)
+                    : factor.title === moduleOptions[2].label
+                      ? selectedModules.includes(moduleOptions[2].label)
+                      : factor.enabled,
+            })),
+          },
+          accessToken,
+        );
+      }
       const payment = await createSubscriptionPayment({ months: selectedPaymentMonths }, accessToken);
       window.open(payment.payment_url, '_blank', 'noopener,noreferrer');
       const status = await waitForPaymentActivation(
@@ -184,14 +209,16 @@ export function TariffPage() {
       );
       if (isPaymentSuccessful(status)) {
         setTopUpStep('success');
-        const [tariffResponse, catalogResponse, statusResponse] = await Promise.all([
+        const [tariffResponse, catalogResponse, statusResponse, factorsResponse] = await Promise.all([
           getTariff(accessToken),
           getSubscriptionCatalog(accessToken),
           getSubscriptionStatus(accessToken),
+          getTariffFactors(accessToken).catch(() => null),
         ]);
         setTariff(tariffResponse);
         setCatalog(catalogResponse);
         setSubscriptionStatus(statusResponse);
+        setTariffFactorsState(factorsResponse);
       } else {
         setTopUpStep('processing');
       }
@@ -208,6 +235,14 @@ export function TariffPage() {
     setSelectedModules((prev) => (
       prev.includes(label) ? prev.filter((item) => item !== label) : [...prev, label]
     ));
+    setTariffFactorsState((prev) => {
+      if (!prev) return prev;
+      return {
+        factors: prev.factors.map((factor) => (
+          factor.title === label ? { ...factor, enabled: !selectedModules.includes(label) } : factor
+        )),
+      };
+    });
   };
 
   const modulesTotal = moduleOptions

@@ -4,6 +4,9 @@ import type {
   ChangePasswordRequest,
   ConfirmationCodeRequest,
   ConfirmationCodeResponse,
+  GenericOkResponse,
+  PasswordResetConfirmRequest,
+  PasswordResetRequest,
   TokenResponse,
   UserResponse,
 } from '../types/api';
@@ -312,4 +315,70 @@ export async function authConfirmCode(
     throw toAuthApiError(res.status, data);
   }
   return data as ConfirmationCodeResponse;
+}
+
+export async function authPasswordResetRequest(payload: PasswordResetRequest): Promise<GenericOkResponse> {
+  const base = getApiBaseUrl();
+  if (!base) {
+    throw new AuthApiError(
+      0,
+      'Не задан VITE_API_BASE_URL — укажите базовый URL API в .env (см. .env.example).',
+    );
+  }
+
+  const res = await fetch(`${base}/api/v1/auth/password/reset/request`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await readResponseBody(res);
+  if (!res.ok) {
+    throw toAuthApiError(res.status, data);
+  }
+  return (data ?? { result: true }) as GenericOkResponse;
+}
+
+export async function authPasswordResetConfirm(payload: PasswordResetConfirmRequest): Promise<GenericOkResponse> {
+  const base = getApiBaseUrl();
+  if (!base) {
+    throw new AuthApiError(
+      0,
+      'Не задан VITE_API_BASE_URL — укажите базовый URL API в .env (см. .env.example).',
+    );
+  }
+
+  const res = await fetch(`${base}/api/v1/auth/password/reset/confirm`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await readResponseBody(res);
+  if (!res.ok) {
+    throw toAuthApiError(res.status, data);
+  }
+  return (data ?? { result: true }) as GenericOkResponse;
+}
+
+export async function authResendConfirmation(payload: PasswordResetRequest): Promise<GenericOkResponse> {
+  const base = getApiBaseUrl();
+  if (!base) {
+    throw new AuthApiError(
+      0,
+      'Не задан VITE_API_BASE_URL — укажите базовый URL API в .env (см. .env.example).',
+    );
+  }
+
+  const res = await fetch(`${base}/api/v1/auth/confirmation/resend`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await readResponseBody(res);
+  if (!res.ok) {
+    throw toAuthApiError(res.status, data);
+  }
+  return (data ?? { result: true }) as GenericOkResponse;
 }

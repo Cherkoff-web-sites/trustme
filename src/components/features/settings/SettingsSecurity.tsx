@@ -1,5 +1,22 @@
-import { useMemo, useState } from 'react';
-import { authChangePassword, authConfirmCode } from '../../../api/auth';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  authChangePassword,
+  authConfirmCode,
+  authPasswordResetConfirm,
+  authPasswordResetRequest,
+  authResendConfirmation,
+} from '../../../api/auth';
+import {
+  addEmail,
+  confirmEmail,
+  confirmPhone,
+  deleteEmail,
+  deletePhone,
+  getUserSecurity,
+  requestPhoneCode,
+  setUserSecurity2fa,
+  setUserSecurityEmail2fa,
+} from '../../../api/users';
 import { useAuth } from '../../../context/AuthContext';
 import { cn } from '../../../lib/cn';
 import { getPasswordRuleChecks } from '../../../lib/passwordRules';
@@ -56,6 +73,7 @@ export function SettingsSecurity({
   const [changePwdStep, setChangePwdStep] = useState<'credentials' | 'emailCode' | 'success'>('credentials');
   const [emailCode, setEmailCode] = useState('');
   const [passwordActionMessage, setPasswordActionMessage] = useState<string | null>(null);
+  const [securityActionMessage, setSecurityActionMessage] = useState<string | null>(null);
   const [phoneFlowStep, setPhoneFlowStep] = useState<'idle' | 'enterPhone' | 'smsSent' | 'enterCode'>('idle');
   const [phoneCandidate, setPhoneCandidate] = useState('+7 (800) 555 35 35');
   const [phoneAccessCode, setPhoneAccessCode] = useState('');
@@ -66,6 +84,11 @@ export function SettingsSecurity({
   const [emailFlowDisplay, setEmailFlowDisplay] = useState('');
   const newPasswordChecks = getPasswordRuleChecks(newPassword);
   const newPasswordRulesStarted = newPassword.length > 0;
+
+  useEffect(() => {
+    if (!accessToken) return;
+    getUserSecurity(accessToken).catch(() => undefined);
+  }, [accessToken]);
 
   const passwordsValid = useMemo(() => {
     if (currentPassword.length === 0 || newPassword.length === 0) return false;
@@ -122,6 +145,45 @@ export function SettingsSecurity({
       setPasswordActionMessage(null);
     } catch (error) {
       setPasswordActionMessage(error instanceof Error ? error.message : 'Не удалось изменить пароль.');
+    }
+  };
+
+  const handlePasswordResetRequest = async () => {
+    if (!profileEmail) {
+      setPasswordActionMessage('Укажите email аккаунта.');
+      return;
+    }
+    try {
+      await authPasswordResetRequest({ email: profileEmail });
+      setPasswordActionMessage('Код/ссылка для сброса пароля отправлены на почту.');
+      setChangePwdStep('emailCode');
+    } catch (error) {
+      setPasswordActionMessage(error instanceof Error ? error.message : 'Не удалось запросить сброс пароля.');
+    }
+  };
+
+  const handlePasswordResetConfirm = async () => {
+    if (!profileEmail || !newPassword || emailCode.length !== CHANGE_PASSWORD_EMAIL_CODE_LEN) return;
+    try {
+      await authPasswordResetConfirm({ email: profileEmail, code: emailCode, new_password: newPassword });
+      setPasswordActionMessage('Пароль сброшен и сохранён.');
+      setChangePwdStep('success');
+      setEmailCode('');
+      setCurrentPassword('');
+      setNewPassword('');
+      setNewPasswordConfirm('');
+    } catch (error) {
+      setPasswordActionMessage(error instanceof Error ? error.message : 'Не удалось подтвердить сброс пароля.');
+    }
+  };
+
+  const handleResendPasswordCode = async () => {
+    if (!profileEmail) return;
+    try {
+      await authResendConfirmation({ email: profileEmail });
+      setPasswordActionMessage('Код отправлен повторно.');
+    } catch (error) {
+      setPasswordActionMessage(error instanceof Error ? error.message : 'Не удалось отправить код повторно.');
     }
   };
 
@@ -233,7 +295,12 @@ export function SettingsSecurity({
 
           <div className={settingsSecurityInfoCardStyles}>
             <p className="m-0">Если вы не помните текущий пароль, то воспользуйтесь сбросом пароля.</p>
-            <Button variant="ghost" className="justify-start p-0 text-base font-medium underline underline-offset-4">
+            <Button
+              type="button"
+              variant="ghost"
+              className="justify-start p-0 text-base font-medium underline underline-offset-4"
+              onClick={handlePasswordResetRequest}
+            >
               Сбросить пароль
             </Button>
           </div>
@@ -282,6 +349,7 @@ export function SettingsSecurity({
                   type="button"
                   variant="ghost"
                   className="inline h-auto min-h-0 p-0 align-baseline underline underline-offset-4"
+                  onClick={handleResendPasswordCode}
                 >
                   Отправить повторно
                 </Button>
@@ -295,6 +363,15 @@ export function SettingsSecurity({
               onClick={handleEmailCodeConfirm}
             >
               Сохранить изменения
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              className="min-w-[240px] w-full lg:w-auto lg:flex-none lg:self-start"
+              disabled={!newPassword || emailCode.length !== CHANGE_PASSWORD_EMAIL_CODE_LEN}
+              onClick={handlePasswordResetConfirm}
+            >
+              Подтвердить сброс пароля
             </Button>
             {passwordActionMessage ? <p className="m-0 text-[#EB4335]">{passwordActionMessage}</p> : null}
           </div>
@@ -334,7 +411,20 @@ export function SettingsSecurity({
               <Button className="min-w-[250px]" onClick={() => setEmailFlowStep('addEmail')}>
                 Добавить почту
               </Button>
-              <Button variant="secondary" className="min-w-[250px]">
+              <Button
+                variant="secondary"
+                className="min-w-[250px]"
+                onClick={async () => {
+                  if (!accessToken || !profileEmail) return;
+                  try {
+                    await deleteEmail(profileEmail, accessToken);
+                    await refreshUser();
+                    setSecurityActionMessage('Почта удалена.');
+                  } catch (error) {
+                    setSecurityActionMessage(error instanceof Error ? error.message : 'Не удалось удалить почту.');
+                  }
+                }}
+              >
                 Удалить почту
               </Button>
             </div>
@@ -366,11 +456,18 @@ export function SettingsSecurity({
                   type="button"
                   className="min-w-[240px] w-full lg:w-auto lg:flex-none lg:self-start disabled:opacity-100"
                   disabled={!newEmailDraft.trim()}
-                  onClick={() => {
+                  onClick={async () => {
                     const next = newEmailDraft.trim();
                     if (!next) return;
-                    setEmailFlowDisplay(next);
-                    setEmailFlowStep('needsConfirmation');
+                    if (!accessToken) return;
+                    try {
+                      await addEmail({ email: next }, accessToken);
+                      setEmailFlowDisplay(next);
+                      setEmailFlowStep('needsConfirmation');
+                      setSecurityActionMessage('Письмо для подтверждения email отправлено.');
+                    } catch (error) {
+                      setSecurityActionMessage(error instanceof Error ? error.message : 'Не удалось добавить почту.');
+                    }
                   }}
                 >
                   Сохранить почту
@@ -408,7 +505,17 @@ export function SettingsSecurity({
               <Button
                 type="button"
                 className="w-full lg:w-auto lg:flex-none lg:self-start"
-                onClick={() => setEmailFlowStep('confirmationSent')}
+                onClick={async () => {
+                  if (!accessToken || !emailFlowDisplay) return;
+                  try {
+                    await confirmEmail({ email: emailFlowDisplay }, accessToken);
+                    await refreshUser();
+                    setEmailFlowStep('confirmationSent');
+                    setSecurityActionMessage('Email подтверждён.');
+                  } catch (error) {
+                    setSecurityActionMessage(error instanceof Error ? error.message : 'Не удалось подтвердить email.');
+                  }
+                }}
               >
                 Отправить подтверждение
               </Button>
@@ -455,7 +562,21 @@ export function SettingsSecurity({
 
           <div className="flex flex-col gap-4 sm:flex-row">
               <Button className="min-w-[290px]" onClick={() => setPhoneFlowStep('enterPhone')}>Добавить номер телефона</Button>
-            <Button variant="secondary" className="min-w-[290px]">Удалить номер телефона</Button>
+            <Button
+              variant="secondary"
+              className="min-w-[290px]"
+              onClick={async () => {
+                if (!accessToken) return;
+                try {
+                  await deletePhone(accessToken);
+                  setSecurityActionMessage('Телефон удалён.');
+                } catch (error) {
+                  setSecurityActionMessage(error instanceof Error ? error.message : 'Не удалось удалить телефон.');
+                }
+              }}
+            >
+              Удалить номер телефона
+            </Button>
           </div>
         </div>
         ) : (
@@ -483,7 +604,16 @@ export function SettingsSecurity({
                 <Button
                   type="button"
                   className="min-w-[240px] w-full lg:w-auto lg:flex-none lg:self-start"
-                  onClick={() => setPhoneFlowStep('smsSent')}
+                  onClick={async () => {
+                    if (!accessToken || !phoneCandidate.trim()) return;
+                    try {
+                      await requestPhoneCode({ phone: phoneCandidate.trim() }, accessToken);
+                      setPhoneFlowStep('smsSent');
+                      setSecurityActionMessage('SMS-код отправлен.');
+                    } catch (error) {
+                      setSecurityActionMessage(error instanceof Error ? error.message : 'Не удалось отправить SMS-код.');
+                    }
+                  }}
                 >
                   Получить код доступа
                 </Button>
@@ -514,7 +644,20 @@ export function SettingsSecurity({
 
               <div className={authModalEmailInfoBoxStyles}>
                 <p className="m-0">Мы отправили SMS с кодом доступа на указанный номер телефона</p>
-                <Button variant="ghost" className="justify-start p-0 text-base font-medium underline underline-offset-4">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="justify-start p-0 text-base font-medium underline underline-offset-4"
+                  onClick={async () => {
+                    if (!accessToken || !phoneCandidate.trim()) return;
+                    try {
+                      await requestPhoneCode({ phone: phoneCandidate.trim() }, accessToken);
+                      setSecurityActionMessage('SMS-код отправлен повторно.');
+                    } catch (error) {
+                      setSecurityActionMessage(error instanceof Error ? error.message : 'Не удалось отправить SMS-код.');
+                    }
+                  }}
+                >
                   Отправить повторно
                 </Button>
               </div>
@@ -559,7 +702,20 @@ export function SettingsSecurity({
 
               <div className={authModalEmailInfoBoxStyles}>
                 <p className="m-0">Введите полученный код доступа</p>
-                <Button variant="ghost" className="justify-start p-0 text-base font-medium underline underline-offset-4">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="justify-start p-0 text-base font-medium underline underline-offset-4"
+                  onClick={async () => {
+                    if (!accessToken || !phoneCandidate.trim()) return;
+                    try {
+                      await requestPhoneCode({ phone: phoneCandidate.trim() }, accessToken);
+                      setSecurityActionMessage('SMS-код отправлен повторно.');
+                    } catch (error) {
+                      setSecurityActionMessage(error instanceof Error ? error.message : 'Не удалось отправить SMS-код.');
+                    }
+                  }}
+                >
                   Отправить повторно
                 </Button>
               </div>
@@ -569,7 +725,16 @@ export function SettingsSecurity({
                   type="button"
                   className="min-w-[190px] w-full lg:w-auto lg:flex-none lg:self-start disabled:opacity-100"
                   disabled={phoneAccessCode.length < PHONE_ACCESS_CODE_LEN}
-                  onClick={resetPhoneFlow}
+                  onClick={async () => {
+                    if (!accessToken || !phoneCandidate.trim()) return;
+                    try {
+                      await confirmPhone({ phone: phoneCandidate.trim(), code: phoneAccessCode }, accessToken);
+                      setSecurityActionMessage('Телефон подтверждён.');
+                      resetPhoneFlow();
+                    } catch (error) {
+                      setSecurityActionMessage(error instanceof Error ? error.message : 'Не удалось подтвердить телефон.');
+                    }
+                  }}
                 >
                   Завершить
                 </Button>
@@ -584,7 +749,24 @@ export function SettingsSecurity({
 
       <SectionCard
         title="Двухфакторная аутентификация (2FA)"
-        aside={<ToggleSwitch checked={twoFactorEnabled} onChange={onToggleTwoFactor} className="inline-flex shrink-0" />}
+        aside={
+          <ToggleSwitch
+            checked={twoFactorEnabled}
+            onChange={async () => {
+              if (accessToken) {
+                try {
+                  await setUserSecurity2fa({ enabled: !twoFactorEnabled }, accessToken);
+                  setSecurityActionMessage('Настройка 2FA сохранена.');
+                } catch (error) {
+                  setSecurityActionMessage(error instanceof Error ? error.message : 'Не удалось сохранить 2FA.');
+                  return;
+                }
+              }
+              onToggleTwoFactor();
+            }}
+            className="inline-flex shrink-0"
+          />
+        }
       >
         <div className="flex flex-col gap-[40px] lg:gap-[60px]">
               <p className="m-0 text-base text-[#FDFEFF]">
@@ -598,8 +780,24 @@ export function SettingsSecurity({
                 Использовать электронную почту для двухфакторной аутентификации
               </p>
             </div>
-            <ToggleSwitch checked={email2faEnabled} onChange={onToggleEmail2fa} className="inline-flex shrink-0" />
+            <ToggleSwitch
+              checked={email2faEnabled}
+              onChange={async () => {
+                if (accessToken) {
+                  try {
+                    await setUserSecurityEmail2fa({ enabled: !email2faEnabled }, accessToken);
+                    setSecurityActionMessage('Настройка email 2FA сохранена.');
+                  } catch (error) {
+                    setSecurityActionMessage(error instanceof Error ? error.message : 'Не удалось сохранить email 2FA.');
+                    return;
+                  }
+                }
+                onToggleEmail2fa();
+              }}
+              className="inline-flex shrink-0"
+            />
           </div>
+          {securityActionMessage ? <p className="m-0 text-[#FDFEFF]">{securityActionMessage}</p> : null}
         </div>
       </SectionCard>
 

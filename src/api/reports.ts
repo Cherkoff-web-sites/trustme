@@ -3,6 +3,7 @@ import type {
   ReportCreateRequestLegal,
   ReportCreateRequestPhys,
   ReportResponse,
+  ReportStatsResponse,
   ReportStatusSchema,
   SubjectTypeSchema,
 } from '../types/api';
@@ -52,6 +53,14 @@ export function listReports(filters: ListReportsFilters, accessToken: string) {
   return apiRequest<ReportResponse[]>(`/api/v1/reports/${toQueryString(filters)}`, {}, accessToken);
 }
 
+export function getReportStats(accessToken: string) {
+  return apiRequest<ReportStatsResponse>('/api/v1/reports/stats', {}, accessToken);
+}
+
+export function getReportById(reportId: number, accessToken: string) {
+  return apiRequest<ReportResponse>(`/api/v1/reports/${reportId}`, {}, accessToken);
+}
+
 export async function waitForReportResolution(
   reportId: number,
   accessToken: string,
@@ -62,8 +71,13 @@ export async function waitForReportResolution(
   const startedAt = Date.now();
 
   while (true) {
-    const reports = await listReports({}, accessToken);
-    const report = reports.find((item) => item.id === reportId);
+    let report: ReportResponse | undefined;
+    try {
+      report = await getReportById(reportId, accessToken);
+    } catch {
+      const reports = await listReports({}, accessToken);
+      report = reports.find((item) => item.id === reportId);
+    }
     if (report && (report.status === 'ready' || report.status === 'failed')) {
       return report;
     }

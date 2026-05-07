@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
-import { bindTelegram, updateUserThemes } from '../../../api/users';
+import {
+  bindTelegram,
+  deleteAvatar,
+  unbindTelegram,
+  updateCurrentUser,
+  updateUserThemes,
+  uploadAvatar,
+} from '../../../api/users';
 import { PersonTypeSwitcher } from '../PersonTypeSwitcher';
 import {
   Button,
@@ -25,9 +32,20 @@ export function SettingsProfile() {
   const [personType, setPersonType] = useState<'legal' | 'individual'>('individual');
   const [consentPromo, setConsentPromo] = useState(false);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
+  const [nickname, setNickname] = useState(profileEmail);
+  const [email, setEmail] = useState(profileEmail);
+  const [inn, setInn] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [birthDate, setBirthDate] = useState('');
   const [telegramUserId, setTelegramUserId] = useState(user?.telegram_id ? String(user.telegram_id) : '');
   const [profileApiMessage, setProfileApiMessage] = useState<string | null>(null);
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setNickname(profileEmail);
+    setEmail(profileEmail);
+    setTelegramUserId(user?.telegram_id ? String(user.telegram_id) : '');
+  }, [profileEmail, user?.telegram_id]);
 
   useEffect(() => {
     return () => {
@@ -35,7 +53,7 @@ export function SettingsProfile() {
     };
   }, [profilePhotoUrl]);
 
-  const handleAvatarFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file?.type.startsWith('image/')) return;
     const url = URL.createObjectURL(file);
@@ -44,11 +62,28 @@ export function SettingsProfile() {
       return url;
     });
     e.target.value = '';
+    if (!accessToken) return;
+    try {
+      await uploadAvatar(file, accessToken);
+      setProfileApiMessage('Аватар загружен.');
+    } catch (error) {
+      setProfileApiMessage(error instanceof Error ? error.message : 'Не удалось загрузить аватар.');
+    }
   };
 
   const handleSaveProfileApiSettings = async () => {
     if (!accessToken || !user) return;
     try {
+      await updateCurrentUser(
+        {
+          email: email.trim() || null,
+          full_name: fullName.trim() || nickname.trim() || null,
+          inn: inn.trim() || null,
+          birth_date: birthDate || null,
+          marketing_consent: consentPromo,
+        },
+        accessToken,
+      );
       await updateUserThemes(
         {
           ui_theme: user.ui_theme,
@@ -64,6 +99,29 @@ export function SettingsProfile() {
       setProfileApiMessage('Профильные API-настройки сохранены.');
     } catch (error) {
       setProfileApiMessage(error instanceof Error ? error.message : 'Не удалось сохранить профильные API-настройки.');
+    }
+  };
+
+  const handleDeleteAvatar = async () => {
+    if (!accessToken) return;
+    try {
+      await deleteAvatar(accessToken);
+      setProfilePhotoUrl(null);
+      setProfileApiMessage('Аватар удалён.');
+    } catch (error) {
+      setProfileApiMessage(error instanceof Error ? error.message : 'Не удалось удалить аватар.');
+    }
+  };
+
+  const handleUnbindTelegram = async () => {
+    if (!accessToken) return;
+    try {
+      await unbindTelegram(accessToken);
+      setTelegramUserId('');
+      await refreshUser();
+      setProfileApiMessage('Telegram отвязан.');
+    } catch (error) {
+      setProfileApiMessage(error instanceof Error ? error.message : 'Не удалось отвязать Telegram.');
     }
   };
 
@@ -94,6 +152,14 @@ export function SettingsProfile() {
           >
             Изменить фото
           </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            className="text-base text-[#EB4335]"
+            onClick={handleDeleteAvatar}
+          >
+            Удалить фото
+          </Button>
         </div>
 
         <div>
@@ -117,7 +183,8 @@ export function SettingsProfile() {
                 key={`settings-profile-nickname-${user?.id ?? 0}`}
                 id="settings-profile-nickname"
                 aria-labelledby="settings-profile-nickname-label"
-                defaultValue={profileEmail}
+                value={nickname}
+                onChange={(event) => setNickname(event.target.value)}
               />
             </div>
 
@@ -130,6 +197,8 @@ export function SettingsProfile() {
                   inputMode="numeric"
                   maxLength={12}
                   placeholder="Введите ИНН"
+                  value={inn}
+                  onChange={(event) => setInn(event.target.value)}
                 />
               </div>
             ) : null}
@@ -140,7 +209,8 @@ export function SettingsProfile() {
                 key={`settings-profile-email-${user?.id ?? 0}`}
                 id="settings-profile-email"
                 aria-labelledby="settings-profile-email-label"
-                defaultValue={profileEmail}
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
               />
             </div>
 
@@ -166,6 +236,8 @@ export function SettingsProfile() {
                       inputMode="numeric"
                       maxLength={12}
                       placeholder="Введите ИНН"
+                    value={inn}
+                    onChange={(event) => setInn(event.target.value)}
                     />
                   </div>
 
@@ -175,6 +247,8 @@ export function SettingsProfile() {
                       id="settings-profile-details-fullname"
                       aria-labelledby="settings-profile-details-fullname-label"
                       placeholder="Введите ФИО"
+                    value={fullName}
+                    onChange={(event) => setFullName(event.target.value)}
                     />
                   </div>
 
@@ -185,6 +259,8 @@ export function SettingsProfile() {
                       aria-labelledby="settings-profile-details-birthdate-label"
                       type="date"
                       className="h-[60px]"
+                    value={birthDate}
+                    onChange={(event) => setBirthDate(event.target.value)}
                     />
                   </div>
                 </div>
@@ -192,7 +268,9 @@ export function SettingsProfile() {
             ) : null}
 
             <div className="mt-2 flex justify-end">
-              <Button className="w-full min-w-0 lg:w-auto lg:min-w-[260px]">Сохранить изменения</Button>
+              <Button className="w-full min-w-0 lg:w-auto lg:min-w-[260px]" onClick={handleSaveProfileApiSettings}>
+                Сохранить изменения
+              </Button>
             </div>
 
             <div className="rounded-[16px] bg-[#2A2A2A] px-[15px] py-[15px]">
@@ -210,6 +288,9 @@ export function SettingsProfile() {
                 </div>
                 <Button type="button" className="w-full lg:w-auto lg:self-start" onClick={handleSaveProfileApiSettings}>
                   Сохранить API-настройки профиля
+                </Button>
+                <Button type="button" variant="secondary" className="w-full lg:w-auto lg:self-start" onClick={handleUnbindTelegram}>
+                  Отвязать Telegram
                 </Button>
                 {profileApiMessage ? <p className="m-0 text-[#FDFEFF]">{profileApiMessage}</p> : null}
               </div>

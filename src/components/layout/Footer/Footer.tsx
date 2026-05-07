@@ -108,18 +108,18 @@ const FOOTER_NAV_COLUMNS: { title: string; items: FooterNavLinkItem[] }[] = [
   },
   {
     title: 'Служба поддержки',
-    items: FOOTER_SUPPORT_LINKS.map(({ label, href }) => ({
+    items: FOOTER_SUPPORT_LINKS.map(({ label, href }, index) => ({
       kind: 'href' as const,
-      key: href,
+      key: `${href}-${label}-${index}`,
       label,
       href,
     })),
   },
   {
     title: 'Дополнительно',
-    items: FOOTER_EXTRA_LINKS.map(({ label, href, external }) => ({
+    items: FOOTER_EXTRA_LINKS.map(({ label, href, external }, index) => ({
       kind: 'href' as const,
-      key: href,
+      key: `${href}-${label}-${index}`,
       label,
       href,
       external,

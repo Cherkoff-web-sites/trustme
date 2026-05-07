@@ -13,7 +13,7 @@ import {
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import { Card, FilterChip } from '../../components/ui';
-import { listReports } from '../../api/reports';
+import { getReportById, listReports } from '../../api/reports';
 import { useAuth } from '../../context/AuthContext';
 import { formatPeriodFilterChipLabel } from '../../lib/dateDisplayFormat';
 import { mapReportToHistoryItem } from '../../lib/apiMappers';
@@ -40,6 +40,19 @@ export function HistoryPage() {
   const [openedReportItem, setOpenedReportItem] = useState<HistoryItem | null>(null);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [mobileOpenPanels, setMobileOpenPanels] = useState<Partial<Record<HistoryFilterPanelKey, boolean>>>({});
+
+  const handleOpenReport = async (item: HistoryItem) => {
+    if (!accessToken || !item.id) {
+      setOpenedReportItem(item);
+      return;
+    }
+    try {
+      const report = await getReportById(item.id, accessToken);
+      setOpenedReportItem(mapReportToHistoryItem(report));
+    } catch {
+      setOpenedReportItem(item);
+    }
+  };
 
   useEffect(() => {
     if (!accessToken) return;
@@ -489,7 +502,7 @@ export function HistoryPage() {
             <HistoryRequestCard
               item={item}
               key={`${item.name}\u0000${item.checkedAt}\u0000${item.document}`}
-              onOpenReport={() => setOpenedReportItem(item)}
+              onOpenReport={() => void handleOpenReport(item)}
               onDelete={() => handleDeleteHistoryItem(item)}
             />
           ))}

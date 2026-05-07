@@ -2,8 +2,19 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { uiFlags } from '../../config/uiFlags';
 import { topupBalance } from '../../api/balance';
-import { attachUserToCompany, createCompany } from '../../api/companies';
-import { listReports } from '../../api/reports';
+import {
+  acceptCompanyInvite,
+  attachUserToCompany,
+  createCompany,
+  createCompanyInvite,
+  detachCompanyUser,
+  getCompany,
+  getMyCompany,
+  listCompanyInvites,
+  listCompanyUsers,
+  updateCompanyUser,
+} from '../../api/companies';
+import { getReportStats, listReports } from '../../api/reports';
 import { getSubscriptionStatus } from '../../api/subscription';
 import { getTariff } from '../../api/tariff';
 import { useAuth } from '../../context/AuthContext';
@@ -20,7 +31,14 @@ import { getSubscriptionBanner, getTariffFeatureItems, getTariffLabel, mapReport
 import { TelegramCircleIcon } from '../../shared/icons';
 import { type HistoryItem } from '../../shared/ReportContent';
 import { scrollableThreeRowListClass } from '../../shared/scrollListClasses';
-import type { SubscriptionStatusResponse, TariffResponse } from '../../types/api';
+import type {
+  CompanyInviteResponse,
+  CompanyResponse,
+  CompanyUserResponse,
+  ReportStatsResponse,
+  SubscriptionStatusResponse,
+  TariffResponse,
+} from '../../types/api';
 import qrSvg from '../../assets/icons/qr.svg';
 import telegramSvg from '../../assets/icons/telegram.svg';
 import websiteOnDashboardSvg from '../../assets/icons/website_on_dashboard.svg';
@@ -86,6 +104,12 @@ export function ManageAccountsPage() {
   const [companyName, setCompanyName] = useState('');
   const [attachCompanyId, setAttachCompanyId] = useState(user?.company_id ? String(user.company_id) : '');
   const [attachUserId, setAttachUserId] = useState('');
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteToken, setInviteToken] = useState('');
+  const [companyUsers, setCompanyUsers] = useState<CompanyUserResponse[]>([]);
+  const [companyInvites, setCompanyInvites] = useState<CompanyInviteResponse[]>([]);
+  const [currentCompany, setCurrentCompany] = useState<CompanyResponse | null>(null);
+  const [reportStats, setReportStats] = useState<ReportStatsResponse | null>(null);
   const [companyActionMessage, setCompanyActionMessage] = useState<string | null>(null);
 
   const [showCurrentTariffModal, setShowCurrentTariffModal] = useState(false);
@@ -182,11 +206,32 @@ export function ManageAccountsPage() {
   useEffect(() => {
     if (!accessToken) return;
     let cancelled = false;
-    Promise.all([getTariff(accessToken), getSubscriptionStatus(accessToken)])
-      .then(([tariffResponse, statusResponse]) => {
+    Promise.all([
+      getTariff(accessToken),
+      getSubscriptionStatus(accessToken),
+      getMyCompany(accessToken).catch(() => null),
+      getReportStats(accessToken).catch(() => null),
+    ])
+      .then(([tariffResponse, statusResponse, companyResponse, statsResponse]) => {
         if (cancelled) return;
         setTariff(tariffResponse);
         setSubscriptionStatus(statusResponse);
+        setCurrentCompany(companyResponse);
+        setReportStats(statsResponse);
+        const companyId = companyResponse?.id ?? user?.company_id ?? null;
+        if (companyId) {
+          setAttachCompanyId(String(companyId));
+          void Promise.all([
+            getCompany(companyId, accessToken),
+            listCompanyUsers(companyId, accessToken),
+            listCompanyInvites(companyId, accessToken),
+          ]).then(([company, users, invites]) => {
+            if (cancelled) return;
+            setCurrentCompany(company);
+            setCompanyUsers(users);
+            setCompanyInvites(invites);
+          }).catch(() => undefined);
+        }
       })
       .catch(() => {
         if (cancelled) return;
@@ -194,7 +239,7 @@ export function ManageAccountsPage() {
     return () => {
       cancelled = true;
     };
-  }, [accessToken]);
+  }, [accessToken, user?.company_id]);
 
   const newCheckTitle =
     newCheckStep === 'form'
@@ -269,6 +314,69 @@ export function ManageAccountsPage() {
       setAttachUserId('');
     } catch {
       setCompanyActionMessage('Не удалось привязать пользователя к компании.');
+    }
+  };
+
+  const refreshCompanyData = async (companyId: number) => {
+    if (!accessToken) return;
+    const [company, users, invites] = await Promise.all([
+      getCompany(companyId, accessToken),
+      listCompanyUsers(companyId, accessToken),
+      listCompanyInvites(companyId, accessToken),
+    ]);
+    setCurrentCompany(company);
+    setCompanyUsers(users);
+    setCompanyInvites(invites);
+  };
+
+  const handleCreateInvite = async () => {
+    if (!accessToken || !inviteEmail.trim()) return;
+    const companyId = Number(attachCompanyId || currentCompany?.id || user?.company_id);
+    if (!companyId) return;
+    try {
+      await createCompanyInvite(companyId, { email: inviteEmail.trim(), role: 'company_employee' }, accessToken);
+      await refreshCompanyData(companyId);
+      setInviteEmail('');
+      setCompanyActionMessage('Приглашение создано.');
+    } catch (error) {
+      setCompanyActionMessage(error instanceof Error ? error.message : 'Не удалось создать приглашение.');
+    }
+  };
+
+  const handleAcceptInvite = async () => {
+    if (!accessToken || !inviteToken.trim()) return;
+    try {
+      await acceptCompanyInvite(inviteToken.trim(), accessToken);
+      setInviteToken('');
+      setCompanyActionMessage('Приглашение принято.');
+    } catch (error) {
+      setCompanyActionMessage(error instanceof Error ? error.message : 'Не удалось принять приглашение.');
+    }
+  };
+
+  const handleToggleCompanyUser = async (targetUser: CompanyUserResponse) => {
+    if (!accessToken) return;
+    const companyId = targetUser.company_id ?? Number(attachCompanyId || currentCompany?.id || user?.company_id);
+    if (!companyId) return;
+    try {
+      await updateCompanyUser(companyId, targetUser.id, { is_active: !targetUser.is_active }, accessToken);
+      await refreshCompanyData(companyId);
+      setCompanyActionMessage('Пользователь компании обновлён.');
+    } catch (error) {
+      setCompanyActionMessage(error instanceof Error ? error.message : 'Не удалось обновить пользователя.');
+    }
+  };
+
+  const handleDetachCompanyUser = async (targetUser: CompanyUserResponse) => {
+    if (!accessToken) return;
+    const companyId = targetUser.company_id ?? Number(attachCompanyId || currentCompany?.id || user?.company_id);
+    if (!companyId) return;
+    try {
+      await detachCompanyUser(companyId, targetUser.id, accessToken);
+      await refreshCompanyData(companyId);
+      setCompanyActionMessage('Пользователь отвязан от компании.');
+    } catch (error) {
+      setCompanyActionMessage(error instanceof Error ? error.message : 'Не удалось отвязать пользователя.');
     }
   };
 
@@ -855,6 +963,75 @@ export function ManageAccountsPage() {
                 </Button>
               </div>
               {companyActionMessage ? <p className="m-0 text-[#FDFEFF]/80">{companyActionMessage}</p> : null}
+            </div>
+          </Card>
+        </section>
+      ) : null}
+
+      {user?.role === 'company_admin' ? (
+        <section className="mt-[20px]">
+          <Card title="Компания и приглашения" headerDecor={<CardHeaderDecorDivider />}>
+            <div className="flex flex-col gap-[20px] text-[#FDFEFF]">
+              {currentCompany ? (
+                <p className="m-0">
+                  Текущая компания: {currentCompany.name} (ID {currentCompany.id})
+                </p>
+              ) : null}
+              {reportStats ? (
+                <p className="m-0">
+                  Статистика отчётов: всего {reportStats.total}, готово {reportStats.ready}, ошибок {reportStats.failed}, юр. {reportStats.legal}, физ. {reportStats.person}
+                </p>
+              ) : null}
+              <div className="flex flex-col gap-[15px] lg:flex-row">
+                <input
+                  className="min-h-[48px] flex-1 rounded-[10px] border border-[#FDFEFF]/20 bg-[#2A2A2A] px-4 text-[#FDFEFF]"
+                  placeholder="Email для приглашения"
+                  value={inviteEmail}
+                  onChange={(event) => setInviteEmail(event.target.value)}
+                />
+                <Button className="lg:min-w-[220px]" onClick={handleCreateInvite}>
+                  Создать приглашение
+                </Button>
+              </div>
+              <div className="flex flex-col gap-[15px] lg:flex-row">
+                <input
+                  className="min-h-[48px] flex-1 rounded-[10px] border border-[#FDFEFF]/20 bg-[#2A2A2A] px-4 text-[#FDFEFF]"
+                  placeholder="Token приглашения"
+                  value={inviteToken}
+                  onChange={(event) => setInviteToken(event.target.value)}
+                />
+                <Button className="lg:min-w-[220px]" onClick={handleAcceptInvite}>
+                  Принять приглашение
+                </Button>
+              </div>
+              {companyUsers.length ? (
+                <div className="flex flex-col gap-[10px]">
+                  <p className="m-0 font-semibold">Пользователи компании</p>
+                  {companyUsers.map((companyUser) => (
+                    <div key={companyUser.id} className="flex flex-col gap-[10px] rounded-[12px] bg-[#2A2A2A] p-[15px] lg:flex-row lg:items-center lg:justify-between">
+                      <span>{companyUser.email} · {companyUser.role} · {companyUser.is_active ? 'активен' : 'неактивен'}</span>
+                      <div className="flex flex-col gap-[10px] lg:flex-row">
+                        <Button variant="secondary" onClick={() => void handleToggleCompanyUser(companyUser)}>
+                          {companyUser.is_active ? 'Деактивировать' : 'Активировать'}
+                        </Button>
+                        <Button variant="secondary" onClick={() => void handleDetachCompanyUser(companyUser)}>
+                          Отвязать
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+              {companyInvites.length ? (
+                <div className="flex flex-col gap-[10px]">
+                  <p className="m-0 font-semibold">Приглашения</p>
+                  {companyInvites.map((invite) => (
+                    <p key={invite.token} className="m-0 rounded-[12px] bg-[#2A2A2A] p-[15px]">
+                      {invite.email} · {invite.role} · {invite.accepted ? 'принято' : 'ожидает'} · {invite.token}
+                    </p>
+                  ))}
+                </div>
+              ) : null}
             </div>
           </Card>
         </section>

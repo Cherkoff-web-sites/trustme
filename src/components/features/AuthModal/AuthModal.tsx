@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
-import { AuthApiError, authAcceptRegister, authRegister } from "../../../api/auth";
+import { AuthApiError, authAcceptRegister, authPasswordResetRequest, authRegister, authResendConfirmation } from "../../../api/auth";
 import bgModalMob from "../../../assets/bg_modal_mob.webp";
 import bgModalPc from "../../../assets/bg_modal_pc.webp";
 import logoSvg from "../../../assets/icons/logo.svg";
@@ -218,14 +218,23 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
     }
   };
 
-  const handlePasswordResetSubmit = (e: React.FormEvent) => {
+  const handlePasswordResetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const next: { email?: string } = {};
     if (!email.trim()) next.email = "Обязательное поле";
     setPasswordResetFieldErrors(next);
     if (Object.keys(next).length > 0) return;
-    // TODO: API сброса пароля
-    setView("login");
+    setAuthSubmitting(true);
+    try {
+      await authPasswordResetRequest({ email: email.trim() });
+      setView("login");
+    } catch (err) {
+      setPasswordResetFieldErrors({
+        email: err instanceof AuthApiError ? err.message : "Не удалось запросить сброс пароля",
+      });
+    } finally {
+      setAuthSubmitting(false);
+    }
   };
 
   if (!open) return null;
@@ -408,7 +417,25 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                 {authSubmitting ? "Проверка…" : "Подтвердить"}
               </Button>
               <p className="m-0 text-center text-sm text-[#FDFEFF] lg:text-base">
-                Отправить повторно через{" "}
+                <button
+                  type="button"
+                  className="underline underline-offset-4 disabled:no-underline disabled:opacity-60"
+                  disabled={authSubmitting || countdownSec > 0 || !email.trim()}
+                  onClick={async () => {
+                    try {
+                      setAuthSubmitting(true);
+                      await authResendConfirmation({ email: email.trim() });
+                      setCountdownSec(EMAIL_CONFIRM_COUNTDOWN_SEC);
+                    } catch (err) {
+                      setConfirmFieldError(err instanceof AuthApiError ? err.message : "Не удалось отправить код повторно");
+                    } finally {
+                      setAuthSubmitting(false);
+                    }
+                  }}
+                >
+                  Отправить повторно
+                </button>{" "}
+                через{" "}
                 <span className="inline-block w-[42px] lg:w-[50px] shrink-0 text-center tabular-nums">
                   {countdownFormatted}
                 </span>
@@ -449,8 +476,8 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
                   Мы&nbsp;отправим ссылку для сброса текущего пароля.
                 </p>
               </div>
-              <Button type="submit" className="w-full">
-                Сбросить
+              <Button type="submit" className="w-full" disabled={authSubmitting}>
+                {authSubmitting ? "Отправляем…" : "Сбросить"}
               </Button>
             </form>
           ) : view === "login" ? (

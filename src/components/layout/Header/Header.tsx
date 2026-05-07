@@ -1,9 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { uiFlags } from '../../../config/uiFlags';
 import { useAuth } from '../../../context/AuthContext';
 import { useAuthModalUi } from '../../../context/AuthModalUiContext';
 import { useBodyScrollLock } from '../../../lib/useBodyScrollLock';
+import {
+  deleteNotification,
+  listNotifications,
+  markAllNotificationsRead,
+  markNotificationRead,
+} from '../../../api/notifications';
 import { MAIN_NAV_ITEMS } from '../../../shared/navConfig';
 import { scrollableThreeRowListClass } from '../../../shared/scrollListClasses';
 import { uiTokens, Button, designTokens } from '../../ui';
@@ -19,7 +25,6 @@ import warningIcon from '../../../assets/icons/notifications/warning.svg';      
 import calendarIcon from '../../../assets/icons/notifications/calendar.svg';      // Календарь/тариф
 import moneyIcon from '../../../assets/icons/notifications/money.svg';            // Пополнение/деньги
 import tariffIcon from '../../../assets/icons/notifications/tariff.svg';          // Тариф/галочка
-import editIcon from '../../../assets/icons/notifications/edit.svg';              // Карандаш/изменение
 
 // Иконки действий (справа в карточке):
 import checkReadIcon from '../../../assets/icons/notifications/check-read.svg';   // Галочка "прочитано"
@@ -126,7 +131,7 @@ function isCabinetPath(pathname: string): boolean {
 }
 
 export function Header() {
-  const { isAuthenticated, logout, user, accountEmails, switchAccount } = useAuth();
+  const { accessToken, isAuthenticated, logout, user, accountEmails, switchAccount } = useAuth();
   const { openAuthModal } = useAuthModalUi();
   const navigate = useNavigate();
   const location = useLocation();
@@ -145,74 +150,45 @@ export function Header() {
   /** Список смены аккаунта только при реальной авторизации (не «шапка кабинета без входа»). */
   const menuAccountEmails = isAuthenticated ? accountEmails : [];
 
-  // === ДАННЫЕ УВЕДОМЛЕНИЙ (потом заменишь на API) ===
-  const initialNotifications: Notification[] = [
-    {
-      id: '1',
-      title: 'Добавлен новый сотрудник: Иванов Иван',
-      titleHighlight: 'Иванов Иван',
-      category: 'account',
-      time: '11 февраля 2026 в 02:49',
-      icon: employeeIcon,
-      isRead: false,
-    },
-    {
-      id: '2',
-      title: 'Аккаунт user@company.ru заблокирован. Превышен лимит доступных проверок',
-      titleHighlight: 'user@company.ru',
-      category: 'account',
-      time: '11 февраля 2026 в 02:49',
-      icon: warningIcon,
-      isRead: false,
-    },
-    {
-      id: '3',
-      title: 'Тарифный план учетной записи user@company.ru истекает через 3 дня',
-      titleHighlight: 'user@company.ru',
-      category: 'tariff',
-      time: '11 февраля 2026 в 02:49',
-      icon: calendarIcon,
-      action: 'Продлить',
-      isRead: false,
-    },
-    {
-      id: '4',
-      title: 'Списано 490 ₽ за проверку юр.лица «ООО УМНЫЙ РИТЕЙЛ»',
-      titleHighlight: '490 ₽',
-      category: 'finance',
-      time: '11 февраля 2026 в 02:49',
-      icon: moneyIcon,
-      isRead: false,
-    },
-    {
-      id: '5',
-      title: 'Баланс успешно пополнен на 10 000 ₽',
-      titleHighlight: '10 000 ₽',
-      category: 'finance',
-      time: '11 февраля 2026 в 02:49',
-      icon: moneyIcon,
-      isRead: false,
-    },
-    {
-      id: '6',
-      title: 'Тариф «Индивидуальный» активирован',
-      titleHighlight: 'активирован',
-      category: 'tariff',
-      time: '11 февраля 2026 в 02:49',
-      icon: tariffIcon,
-      isRead: false,
-    },
-    {
-      id: '7',
-      title: 'Тариф «Индивидуальный» изменен',
-      titleHighlight: 'изменен',
-      category: 'tariff',
-      time: '11 февраля 2026 в 02:49',
-      icon: editIcon,
-      isRead: false,
-    },
-  ];
-  const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  const notificationIconByCategory = (category: Notification['category'], action?: string | null) => {
+    if (category === 'finance') return moneyIcon;
+    if (category === 'tariff') return action === 'Продлить' ? calendarIcon : tariffIcon;
+    if (category === 'account') return employeeIcon;
+    return warningIcon;
+  };
+
+  useEffect(() => {
+    if (!accessToken || !isAuthenticated) {
+      setNotifications([]);
+      return;
+    }
+    let cancelled = false;
+    listNotifications(accessToken)
+      .then((items) => {
+        if (cancelled) return;
+        setNotifications(
+          items.map((item) => ({
+            id: item.id,
+            title: item.title,
+            titleHighlight: item.titleHighlight ?? undefined,
+            category: item.category,
+            time: item.time,
+            icon: item.icon || notificationIconByCategory(item.category, item.action),
+            action: item.action ?? undefined,
+            isRead: item.isRead ?? false,
+          })),
+        );
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setNotifications([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken, isAuthenticated]);
 
   const handleLogout = async () => {
     await logout();
@@ -237,16 +213,54 @@ export function Header() {
     openAuthModal();
   };
 
-  const handleDeleteNotification = (id: string) => {
+  const handleDeleteNotification = async (id: string) => {
+    if (accessToken) {
+      try {
+        await deleteNotification(id, accessToken);
+      } catch {
+        // Локально убираем уведомление даже если сеть временно недоступна.
+      }
+    }
     setNotifications((prev) => prev.filter((notification) => notification.id !== id));
   };
 
-  const handleMarkRead = (id: string) => {
+  const handleMarkRead = async (id: string) => {
+    if (accessToken) {
+      try {
+        await markNotificationRead(id, accessToken);
+      } catch {
+        // Локально отмечаем прочитанным, сервер синхронизируется при следующей загрузке.
+      }
+    }
     setNotifications((prev) =>
       prev.map((notification) =>
         notification.id === id ? { ...notification, isRead: true } : notification,
       ),
     );
+  };
+
+  const handleMarkAllRead = async () => {
+    if (accessToken) {
+      try {
+        const updated = await markAllNotificationsRead(accessToken);
+        setNotifications(
+          updated.map((item) => ({
+            id: item.id,
+            title: item.title,
+            titleHighlight: item.titleHighlight ?? undefined,
+            category: item.category,
+            time: item.time,
+            icon: item.icon || notificationIconByCategory(item.category, item.action),
+            action: item.action ?? undefined,
+            isRead: item.isRead ?? true,
+          })),
+        );
+        return;
+      } catch {
+        // Fallback ниже.
+      }
+    }
+    setNotifications((prev) => prev.map((notification) => ({ ...notification, isRead: true })));
   };
 
   // Фильтрация уведомлений по табу
@@ -630,9 +644,9 @@ export function Header() {
                 <button
                   className="self-end text-[16px] leading-[19px] font-medium text-[#FDFEFF] hover:text-[#0EB8D2] lg:shrink-0 lg:self-auto lg:text-[18px] lg:leading-[22px]"
                   type="button"
-                  onClick={() => setNotifications([])}
+                  onClick={handleMarkAllRead}
                 >
-                  Очистить
+                  Прочитать все
                 </button>
               </div>
             </header>

@@ -5,6 +5,7 @@ export type SubjectTypeSchema = 'legal' | 'person';
 export type ReportStatusSchema = 'pending' | 'processing' | 'ready' | 'failed';
 export type SearchTypePhys = 'fio' | 'fio_inn' | 'fio_inn_birthday';
 export type TransactionTypeSchema = 'topup' | 'charge';
+export type NotificationCategorySchema = 'account' | 'tariff' | 'finance';
 export type TypeConfirmationCodeSchema =
   | 'authorization'
   | 'change_password'
@@ -62,6 +63,28 @@ export interface ConfirmationCodeResponse {
   result: boolean;
 }
 
+export interface GenericOkResponse {
+  result?: boolean;
+}
+
+export interface PasswordResetRequest {
+  email: string;
+}
+
+export interface PasswordResetConfirmRequest {
+  email: string;
+  code?: string | null;
+  new_password: string;
+}
+
+export interface UserPatchRequest {
+  email?: string | null;
+  full_name?: string | null;
+  inn?: string | null;
+  birth_date?: string | null;
+  marketing_consent?: boolean | null;
+}
+
 export interface SetThemesRequest {
   ui_theme: Theme;
   report_theme: Theme;
@@ -69,6 +92,33 @@ export interface SetThemesRequest {
 
 export interface BindTelegramRequest {
   telegram_user_id: number;
+}
+
+export interface EmailManageRequest {
+  email: string;
+}
+
+export interface EmailConfirmRequest {
+  email: string;
+  code?: string | null;
+}
+
+export interface PhoneRequestCodeRequest {
+  phone: string;
+}
+
+export interface PhoneConfirmRequest {
+  phone: string;
+  code: string;
+}
+
+export interface UserSecurityResponse {
+  two_factor_enabled?: boolean;
+  email_two_factor_enabled?: boolean;
+}
+
+export interface UserSecurityPatchRequest {
+  enabled: boolean;
 }
 
 export interface CompanyCreateRequest {
@@ -79,6 +129,35 @@ export interface CompanyResponse {
   id: number;
   name: string;
   owner_id: number;
+}
+
+export interface CompanyUserPatchRequest {
+  role?: string | null;
+  balance?: number | null;
+  is_active?: boolean | null;
+}
+
+export interface CompanyUserResponse {
+  id: number;
+  email: string;
+  role: string;
+  balance: number;
+  telegram_id?: number | null;
+  company_id?: number | null;
+  is_active: boolean;
+}
+
+export interface CompanyInviteCreateRequest {
+  email: string;
+  role?: string;
+}
+
+export interface CompanyInviteResponse {
+  token: string;
+  email: string;
+  company_id: number;
+  role: string;
+  accepted?: boolean;
 }
 
 /** OpenAPI содержит опечатку `ReportCreateRequesLegal`; оставляем совместимость с контрактом. */
@@ -109,6 +188,16 @@ export interface ReportResponse {
   updated_at: string;
 }
 
+export interface ReportStatsResponse {
+  total: number;
+  ready: number;
+  failed: number;
+  processing: number;
+  pending: number;
+  legal: number;
+  person: number;
+}
+
 export interface TopupRequest {
   amount: number;
   description?: string | null;
@@ -135,6 +224,20 @@ export interface TariffResponse {
   include_media: boolean;
   include_telegram: boolean;
   subscription_price: number;
+}
+
+export interface TariffFactorItem {
+  key: string;
+  title: string;
+  enabled?: boolean;
+}
+
+export interface TariffFactorsRequest {
+  factors: TariffFactorItem[];
+}
+
+export interface TariffFactorsResponse {
+  factors: TariffFactorItem[];
 }
 
 export interface SubscriptionCatalogResponse {
@@ -192,4 +295,16 @@ export interface PaymentStatusResponse {
   report_type?: string | null;
   activated?: boolean;
   local_order_status?: string | null;
+}
+
+export interface NotificationResponse {
+  id: string;
+  title: string;
+  titleHighlight?: string | null;
+  category: NotificationCategorySchema;
+  time: string;
+  icon?: string | null;
+  action?: string | null;
+  isRead?: boolean;
+  created_at?: string | null;
 }

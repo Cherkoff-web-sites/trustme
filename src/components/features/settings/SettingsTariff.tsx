@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Checkbox, Label, MoreDetailsSection, SectionCard, ToggleSwitch } from '../../ui';
 import {
   settingsTariffFactorsGridStyles,
@@ -14,6 +14,8 @@ export interface SettingsTariffProps {
   onToggleMentionsMedia: () => void;
   mentionsTelegramEnabled: boolean;
   onToggleMentionsTelegram: () => void;
+  selectedFactorKeys?: string[];
+  onSelectedFactorsChange?: (factors: string[]) => void;
 }
 
 export function SettingsTariff({
@@ -25,16 +27,24 @@ export function SettingsTariff({
   onToggleMentionsMedia,
   mentionsTelegramEnabled,
   onToggleMentionsTelegram,
+  selectedFactorKeys,
+  onSelectedFactorsChange,
 }: SettingsTariffProps) {
-  const [selectedFactors, setSelectedFactors] = useState<string[]>([]);
+  const [selectedFactors, setSelectedFactors] = useState<string[]>(selectedFactorKeys ?? []);
   const selectedFactorSet = useMemo(() => new Set(selectedFactors), [selectedFactors]);
 
+  useEffect(() => {
+    if (selectedFactorKeys) setSelectedFactors(selectedFactorKeys);
+  }, [selectedFactorKeys]);
+
   const toggleFactor = (factor: string) => {
-    setSelectedFactors((prev) =>
-      prev.includes(factor)
+    setSelectedFactors((prev) => {
+      const next = prev.includes(factor)
         ? prev.filter((value) => value !== factor)
-        : [...prev, factor],
-    );
+        : [...prev, factor];
+      onSelectedFactorsChange?.(next);
+      return next;
+    });
   };
 
   return (

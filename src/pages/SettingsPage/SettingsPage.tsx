@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getTariff, setTariff } from '../../api/tariff';
+import { getTariff, getTariffFactors, setTariff, setTariffFactors } from '../../api/tariff';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { PageSection } from '../../components/layout/PageSection/PageSection';
 import {
@@ -26,6 +26,7 @@ export function SettingsPage() {
   const [mentionsMediaEnabled, setMentionsMediaEnabled] = useState(false);
   const [mentionsTelegramEnabled, setMentionsTelegramEnabled] = useState(false);
   const [currentTariffLabel, setCurrentTariffLabel] = useState('Индивидуальный');
+  const [selectedFactorKeys, setSelectedFactorKeys] = useState<string[]>([]);
 
   const personalizationFactors = [
     'Розыск МВД',
@@ -47,13 +48,16 @@ export function SettingsPage() {
   useEffect(() => {
     if (!accessToken) return;
     let cancelled = false;
-    getTariff(accessToken)
-      .then((tariff) => {
+    Promise.all([getTariff(accessToken), getTariffFactors(accessToken).catch(() => null)])
+      .then(([tariff, factors]) => {
         if (cancelled) return;
         setFactorsEnabled(tariff.include_factors);
         setMentionsMediaEnabled(tariff.include_media);
         setMentionsTelegramEnabled(tariff.include_telegram);
         setCurrentTariffLabel(getTariffLabel(tariff));
+        if (factors) {
+          setSelectedFactorKeys(factors.factors.filter((factor) => factor.enabled !== false).map((factor) => factor.title));
+        }
       })
       .catch(() => {
         if (cancelled) return;
@@ -84,6 +88,25 @@ export function SettingsPage() {
       setCurrentTariffLabel(getTariffLabel(updated));
     } catch {
       // Если сохранение не удалось, UI останется в последнем локальном состоянии до следующей перезагрузки профиля.
+    }
+  };
+
+  const persistFactors = async (nextSelected: string[]) => {
+    if (!accessToken) return;
+    setSelectedFactorKeys(nextSelected);
+    try {
+      await setTariffFactors(
+        {
+          factors: personalizationFactors.map((title) => ({
+            key: title,
+            title,
+            enabled: nextSelected.includes(title),
+          })),
+        },
+        accessToken,
+      );
+    } catch {
+      // UI останется локально выбранным, следующая загрузка подтянет актуальные данные API.
     }
   };
 
@@ -149,6 +172,8 @@ export function SettingsPage() {
                     mentionsTelegramEnabled: next,
                   });
                 }}
+                selectedFactorKeys={selectedFactorKeys}
+                onSelectedFactorsChange={(next) => void persistFactors(next)}
               />
             ) : null}
           </div>
